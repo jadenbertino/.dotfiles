@@ -22,11 +22,17 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Powerlevel10k
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
-# zsh plugins
+# zsh plugins via repo
 zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
-# zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
+zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
+
+# zsh plugins via URL
+# You can update all these with `zinit update --all`
+# Reference: https://github.com/zdharma-continuum/zinit#plugins-and-snippets
+# Find plugins at places like https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
+zinit snippet OMZ::plugins/git # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -34,7 +40,7 @@ zinit cdreplay -q
 
 # keybindings
 bindkey -e # emacs keybindings
-bindkey '\e[59;5u' autosuggest-accept # accept autosuggestion with ctrl + ;
+# ctrl f = accept autosuggestion (via emacs keybindings)
 bindkey '^[[A' history-search-backward # up arrow
 bindkey '^[[B' history-search-forward # down arrow
 export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
