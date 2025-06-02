@@ -76,6 +76,7 @@ alias nv='nvim'
 # Shell integrations
 eval "$(fzf --zsh)" # ctrl + r -> fzf
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
+setopt AUTO_CD # cd without cd command
 
 # Load powerlevel config
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
