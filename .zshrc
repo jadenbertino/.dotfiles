@@ -80,3 +80,15 @@ eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 # Load powerlevel config
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+if [ ! -d "$NVM_DIR" ]; then
+  # Install nvm if it doesn't exist
+  git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+  cd "$NVM_DIR"
+  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+  echo "Installed nvm"
+fi
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # load nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # load nvm bash_completion
