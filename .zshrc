@@ -103,6 +103,21 @@ alias .......='cd ../../../../../..'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
+# Git aliases setup with commit hash tracking
+setup_git_aliases_if_needed() {
+  local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
+  [[ -z "$current_hash" ]] && return
+  local stored_hash=$(git config --global dotfiles.last-executed-hash 2>/dev/null)
+  
+  # Only setup aliases if hash has changed
+  if [[ "$current_hash" != "$stored_hash" ]]; then
+    source ~/.config/zsh/git-aliases.zsh
+    echo "Updated git aliases"
+    git config --global dotfiles.last-executed-hash "$current_hash"
+  fi
+}
+setup_git_aliases_if_needed
+
 # NVM
 export NVM_DIR="$HOME/.nvm"
 if [ ! -d "$NVM_DIR" ]; then
