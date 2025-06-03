@@ -28,6 +28,11 @@
       ghostty +show-config | grep font-family
       ```
   - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
+  - VSCode: Command Palette -> `Preferences: Open Settings (JSON)`
+      ```json
+      "editor.fontFamily": "Consolas, 'Courier New', monospace",
+      "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
+      ```
 
 ### Install packages
 
