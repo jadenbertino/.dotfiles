@@ -12,11 +12,10 @@
 
 ### Install packages
 
-You'll need to install the following packages:
-- `git`
-- `fzf`
-- `zoxide`
-- `stow`
+- Mac
+  - `brew install --force git fzf zoxide stow`
+- Ubuntu
+  - `sudo apt install -y git fzf zoxide stow`
 
 ### Install a Nerd Font
 
