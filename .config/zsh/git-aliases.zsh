@@ -1,0 +1,45 @@
+# Do not source this file in .zshrc, it takes 400ms to load
+# Just source it manually if you want to update the aliases
+
+# Define aliases here
+typeset -A git_aliases=(
+    # List all aliases
+    ["aliases"]='!f() { git config --get-regexp "^alias\." | sed -e "s/^alias\.//" -e "s/ / = /" ; }; f'
+
+    # Tracking
+    ["a"]='!git add . && git status -sb'
+    ["st"]="status -sb"
+    ["sa"]="stash apply"
+
+    # Commit
+    ["cam"]="commit -a -m"
+    ["cm"]="commit -m"
+    ["cp"]="cherry-pick"
+
+    # Branches
+    ["p"]="pull"
+    ["s"]="switch"
+    ["sc"]="switch -c"
+    ["bd"]="branch --delete"
+    ["cb"]="rev-parse --abbrev-ref HEAD"
+    ["su"]='!f() { if [ -n "$1" ] && [ -n "$2" ]; then git branch --set-upstream-to="$1" "$2"; elif [ -z "$1" ] && [ -z "$2" ]; then current_branch=$(git symbolic-ref --short HEAD); git branch --set-upstream-to="origin/$current_branch" "$current_branch"; else echo "Usage: git su [ <upstream> <local_branch> ]"; fi; }; f'
+
+    # Undo
+    ["undo"]="reset HEAD~1 --soft"
+    ["amend"]="commit --amend"
+
+    # Logs
+    ["l"]="log --oneline"
+    ["ll"]="!git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+    ["last"]="log -1 HEAD"
+
+    # Delete all branches except current
+    ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
+)
+
+# Set aliases
+for alias_name in ${(k)git_aliases}; do
+  git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
+done
+
+alias g="git"
