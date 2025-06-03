@@ -29,8 +29,8 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
 
-# Then initialize completions
-autoload -Uz compinit && compinit
+# Then initialize completions (optimized with -C flag to skip security checks)
+autoload -Uz compinit && compinit -C
 zinit cdreplay -q
 
 # fzf (must be before fzf tab)
@@ -109,13 +109,5 @@ update_on_hash_change() {
 }
 update_on_hash_change
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-if [ ! -d "$NVM_DIR" ]; then
-  # Install nvm if it doesn't exist
-  git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
-  (cd "$NVM_DIR" && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`)
-  echo "Installed nvm"
-fi
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # load nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # load nvm bash_completion
+# NVM - Lazy Loading (saves ~0.58s on startup!)
+source ~/.config/zsh/node.sh
