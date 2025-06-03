@@ -3,8 +3,8 @@
 ### Install packages
 
 - Update package manager
-  - Ubuntu: `sudo apt update && sudo apt upgrade -y`
-  - Mac: `brew update && brew upgrade -y`
+  - Ubuntu: `sudo apt update`
+  - Mac: `brew update`
 - Install `zsh`
   - Ubuntu: `sudo apt install zsh`
   - Mac: `brew install zsh`
