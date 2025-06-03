@@ -1,22 +1,5 @@
 # Prerequisites
 
-### Install packages
-
-- If using Ubuntu then ensure you're using 24 to prevent issues with fzf
-- Update package manager
-  - Ubuntu: `sudo apt update`
-  - Mac: `brew update`
-- Install `zsh`
-  - Ubuntu: `sudo apt install zsh`
-  - Mac: `brew install zsh`
-- Set `zsh` as the default shell
-  - `sudo chsh -s $(which zsh)`
-  - Note that once you symlink with stow, the new `.bashrc` will auto switch to `zsh` if it is installed.
-- (Optionally backup and) Remove any existing `.zshrc` files or configuration (e.g. `oh-my-zsh`)
-- Install additional packages
-  - Mac: `brew install --force git fzf zoxide stow`
-  - Ubuntu: `sudo apt install -y git fzf zoxide stow`
-
 ### Install a Nerd Font
 
 - Recommended: `JetBrainsMono Nerd Font`
@@ -46,20 +29,32 @@
       ```
   - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
 
+### Install packages
+
+- Update packages
+  - Ubuntu: `sudo apt update && sudo apt install -y zsh zoxide stow`
+  - Mac: `brew update && brew install --force zsh zoxide stow`
+- Set `zsh` as the default shell
+  - `sudo chsh -s $(which zsh)`
+- (Optionally backup and) Remove any existing `.zshrc` files or configuration (e.g. `oh-my-zsh`)
+
 # Usage
 
 1. Clone this repo into your home directory
 2. `cd` into the repo
-3. run `stow -v .` to symlink the files
-4. You will probably get conflicts. You can either:
-   - Recommended: Delete the conflicting files then run `stow -v .` again. Keep in mind that you should be deleting the files in your `~` dir.
-   - Run `stow --adopt .` to have the external files overwrite the files in `dotfiles` repo. From here you can commit the changes or stash to get rid of them.
+3. Run `stow -v .`
+    ```bash
+    stow -v --adopt .
+    git stash
+    source ~/.zshrc
+    # you can now unstash the changes if you want to to see what changed
+    ```
 
 # Additional Notes
 
+- If you ever want to remove the symlinks, you can run `stow -D .`
 - You can make changes to the symlinked files and the original files will be updated.
 - The structure of this repo must match the structure of your `$HOME` directory.
-- If there are conflicts, you can run `stow --adopt .`. This will move the original files into this directory and then symlink the files back to the original location. Keep in mind that this will overwrite the files in this repo.
 
 # References
 
