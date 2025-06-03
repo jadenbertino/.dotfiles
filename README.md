@@ -3,7 +3,11 @@
 ### Install `zsh`
 
 - Install `zsh`
+  - Ubuntu: `sudo apt install zsh`
+  - Mac: `brew install zsh`
 - Set `zsh` as the default shell
+  - `sudo chsh -s $(which zsh)`
+  - Note that once you symlink with stow, the new `.bashrc` will auto switch to `zsh` if it is installed.
 - (Optionally backup and) Remove any existing `.zshrc` files or configuration (e.g. `oh-my-zsh`)
 
 ### Install packages
