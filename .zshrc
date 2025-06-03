@@ -82,7 +82,7 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-eval $(zoxide init --cmd cd zsh) # cd -> zoxide
+[ -x "$(command -v zoxide)" ] && eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -95,7 +95,7 @@ alias .......='cd ../../../../../..'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# Git aliases setup with commit hash tracking
+# These don't need to be sourced on every prompt
 update_on_hash_change() {
   local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
   [[ -z "$current_hash" ]] && return
