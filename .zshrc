@@ -72,7 +72,8 @@ alias c='clear'
 alias nv='nvim'
 
 # Shell integrations
-eval "$(fzf --zsh)" # ctrl + r -> fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# eval "$(fzf --zsh)" # requires v0.48.0 or later ctrl + r -> fzf
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 
