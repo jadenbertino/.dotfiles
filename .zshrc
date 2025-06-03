@@ -72,9 +72,17 @@ alias ls='ls --color'
 alias c='clear'
 alias nv='nvim'
 
-# Shell integrations
+# fzf
+if [ ! -d ~/.fzf ]; then
+  echo "Installing fzf..."
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --key-bindings --completion --no-update-rc
+fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# eval "$(fzf --zsh)" # requires v0.48.0 or later ctrl + r -> fzf
+# github docs say to do it like below, but install script used the above method
+# eval "$(fzf --zsh)"
+
+# cd helpers
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 
