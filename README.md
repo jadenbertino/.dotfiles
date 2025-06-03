@@ -41,6 +41,7 @@
       # confirm config loaded
       ghostty +show-config | grep font-family
       ```
+  - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
 
 # Usage
 
