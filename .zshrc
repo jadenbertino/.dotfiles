@@ -35,6 +35,16 @@ zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
 autoload -Uz compinit && compinit
 zinit cdreplay -q
 
+# fzf (must be before fzf tab)
+if [ ! -d ~/.fzf ]; then
+  echo "Installing fzf..."
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --key-bindings --completion --no-update-rc
+fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# github docs say to do it like below, but install script used the above method
+# eval "$(fzf --zsh)"
+
 # fzf-tab needs to be loaded after compinit, but before plugins which will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting
 zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
 zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
@@ -45,14 +55,6 @@ zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-aut
 # Reference: https://github.com/zdharma-continuum/zinit#plugins-and-snippets
 # Find plugins at places like https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
 zinit snippet OMZ::plugins/git # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-
-# keybindings
-bindkey -e # emacs keybindings
-# ctrl f = accept autosuggestion (via emacs keybindings)
-bindkey '^[[A' history-search-backward # up arrow
-bindkey '^[[B' history-search-forward # down arrow
-export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
-export FZF_ALT_C_COMMAND="" # disable fzf alt + c
 
 # History
 HISTSIZE=5000
@@ -67,24 +69,30 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
+# Keybinds
+bindkey -e # emacs keybindings
+# ctrl f = accept autosuggestion (via emacs keybindings)
+bindkey '^[[A' history-search-backward # up arrow
+bindkey '^[[B' history-search-forward # down arrow
+export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
+export FZF_ALT_C_COMMAND="" # disable fzf alt + c
+
+
 # Aliases
 alias ls='ls --color'
+alias la='ls -a'
 alias c='clear'
 alias nv='nvim'
-
-# fzf
-if [ ! -d ~/.fzf ]; then
-  echo "Installing fzf..."
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install --key-bindings --completion --no-update-rc
-fi
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# github docs say to do it like below, but install script used the above method
-# eval "$(fzf --zsh)"
 
 # cd helpers
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias .......='cd ../../../../../..'
 
 # Load powerlevel config
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
