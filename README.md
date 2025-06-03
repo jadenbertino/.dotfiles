@@ -51,6 +51,9 @@
 1. Clone this repo into your home directory
 2. `cd` into the repo
 3. run `stow -v .` to symlink the files
+4. You will probably get conflicts. You can either:
+   - Recommended: Delete the conflicting files then run `stow -v .` again. Keep in mind that you should be deleting the files in your `~` dir.
+   - Run `stow --adopt .` to have the external files overwrite the files in `dotfiles` repo. From here you can commit the changes or stash to get rid of them.
 
 # Additional Notes
 
