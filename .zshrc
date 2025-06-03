@@ -6,9 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Make homebrew apps available in path
-if command -v brew &>/dev/null; then
-  eval "$(brew shellenv)"
-fi
+[ -x "$(command -v brew)" ] && eval "$(brew shellenv)"
 
 # Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -50,11 +48,10 @@ zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab com
 zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
 
-# zsh plugins via URL
+# You can also load zsh plugins via URL
 # You can update all these with `zinit update --all`
 # Reference: https://github.com/zdharma-continuum/zinit#plugins-and-snippets
 # Find plugins at places like https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
-zinit snippet OMZ::plugins/git # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 
 # History
 HISTSIZE=5000
@@ -70,7 +67,8 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Keybinds
-bindkey -e # emacs keybindings
+# bindkey -e # emacs keybindings
+bindkey '^F' autosuggest-accept
 # ctrl f = accept autosuggestion (via emacs keybindings)
 bindkey '^[[A' history-search-backward # up arrow
 bindkey '^[[B' history-search-forward # down arrow
@@ -84,12 +82,6 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-if ! command -v zoxide &> /dev/null; then
-  echo "Warning: zoxide is not installed. Please install it:"
-  echo "  - On macOS: brew install zoxide"
-  echo "  - On Ubuntu/Debian: apt install zoxide"
-  echo "  - Or visit: https://github.com/ajeetdsouza/zoxide#installation"
-fi
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
@@ -104,7 +96,7 @@ alias .......='cd ../../../../../..'
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # Git aliases setup with commit hash tracking
-setup_git_aliases_if_needed() {
+update_on_hash_change() {
   local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
   [[ -z "$current_hash" ]] && return
   local stored_hash=$(git config --global dotfiles.last-executed-hash 2>/dev/null)
@@ -112,11 +104,10 @@ setup_git_aliases_if_needed() {
   # Only setup aliases if hash has changed
   if [[ "$current_hash" != "$stored_hash" ]]; then
     source ~/.config/zsh/git-aliases.zsh
-    echo "Updated git aliases"
     git config --global dotfiles.last-executed-hash "$current_hash"
   fi
 }
-setup_git_aliases_if_needed
+update_on_hash_change
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
