@@ -17,6 +17,8 @@ _darcs
 \.gitignore
 \.gitmodules
 
+\.DS_Store       # macOS Finder files
+
 .+~          # emacs backup files
 \#.*\#       # emacs autosave files
 
