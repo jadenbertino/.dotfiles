@@ -77,7 +77,6 @@ bindkey '^[[B' history-search-forward # down arrow
 export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
 export FZF_ALT_C_COMMAND="" # disable fzf alt + c
 
-
 # Aliases
 alias ls='ls --color'
 alias la='ls -a'
@@ -85,6 +84,12 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
+if ! command -v zoxide &> /dev/null; then
+  echo "Warning: zoxide is not installed. Please install it:"
+  echo "  - On macOS: brew install zoxide"
+  echo "  - On Ubuntu/Debian: apt install zoxide"
+  echo "  - Or visit: https://github.com/ajeetdsouza/zoxide#installation"
+fi
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
