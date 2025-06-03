@@ -18,6 +18,7 @@ _darcs
 \.gitmodules
 
 \.DS_Store       # macOS Finder files
+\.docker         # Docker directory
 
 .+~          # emacs backup files
 \#.*\#       # emacs autosave files
