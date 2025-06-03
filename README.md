@@ -1,7 +1,10 @@
 # Prerequisites
 
-### Install `zsh`
+### Install packages
 
+- Update package manager
+  - Ubuntu: `sudo apt update && sudo apt upgrade -y`
+  - Mac: `brew update && brew upgrade -y`
 - Install `zsh`
   - Ubuntu: `sudo apt install zsh`
   - Mac: `brew install zsh`
@@ -9,13 +12,9 @@
   - `sudo chsh -s $(which zsh)`
   - Note that once you symlink with stow, the new `.bashrc` will auto switch to `zsh` if it is installed.
 - (Optionally backup and) Remove any existing `.zshrc` files or configuration (e.g. `oh-my-zsh`)
-
-### Install packages
-
-- Mac
-  - `brew install --force git fzf zoxide stow`
-- Ubuntu
-  - `sudo apt install -y git fzf zoxide stow`
+- Install additional packages
+  - Mac: `brew install --force git fzf zoxide stow`
+  - Ubuntu: `sudo apt install -y git fzf zoxide stow`
 
 ### Install a Nerd Font
 
