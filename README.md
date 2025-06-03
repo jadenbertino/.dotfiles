@@ -2,6 +2,7 @@
 
 ### Install packages
 
+- If using Ubuntu then ensure you're using 24 to prevent issues with fzf
 - Update package manager
   - Ubuntu: `sudo apt update`
   - Mac: `brew update`
