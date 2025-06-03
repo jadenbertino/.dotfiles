@@ -20,12 +20,15 @@
 ### Install a Nerd Font
 
 - Recommended: `JetBrainsMono Nerd Font`
-- Go to [Nerd Fonts Download Page](https://www.nerdfonts.com/font-downloads)
+- Go to [Nerd Fonts Releases](https://github.com/ryanoasis/nerd-fonts/releases)
+- Go to assets section of latest version and expand
+- Search for your font zip
 - Download the font zip
 - Unzip the download
 - Install the fonts
   - Mac: Open up `Font Book` and drag and drop the fonts into the app
   - Ubuntu: Copy the .ttf files to `/usr/local/share/fonts`
+  - PC: Select all .ttf files -> right click -> Install
 - Ensure your terminal is using the font
   - Mac (`ghostty`):
       ```bash
