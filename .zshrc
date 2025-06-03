@@ -20,29 +20,41 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Powerlevel10k
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 
-# zsh plugins via repo
-zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
+# Load completions plugin
 zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
+
+# Define completions
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
+
+# Then initialize completions
+autoload -Uz compinit && compinit
+zinit cdreplay -q
+
+# fzf (must be before fzf tab)
+if [ ! -d ~/.fzf ]; then
+  echo "Installing fzf..."
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --key-bindings --completion --no-update-rc
+fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# github docs say to do it like below, but install script used the above method
+# eval "$(fzf --zsh)"
+
+# fzf-tab needs to be loaded after compinit, but before plugins which will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting
 zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
+zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
 
 # zsh plugins via URL
 # You can update all these with `zinit update --all`
 # Reference: https://github.com/zdharma-continuum/zinit#plugins-and-snippets
 # Find plugins at places like https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
 zinit snippet OMZ::plugins/git # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
-
-# Load completions
-autoload -Uz compinit && compinit
-zinit cdreplay -q
-
-# keybindings
-bindkey -e # emacs keybindings
-# ctrl f = accept autosuggestion (via emacs keybindings)
-bindkey '^[[A' history-search-backward # up arrow
-bindkey '^[[B' history-search-forward # down arrow
-export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
-export FZF_ALT_C_COMMAND="" # disable fzf alt + c
 
 # History
 HISTSIZE=5000
@@ -57,24 +69,35 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# Completions
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
-zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
+# Keybinds
+bindkey -e # emacs keybindings
+# ctrl f = accept autosuggestion (via emacs keybindings)
+bindkey '^[[A' history-search-backward # up arrow
+bindkey '^[[B' history-search-forward # down arrow
+export FZF_CTRL_T_COMMAND="" # disable fzf ctrl + t
+export FZF_ALT_C_COMMAND="" # disable fzf alt + c
 
 # Aliases
 alias ls='ls --color'
+alias la='ls -a'
 alias c='clear'
 alias nv='nvim'
 
-# Shell integrations
-eval "$(fzf --zsh)" # ctrl + r -> fzf
+# cd helpers
+if ! command -v zoxide &> /dev/null; then
+  echo "Warning: zoxide is not installed. Please install it:"
+  echo "  - On macOS: brew install zoxide"
+  echo "  - On Ubuntu/Debian: apt install zoxide"
+  echo "  - Or visit: https://github.com/ajeetdsouza/zoxide#installation"
+fi
 eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias .......='cd ../../../../../..'
 
 # Load powerlevel config
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -85,8 +108,7 @@ export NVM_DIR="$HOME/.nvm"
 if [ ! -d "$NVM_DIR" ]; then
   # Install nvm if it doesn't exist
   git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
-  cd "$NVM_DIR"
-  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+  (cd "$NVM_DIR" && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`)
   echo "Installed nvm"
 fi
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # load nvm
