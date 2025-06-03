@@ -1,0 +1,8 @@
+# Ignore .ssh directory and all its contents
+.ssh/**/*
+
+# Allow .md files within .ssh and subdirectories
+!.ssh/**/*.md
+
+# Allow files named "config" within .ssh and subdirectories
+!.ssh/**/config

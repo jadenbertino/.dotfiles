@@ -1,3 +1,17 @@
+# ⚠️ SECURITY WARNING
+
+**DO NOT ADD SSH KEYS TO THIS REPOSITORY!**
+
+- ✅ `README.md` and `config` files should be in this repo and stowed
+- ❌ SSH private keys (e.g., `github_key`, `aws_key`, `work_key`) should **NEVER** be committed
+- ❌ SSH public keys should also be kept outside the repo for security
+
+The actual SSH keys should be stored locally in your actual `~/.ssh` folder, outside of this repo.
+
+Note that any files in the .ssh directory are ignored by git except for `*.md` and `config` files.
+
+---
+
 # SSH Configuration Structure
 
 This directory is organized by service, with each service containing its own SSH configuration and keys.
@@ -5,8 +19,8 @@ This directory is organized by service, with each service containing its own SSH
 ## Directory Structure
 
 ```
-~/.ssh/
-├── config                    # Main SSH config (contains Include statements)
+.ssh/
+├── config                   # Main SSH config (contains Include statements)
 ├── aws/
 │   ├── config               # AWS-specific SSH hosts and settings
 │   ├── aws_key              # Private key for AWS services
@@ -26,9 +40,10 @@ This directory is organized by service, with each service containing its own SSH
 The main `~/.ssh/config` file includes all service-specific configurations:
 
 ```bash
-Include ~/.ssh/github/config
-Include ~/.ssh/aws/config  
-Include ~/.ssh/work/config
+# Config for each service
+Include ~/.ssh/git/config
+Include ~/.ssh/aws/config
+Include ~/.ssh/hostinger/config
 
 # Global defaults
 Host *
