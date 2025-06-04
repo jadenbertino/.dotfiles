@@ -47,13 +47,9 @@
 
 1. Clone this repo into your home directory
 2. `cd` into the repo
-3. Run `stow -v .`
-    ```bash
-    stow -v --adopt .
-    git stash
-    source ~/.zshrc
-    # you can now unstash the changes if you want to to see what changed
-    ```
+3. Run `./stow.sh`
+4. Review and make changes to files in the repo
+5. Run `source ~/.zshrc` to load the config
 
 # Additional Notes
 

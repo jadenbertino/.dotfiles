@@ -26,3 +26,6 @@ _darcs
 ^/[^/]*\.md$     # All .md files at root level 
 ^/LICENSE.*
 ^/COPYING
+
+# ignore stow.sh
+^stow\.sh$
