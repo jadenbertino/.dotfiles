@@ -27,5 +27,5 @@ _darcs
 ^/LICENSE.*
 ^/COPYING
 
-# ignore stow.sh
 ^stow\.sh$
+^\.config/Code
