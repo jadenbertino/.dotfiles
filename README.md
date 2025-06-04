@@ -13,20 +13,7 @@
   - Ubuntu: Copy the .ttf files to `/usr/local/share/fonts`
   - PC: Select all .ttf files -> right click -> Install
 - Ensure your terminal is using the font
-  - Mac (`ghostty`):
-      ```bash
-      ghostty +list-fonts | grep -i jetbrains
-      # choose a top level (non indented) font
-
-      # Open up config file
-      # code "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
-      # add this line (NL = non ligatures)
-      # font-family = "JetBrainsMonoNL Nerd Font Mono"
-
-      # Open up a new ghostty tab
-      # confirm config loaded
-      ghostty +show-config | grep font-family
-      ```
+  - Mac (`ghostty`): This will work automatically if you have the font installed due to the `ghostty` config file
   - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
   - VSCode: Command Palette -> `Preferences: Open Settings (JSON)`
       ```json
