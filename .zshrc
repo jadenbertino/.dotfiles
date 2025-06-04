@@ -82,7 +82,11 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-[ -x "$(command -v zoxide)" ] && unalias zi && eval "$(zoxide init zsh --cmd z)"
+if [ -x "$(command -v zoxide)" ]; then
+  unalias zi && eval "$(zoxide init zsh --cmd z)"
+else
+  echo "Please install zoxide, refer to the docs here https://github.com/ajeetdsouza/zoxide#installation"
+fi
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
 alias ...='cd ../..'
