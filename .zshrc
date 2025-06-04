@@ -12,7 +12,7 @@ fi
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-source "${ZINIT_HOME}/zinit.zsh"
+source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alias is necessary to prevent conflicts with zoxide
 # can confirm installation by running "zinit zstatus"
 
 # Powerlevel10k
@@ -82,7 +82,7 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-[ -x "$(command -v zoxide)" ] && unalias zi && eval "$(zoxide init zsh --cmd z)" && alias zi='zinit'
+[ -x "$(command -v zoxide)" ] && unalias zi && eval "$(zoxide init zsh --cmd z)"
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
 alias ...='cd ../..'
