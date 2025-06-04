@@ -82,7 +82,7 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-[ -x "$(command -v zoxide)" ] && eval "$(zoxide init --cmd cd zsh)" # cd -> zoxide
+[ -x "$(command -v zoxide)" ] && unalias zi && eval "$(zoxide init zsh)" && alias zi='zinit'
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
 alias ...='cd ../..'
