@@ -113,5 +113,8 @@ update_on_hash_change() {
 }
 update_on_hash_change
 
+# SSH Agent
+source ~/.config/zsh/ssh-agent.sh
+
 # NVM - Lazy Loading (saves ~0.58s on startup!)
 source ~/.config/zsh/node.sh
