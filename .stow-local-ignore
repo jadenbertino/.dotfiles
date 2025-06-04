@@ -17,9 +17,15 @@ _darcs
 \.gitignore
 \.gitmodules
 
+\.DS_Store       # macOS Finder files
+\.docker         # Docker directory
+
 .+~          # emacs backup files
 \#.*\#       # emacs autosave files
 
 ^/[^/]*\.md$     # All .md files at root level 
 ^/LICENSE.*
 ^/COPYING
+
+^stow\.sh$
+^\.config/Code

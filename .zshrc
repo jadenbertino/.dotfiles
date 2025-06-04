@@ -6,15 +6,13 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Make homebrew apps available in path
-if command -v brew &>/dev/null; then
-  eval "$(brew shellenv)"
-fi
+[ -x "$(command -v brew)" ] && eval "$(brew shellenv)"
 
 # Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-source "${ZINIT_HOME}/zinit.zsh"
+source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alias is necessary to prevent conflicts with zoxide
 # can confirm installation by running "zinit zstatus"
 
 # Powerlevel10k
@@ -31,8 +29,8 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
 
-# Then initialize completions
-autoload -Uz compinit && compinit
+# Then initialize completions (optimized with -C flag to skip security checks)
+autoload -Uz compinit && compinit -C
 zinit cdreplay -q
 
 # fzf (must be before fzf tab)
@@ -50,11 +48,10 @@ zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab com
 zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
 
-# zsh plugins via URL
+# You can also load zsh plugins via URL
 # You can update all these with `zinit update --all`
 # Reference: https://github.com/zdharma-continuum/zinit#plugins-and-snippets
 # Find plugins at places like https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins
-zinit snippet OMZ::plugins/git # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 
 # History
 HISTSIZE=5000
@@ -70,7 +67,8 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Keybinds
-bindkey -e # emacs keybindings
+# bindkey -e # emacs keybindings
+bindkey '^F' autosuggest-accept
 # ctrl f = accept autosuggestion (via emacs keybindings)
 bindkey '^[[A' history-search-backward # up arrow
 bindkey '^[[B' history-search-forward # down arrow
@@ -84,13 +82,11 @@ alias c='clear'
 alias nv='nvim'
 
 # cd helpers
-if ! command -v zoxide &> /dev/null; then
-  echo "Warning: zoxide is not installed. Please install it:"
-  echo "  - On macOS: brew install zoxide"
-  echo "  - On Ubuntu/Debian: apt install zoxide"
-  echo "  - Or visit: https://github.com/ajeetdsouza/zoxide#installation"
+if [ -x "$(command -v zoxide)" ]; then
+  unalias zi && eval "$(zoxide init zsh --cmd z)"
+else
+  echo "Please install zoxide, refer to the docs here https://github.com/ajeetdsouza/zoxide#installation"
 fi
-eval $(zoxide init --cmd cd zsh) # cd -> zoxide
 setopt AUTO_CD # cd without cd command
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -103,13 +99,19 @@ alias .......='cd ../../../../../..'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-if [ ! -d "$NVM_DIR" ]; then
-  # Install nvm if it doesn't exist
-  git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
-  (cd "$NVM_DIR" && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`)
-  echo "Installed nvm"
-fi
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # load nvm
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # load nvm bash_completion
+# These don't need to be sourced on every prompt
+update_on_hash_change() {
+  local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
+  [[ -z "$current_hash" ]] && return
+  local stored_hash=$(git config --global dotfiles.last-executed-hash 2>/dev/null)
+  
+  # Only setup aliases if hash has changed
+  if [[ "$current_hash" != "$stored_hash" ]]; then
+    source ~/.config/zsh/git-aliases.zsh
+    git config --global dotfiles.last-executed-hash "$current_hash"
+  fi
+}
+update_on_hash_change
+
+# NVM - Lazy Loading (saves ~0.58s on startup!)
+source ~/.config/zsh/node.sh
