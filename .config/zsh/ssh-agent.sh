@@ -18,10 +18,11 @@ if needs_ssh_agent; then
   fi
   if needs_ssh_agent; then
     rm -f "$SSH_AGENT_ENV"
-    eval "$(ssh-agent -s | tee "$SSH_AGENT_ENV")"
+    eval "$(ssh-agent -s | tee "$SSH_AGENT_ENV" >/dev/null)"
     chmod 600 "$SSH_AGENT_ENV"
     source "$SSH_AGENT_ENV" > /dev/null
     ssh-add -q "$HOME/.ssh/github" &>/dev/null
   fi
 fi
+
 unset -f validate_ssh_agent_env needs_ssh_agent
