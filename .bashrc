@@ -122,3 +122,6 @@ if ! shopt -oq posix; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# NVM - Lazy Loading (saves ~0.58s on startup!)
+source ~/.config/zsh/node.sh
