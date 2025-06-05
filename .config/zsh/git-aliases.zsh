@@ -24,7 +24,7 @@ typeset -A git_aliases=(
     ["cb"]="rev-parse --abbrev-ref HEAD"
     ["su"]='!f() { if [ -n "$1" ] && [ -n "$2" ]; then git branch --set-upstream-to="$1" "$2"; elif [ -z "$1" ] && [ -z "$2" ]; then current_branch=$(git symbolic-ref --short HEAD); git branch --set-upstream-to="origin/$current_branch" "$current_branch"; else echo "Usage: git su [ <upstream> <local_branch> ]"; fi; }; f'
     ["mu"]='!git pull --quiet && git merge origin/$(git branch --show-current) $(git branch --show-current)'
-    ["br"]="!git fetch origin --prune && git branch -r --sort=-committerdate --format='%(color:cyan)%(refname:lstrip=3)%(color:reset) @ %(color:yellow)%(committerdate:short)%(color:reset) by %(color:blue)%(authorname)%(color:reset)'"
+    ["br"]="!git fetch origin --prune --quiet && git branch -r --sort=-committerdate --format='%(color:cyan)%(refname:lstrip=3)%(color:reset) @ %(color:yellow)%(committerdate:short)%(color:reset) by %(color:blue)%(authorname)%(color:reset)'"
 
     # Undo
     ["undo"]="reset HEAD~1 --soft"
@@ -45,3 +45,4 @@ for alias_name in ${(k)git_aliases}; do
 done
 
 alias g="git"
+alias ga="git add ."
