@@ -80,6 +80,7 @@ alias ls='ls --color'
 alias la='ls -a'
 alias c='clear'
 alias nv='nvim'
+alias dr='doppler run --'
 
 # cd helpers
 if [ -x "$(command -v zoxide)" ]; then
