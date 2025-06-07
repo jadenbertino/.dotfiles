@@ -43,6 +43,17 @@ fi
 # github docs say to do it like below, but install script used the above method
 # eval "$(fzf --zsh)"
 
+# tmux - https://github.com/tmux/tmux/wiki
+# if [ ! -x "$(command -v tmux)" ] && [ ! -d ~/.tmux ]; then
+#   echo "Installing tmux..."
+#   git clone https://github.com/tmux/tmux.git ~/.tmux
+#   (
+#     cd ~/.tmux
+#     ./autogen.sh
+#     make
+#   )
+# fi
+
 # fzf-tab needs to be loaded after compinit, but before plugins which will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting
 zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
 zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
