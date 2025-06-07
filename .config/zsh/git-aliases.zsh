@@ -44,5 +44,11 @@ for alias_name in ${(k)git_aliases}; do
   git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
 done
 
+# For inspo see: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 alias g="git"
+alias gp="git pull"
 alias ga="git add ."
+alias gs="git switch"
+alias gcm="git commit -m"
+alias gst="git add . && git stash"
+alias gsta="git stash apply"

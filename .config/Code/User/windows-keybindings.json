@@ -1,0 +1,12 @@
+[
+  {
+    "key": "ctrl+enter",
+    "command": "editor.toggleFold",
+    "when": "editorTextFocus && foldingEnabled"
+  },
+  {
+    "key": "shift+tab",
+    "command": "workbench.action.terminal.focusPreviousPane",
+    "when": "terminalFocus"
+  }
+]
