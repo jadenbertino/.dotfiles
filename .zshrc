@@ -86,6 +86,7 @@ alias c='code'
 alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
+alias tm='tmux'
 
 # cd helpers
 if [ -x "$(command -v zoxide)" ]; then
