@@ -113,19 +113,7 @@ alias .......='cd ../../../../../..'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
-# These don't need to be sourced on every prompt
-update_on_hash_change() {
-  local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
-  [[ -z "$current_hash" ]] && return
-  local stored_hash=$(git config --global dotfiles.last-executed-hash 2>/dev/null)
-  
-  # Only setup aliases if hash has changed
-  if [[ "$current_hash" != "$stored_hash" ]]; then
-    source ~/.config/zsh/git-aliases.zsh
-    git config --global dotfiles.last-executed-hash "$current_hash"
-  fi
-}
-update_on_hash_change
+source ~/.config/zsh/git-aliases.zsh
 
 # SSH Agent
 source ~/.config/zsh/ssh-agent.sh
