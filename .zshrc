@@ -34,6 +34,7 @@ autoload -Uz compinit && compinit -C
 zinit cdreplay -q
 
 # fzf (must be before fzf tab)
+# install from github because the package manager version is outdated
 if [ ! -d ~/.fzf ]; then
   echo "Installing fzf..."
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -42,17 +43,6 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # github docs say to do it like below, but install script used the above method
 # eval "$(fzf --zsh)"
-
-# tmux - https://github.com/tmux/tmux/wiki
-# if [ ! -x "$(command -v tmux)" ] && [ ! -d ~/.tmux ]; then
-#   echo "Installing tmux..."
-#   git clone https://github.com/tmux/tmux.git ~/.tmux
-#   (
-#     cd ~/.tmux
-#     ./autogen.sh
-#     make
-#   )
-# fi
 
 # fzf-tab needs to be loaded after compinit, but before plugins which will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting
 zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
@@ -91,9 +81,11 @@ bindkey "^[[1;5D" backward-word # ctrl + left arrow
 # Aliases
 alias ls='ls --color'
 alias la='ls -a'
-alias c='clear'
+alias cc='clear'
+alias c='code'
 alias nv='nvim'
 alias dr='doppler run --'
+alias reload='source ~/.zshrc'
 
 # cd helpers
 if [ -x "$(command -v zoxide)" ]; then
@@ -132,3 +124,6 @@ source ~/.config/zsh/ssh-agent.sh
 
 # NVM - Lazy Loading (saves ~0.58s on startup!)
 source ~/.config/zsh/node.sh
+
+# tmux
+source ~/.config/zsh/tmux.sh
