@@ -39,10 +39,22 @@ typeset -A git_aliases=(
     ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
 )
 
-# Set aliases
-for alias_name in ${(k)git_aliases}; do
-  git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
-done
+# Set aliases on hash change
+update_on_hash_change() {
+  local current_hash=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
+  [[ -z "$current_hash" ]] && return
+  local stored_hash=$(git config --global dotfiles.last-executed-hash 2>/dev/null)
+  
+  # Only setup aliases if hash has changed
+  if [[ "$current_hash" != "$stored_hash" ]]; then
+    for alias_name in ${(k)git_aliases}; do
+      git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
+    done
+    git config --global dotfiles.last-executed-hash "$current_hash"
+  fi
+}
+
+update_on_hash_change
 
 # For inspo see: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 alias g="git"
