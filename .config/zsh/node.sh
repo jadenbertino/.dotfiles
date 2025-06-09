@@ -11,32 +11,43 @@ if [ ! -d "$NVM_DIR" ]; then
     echo "Installed nvm"
 fi
 
+# Function to lazy load NVM
+load_nvm() {
+    unset -f nvm node npm npx
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
 # Lazy load NVM - only loads when needed
 nvm() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+    load_nvm
     nvm "$@"
 }
 
-# Create lazy-loaded aliases for node, npm, npx
+# Create lazy-loaded aliases for node, npm
 node() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+    load_nvm
     node "$@"
 }
 
 npm() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+    load_nvm
     npm "$@"
 }
 
-npx() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-    npx "$@"
+# Set a default node version if none is active and NVM is loaded
+_set_default_node() {
+    if [ -n "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; then
+        # Check if we have a default version set
+        if [ -f "$NVM_DIR/alias/default" ]; then
+            load_nvm
+            nvm use default --silent 2>/dev/null
+        elif [ -d "$NVM_DIR/versions/node" ] && [ "$(ls -A $NVM_DIR/versions/node 2>/dev/null)" ]; then
+            # If no default is set but we have node versions, use the latest
+            load_nvm
+            local latest_version=$(ls -1 "$NVM_DIR/versions/node" | tail -1)
+            nvm use "$latest_version" --silent 2>/dev/null
+            nvm alias default "$latest_version" --silent 2>/dev/null
+        fi
+    fi
 } 
