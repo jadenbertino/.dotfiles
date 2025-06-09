@@ -2,25 +2,30 @@
 # https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer
 
 if [[ $# -eq 1 ]]; then
-    selected=$1
+    # If a session name is provided, use it
+    session=$1
 else
-    selected=$(find ~/projects -mindepth 1 -maxdepth 2 -type d | fzf)
+    # Otherwise, use fzf to select a session
+
+    # If no tmux is running, exit (no sessions to list)
+    tmux_running=$(pgrep tmux)
+    if [[ -z $tmux_running ]]; then
+        echo "No tmux sessions are running"
+        exit 1
+    fi
+    
+    # List active tmux sessions and let user select with fzf
+    session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf)
 fi
 
-if [[ -z $selected ]]; then
+if [[ -z $session ]]; then
     exit 0
 fi
 
-selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
-
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+# If we're inside tmux, switch client to the selected session
+if [[ -n $TMUX ]]; then
+    tmux switch-client -t $session
+else
+    # If we're outside tmux, attach to the selected session
+    tmux attach-session -t $session
 fi
-
-if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
-fi
-
-tmux switch-client -t $selected_name
