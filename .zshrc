@@ -116,3 +116,6 @@ source ~/.config/zsh/node.sh
 
 # tmux
 source ~/.config/zsh/tmux.sh
+
+# Path
+export PATH="$HOME/.local/bin:$PATH"
