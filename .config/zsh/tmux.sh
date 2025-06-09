@@ -34,6 +34,7 @@ alias tml='tmux list-sessions'
 alias tma='~/.local/bin/tmux-sessionizer.sh'
 alias tmd='tmux detach'
 alias tmc='tmux new-session -s'
+alias tmka='tmux kill-server'
 tmk() {
     # kill a session
     if [[ $# -eq 0 ]]; then
