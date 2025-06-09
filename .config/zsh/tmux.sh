@@ -27,8 +27,6 @@ if [ ! -d "$CATPUCCIN_DIR" ]; then
 fi
 
 # Aliases
-TMUX_CONFIG="$HOME/.config/tmux/.tmux.conf"
-alias tmux="tmux -f $TMUX_CONFIG"
 alias tm='tmux'
 alias tml='tmux list-sessions'
 alias tma='~/.local/bin/tmux-sessionizer.sh'
