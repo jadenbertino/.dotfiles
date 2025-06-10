@@ -11,7 +11,7 @@ fi
 # Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
-[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+[ ! -d $ZINIT_HOME/.git ] && git clone -q https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alias is necessary to prevent conflicts with zoxide
 # can confirm installation by running "zinit zstatus"
 
@@ -37,7 +37,7 @@ zinit cdreplay -q
 # install from github because the package manager version is outdated
 if [ ! -d ~/.fzf ]; then
   echo "Installing fzf..."
-  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  git clone -q --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install --key-bindings --completion --no-update-rc
 fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

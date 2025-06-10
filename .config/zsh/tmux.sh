@@ -13,7 +13,7 @@ fi
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
   echo "Installing TPM..."
-  git clone https://github.com/tmux-plugins/tpm "$TPM_DIR" > /dev/null
+  git clone -q https://github.com/tmux-plugins/tpm "$TPM_DIR" > /dev/null
   echo "TPM installed successfully"
 fi
 
@@ -22,7 +22,7 @@ CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
 if [ ! -d "$CATPUCCIN_DIR" ]; then
   echo "Installing Catpuccin theme..."
   mkdir -p "$CATPUCCIN_DIR"
-  git clone -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
+  git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
   echo "Catpuccin theme installed successfully"
 fi
 

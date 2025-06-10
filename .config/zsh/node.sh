@@ -6,7 +6,7 @@ export NVM_DIR="$HOME/.nvm"
 # Install nvm if it doesn't exist
 if [ ! -d "$NVM_DIR" ]; then
     echo "Installing nvm..."
-    git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+    git clone -q https://github.com/nvm-sh/nvm.git "$NVM_DIR"
     (cd "$NVM_DIR" && git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`)
     echo "Installed nvm"
 fi
