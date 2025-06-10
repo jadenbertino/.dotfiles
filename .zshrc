@@ -108,7 +108,7 @@ alias .......='cd ../../../../../..'
 source ~/.config/zsh/git-aliases.zsh
 
 # SSH Agent
-source ~/.config/zsh/ssh-agent.sh
+source ~/.config/zsh/ssh-agent.sh > /dev/null
 
 # NVM - Lazy Loading (saves ~0.58s on startup!)
 source ~/.config/zsh/node.sh
