@@ -24,9 +24,7 @@ fi
 
 # If we're inside tmux, detach from current session first, then attach to selected session
 if [[ -n $TMUX ]]; then
-    # don't switch session, this can be confusing if you have multiple clients attached to the same session
-    tmux detach-client
-    tmux attach-session -t $session
+    tmux switch-client -t $session
 else
     # If we're outside tmux, attach to the selected session
     tmux attach-session -t $session
