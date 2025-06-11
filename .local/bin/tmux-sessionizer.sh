@@ -22,9 +22,11 @@ if [[ -z $session ]]; then
     exit 0
 fi
 
-# If we're inside tmux, switch client to the selected session
+# If we're inside tmux, detach from current session first, then attach to selected session
 if [[ -n $TMUX ]]; then
-    tmux switch-client -t $session
+    # don't switch session, this can be confusing if you have multiple clients attached to the same session
+    tmux detach-client
+    tmux attach-session -t $session
 else
     # If we're outside tmux, attach to the selected session
     tmux attach-session -t $session

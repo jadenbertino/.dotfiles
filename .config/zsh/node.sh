@@ -35,6 +35,11 @@ npm() {
     npm "$@"
 }
 
+npx() {
+    load_nvm
+    npx "@"
+}
+
 # Set a default node version if none is active and NVM is loaded
 _set_default_node() {
     if [ -n "$NVM_DIR" ] && [ -s "$NVM_DIR/nvm.sh" ]; then
