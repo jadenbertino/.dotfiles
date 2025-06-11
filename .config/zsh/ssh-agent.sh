@@ -21,7 +21,6 @@ if needs_ssh_agent; then
     eval "$(ssh-agent -s | tee "$SSH_AGENT_ENV" >/dev/null)"
     chmod 600 "$SSH_AGENT_ENV"
     source "$SSH_AGENT_ENV" > /dev/null
-    ssh-add -q "$HOME/.ssh/github" &>/dev/null
   fi
 fi
 
