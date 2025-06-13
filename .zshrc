@@ -82,7 +82,7 @@ bindkey "^[[1;5D" backward-word # ctrl + left arrow
 alias ls='ls --color'
 alias la='ls -a'
 alias cc='clear'
-alias c='code'
+alias c='cursor' # 'code' still opens vs code - for using github pull requests, which is broken in cursor
 alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
@@ -116,6 +116,4 @@ source ~/.config/zsh/node.sh
 # tmux
 source ~/.config/zsh/tmux.sh
 
-
-# Path
-export PATH="$HOME/.local/bin:$PATH"
+source ~/.config/zsh/path.sh
