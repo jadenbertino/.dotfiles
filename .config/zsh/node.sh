@@ -6,7 +6,7 @@ export NVM_DIR="$HOME/.nvm"
 # Function to lazy load NVM - only runs once (on first call of whichever comes first: nvm, node, npm, or npx)
 load_nvm() {
     # Remove lazy loading functions
-    unset -f nvm node npm npx 2>/dev/null
+    unset -f nvm node npm pnpm 2>/dev/null
 
     # Replace with actual nvm commands
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -59,3 +59,25 @@ npm() {
     load_nvm
     npm "$@"
 }
+
+# PNPM - Lazy Loading Configuration
+# must set this up after nvm is loaded
+# This file contains PNPM setup with lazy loading to improve shell startup performance
+
+# Function to lazy load PNPM - only runs once (on first call of pnpm)
+PNPM_HOME="$(npm config get prefix)/lib/node_modules/pnpm"
+
+# Install pnpm if it doesn't exist
+if [ ! -d "$PNPM_HOME" ]; then
+    echo "Installing pnpm..."
+    npm install -g pnpm
+    echo "Installed pnpm"
+fi
+
+
+pnpm() {
+    load_nvm
+    pnpm "$@"
+}
+
+alias pm=pnpm
