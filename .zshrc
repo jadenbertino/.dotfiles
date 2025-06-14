@@ -82,10 +82,18 @@ bindkey "^[[1;5D" backward-word # ctrl + left arrow
 alias ls='ls --color'
 alias la='ls -a'
 alias cc='clear'
-alias c='cursor' # 'code' still opens vs code - for using github pull requests, which is broken in cursor
 alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
+function c() {
+  TARGET_DIR="${1:-.}"
+  if [ -d "$TARGET_DIR" ]; then
+    cursor "$TARGET_DIR"
+  else
+    echo "Directory '$TARGET_DIR' does not exist"
+    return 1
+  fi
+}
 
 # cd helpers
 if [ -x "$(command -v zoxide)" ]; then
