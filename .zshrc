@@ -112,10 +112,10 @@ source ~/.config/zsh/ssh-agent.sh > /dev/null
 
 # NVM - Lazy Loading (saves ~0.58s on startup!)
 source ~/.config/zsh/node.sh
+source ~/.config/zsh/pnpm.sh
 
 # tmux
 source ~/.config/zsh/tmux.sh
-
 
 # Path
 export PATH="$HOME/.local/bin:$PATH"
