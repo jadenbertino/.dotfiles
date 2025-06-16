@@ -17,7 +17,9 @@ add_to_path "$HOME/.local/bin"
 
 # VS Code
 if [[ "$OS" == "wsl" ]]; then
-    # go into cursor folder and delete "code" and "code.cmd" files. This is because cursor is broken in wsl
-    add_to_path "/mnt/c/Users/jaden/AppData/Local/Programs/cursor/resources/app/bin"
+    CURSOR_PATH="/mnt/c/Users/jaden/AppData/Local/Programs/cursor/resources/app/bin"
+    add_to_path "$CURSOR_PATH"
+    rm -f "$CURSOR_PATH/code"
+    rm -f "$CURSOR_PATH/code.cmd"
     add_to_path "/mnt/c/Users/jaden/AppData/Local/Programs/Microsoft VS Code/bin"
 fi
