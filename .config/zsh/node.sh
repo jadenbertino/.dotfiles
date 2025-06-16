@@ -80,4 +80,5 @@ pnpm() {
     pnpm "$@"
 }
 
-alias pm=pnpm
+alias pm="pnpm"
+alias pmx="pnpm dlx"
