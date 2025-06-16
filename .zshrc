@@ -94,6 +94,7 @@ function c() {
     return 1
   fi
 }
+alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 
 # cd helpers
 if [ -x "$(command -v zoxide)" ]; then
