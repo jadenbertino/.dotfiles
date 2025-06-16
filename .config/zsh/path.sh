@@ -15,11 +15,14 @@ remove_from_path() {
 
 add_to_path "$HOME/.local/bin"
 
+# added this so that "code" still opens vs code
+# Intention was so I can use github pull requests (its broken in cursor)
+# but I think i will just use github.dev to review prs
 # VS Code
-if [[ "$OS" == "wsl" ]]; then
-    CURSOR_PATH="/mnt/c/Users/jaden/AppData/Local/Programs/cursor/resources/app/bin"
-    add_to_path "$CURSOR_PATH"
-    rm -f "$CURSOR_PATH/code"
-    rm -f "$CURSOR_PATH/code.cmd"
-    add_to_path "/mnt/c/Users/jaden/AppData/Local/Programs/Microsoft VS Code/bin"
-fi
+# if [[ "$OS" == "wsl" ]]; then
+#     CURSOR_PATH="/mnt/c/Users/jaden/AppData/Local/Programs/cursor/resources/app/bin"
+#     add_to_path "$CURSOR_PATH"
+#     rm -f "$CURSOR_PATH/code"
+#     rm -f "$CURSOR_PATH/code.cmd"
+#     add_to_path "/mnt/c/Users/jaden/AppData/Local/Programs/Microsoft VS Code/bin"
+# fi
