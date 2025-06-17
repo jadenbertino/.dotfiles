@@ -86,11 +86,13 @@ alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
 function c() {
-  TARGET_DIR="${1:-.}"
-  if [ -d "$TARGET_DIR" ]; then
-    cursor "$TARGET_DIR"
+  TARGET_PATH="${1:-.}"
+  if [ -d "$TARGET_PATH" ]; then
+    cursor "$TARGET_PATH"
+  elif [ -f "$TARGET_PATH" ]; then
+    code "$TARGET_PATH" # cursor command doesn't work for files. use code instead. will still open in cursor tho lol
   else
-    echo "Directory '$TARGET_DIR' does not exist"
+    echo "Path '$TARGET_PATH' does not exist"
     return 1
   fi
 }
