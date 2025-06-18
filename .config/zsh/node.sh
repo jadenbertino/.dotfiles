@@ -34,7 +34,7 @@ update_setting() {
 # Function to lazy load NVM - only runs once (on first call of whichever comes first: nvm, node, npm, or npx)
 load_nvm() {
     # Remove lazy loading functions
-    unset -f nvm node npm pnpm 2>/dev/null
+    unset -f nvm node npm pnpm npx 2>/dev/null
 
     # Install nvm if it doesn't exist
     if [ ! -d "$NVM_DIR" ]; then
