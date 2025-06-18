@@ -127,9 +127,15 @@ fi
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # pnpm
-export PNPM_HOME="/home/jaden/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/jaden/google-cloud-sdk/path.bash.inc' ]; then . '/home/jaden/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/jaden/google-cloud-sdk/completion.bash.inc' ]; then . '/home/jaden/google-cloud-sdk/completion.bash.inc'; fi
