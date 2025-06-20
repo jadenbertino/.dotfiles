@@ -2,3 +2,5 @@
 .ssh/**/*
 !.ssh/**/*.md
 !.ssh/**/config
+.env*
+!.env*.example

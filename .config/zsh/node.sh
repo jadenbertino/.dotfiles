@@ -3,34 +3,6 @@
 
 export NVM_DIR="$HOME/.nvm"
 
-# Function to update a setting in .npmrc
-update_setting() {
-    local key=$1
-    local value=$2
-    local npmrc_file="$HOME/.npmrc"
-    
-    # Create .npmrc if it doesn't exist
-    if [ ! -f "$npmrc_file" ]; then
-        touch "$npmrc_file"
-        echo "Created $npmrc_file"
-    fi
-    
-    # Check if the setting exists and if the value is different
-    if grep -q "^$key=" "$npmrc_file"; then
-        # Get current value
-        current_value=$(grep "^$key=" "$npmrc_file" | cut -d'=' -f2)
-        # Only update if value is different
-        if [ "$current_value" != "$value" ]; then
-            sed -i "s/^$key=.*/$key=$value/" "$npmrc_file"
-            updated_settings+=("$key")
-        fi
-    else
-        # Add new setting
-        echo "$key=$value" >> "$npmrc_file"
-        updated_settings+=("$key")
-    fi
-}
-
 # Function to lazy load NVM - only runs once (on first call of whichever comes first: nvm, node, npm, or npx)
 load_nvm() {
     # Remove lazy loading functions
@@ -65,23 +37,6 @@ load_nvm() {
     # Load nvm
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-    # Update npmrc settings
-    updated_settings=()
-    update_setting "save-exact" "true"
-    update_setting "auto-install-peers" "true"
-    update_setting "package-lock" "true"
-    update_setting "engine-strict" "true"
-    update_setting "fund" "false"
-    update_setting "update-notifier" "false"
-    update_setting "loglevel" "warn"
-    update_setting "progress" "true"
-    update_setting "audit-level" "moderate"
-    update_setting "audit" "true"
-    update_setting "audit-signatures" "true"
-    if [ ${#updated_settings[@]} -gt 0 ]; then
-        echo "Updated npmrc settings for: ${updated_settings[*]}"
-    fi
 }
 
 # Lazy load npx, nvm, node, npm

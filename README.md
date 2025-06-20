@@ -30,6 +30,10 @@
   - `sudo chsh -s $(which zsh)`
 - (Optionally backup and) Remove any existing `.zshrc` files or configuration (e.g. `oh-my-zsh`)
 
+### Additional Steps
+
+- Refer to `.config/env/.env.example` to set up your `.env` file
+
 # Usage
 
 1. Clone this repo into your home directory

@@ -127,3 +127,4 @@ source ~/.config/zsh/tmux.sh
 
 # Path
 source ~/.config/zsh/path.sh
+source ~/.config/env/.env
