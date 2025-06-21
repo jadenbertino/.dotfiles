@@ -15,7 +15,6 @@ remove_from_path() {
 
 add_to_path "$HOME/.local/bin"
 
-
 # The next line updates PATH for the Google Cloud SDK.
 GCLOUD_CLI_DIR='/home/jaden/.google-cloud-sdk'
 if [ -f '$GCLOUD_CLI_DIR/path.bash.inc' ]; then . '$GCLOUD_CLI_DIR/path.bash.inc'; fi
@@ -33,3 +32,6 @@ add_to_path "$GCLOUD_CLI_DIR/bin"
 #     rm -f "$CURSOR_PATH/code.cmd"
 #     add_to_path "/mnt/c/Users/jaden/AppData/Local/Programs/Microsoft VS Code/bin"
 # fi
+
+# Make homebrew apps available in path
+[ -x "$(command -v brew)" ] && eval "$(brew shellenv)"
