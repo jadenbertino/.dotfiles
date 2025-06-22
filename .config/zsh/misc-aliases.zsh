@@ -21,6 +21,7 @@ function c() {
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias cc="npx claude" # claude code
 alias ccs="cc /start"
+alias ccp="cc /plan"
 alias lz="eza"
 alias lza="eza --tree --git-ignore --level=3 --no-permissions --no-user --no-time --all"
 
