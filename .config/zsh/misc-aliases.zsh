@@ -22,6 +22,7 @@ alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias cc="npx claude" # claude code
 alias ccs="cc /start"
 alias lz="eza"
+alias lza="eza --tree --git-ignore --level=3 --no-permissions --no-user --no-time --all"
 
 # cd aliases
 alias ..='cd ..'
