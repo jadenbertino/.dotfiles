@@ -5,13 +5,18 @@ alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
 function c() {
-  TARGET_PATH="${1:-.}"
-  if [ -d "$TARGET_PATH" ] || [ -f "$TARGET_PATH" ]; then
-    cursor "$TARGET_PATH"
-  else
-    echo "Path '$TARGET_PATH' does not exist"
-    return 1
+  local TARGET_PATH="${1:-.}"
+  
+  # If file doesn't exist, try to create it
+  if [ ! -e "$TARGET_PATH" ]; then
+    if ! mkdir -p "$(dirname "$TARGET_PATH")" || ! touch "$TARGET_PATH"; then
+      echo "c: Failed to create '$TARGET_PATH'" >&2
+      return 1
+    fi
   fi
+  
+  # Open file in cursor
+  cursor "$TARGET_PATH"
 }
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias cl="claude"
