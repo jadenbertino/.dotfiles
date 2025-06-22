@@ -21,6 +21,7 @@ function c() {
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias cc="npx claude" # claude code
 alias ccs="cc /start"
+alias lz="eza"
 
 # cd aliases
 alias ..='cd ..'
