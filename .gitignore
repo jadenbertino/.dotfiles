@@ -2,5 +2,10 @@
 .ssh/**/*
 !.ssh/**/*.md
 !.ssh/**/config
+
+# Ignore .env files
 .env*
 !.env*.example
+
+# Ignore tmux plugins (these are usually git repos)
+.config/tmux/plugins
