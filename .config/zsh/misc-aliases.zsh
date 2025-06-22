@@ -19,8 +19,8 @@ function c() {
   cursor "$TARGET_PATH"
 }
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
-alias cc="claude" # claude code
-alias ccs="claude /start"
+alias cc="npx claude" # claude code
+alias ccs="cc /start"
 
 # cd aliases
 alias ..='cd ..'
