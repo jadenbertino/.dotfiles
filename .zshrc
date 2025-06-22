@@ -20,4 +20,4 @@ source $ZSH_CONFIG_HOME/node.sh # NVM
 source $ZSH_CONFIG_HOME/tmux.sh
 source $ZSH_CONFIG_HOME/path.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
-[[ -f "$XDG_CONFIG_HOME/.env" ]] && source "$XDG_CONFIG_HOME/.env"
+source $ZSH_CONFIG_HOME/doppler.sh
