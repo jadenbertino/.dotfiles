@@ -1,6 +1,6 @@
 alias ls='ls --color'
 alias la='ls -a'
-alias cc='clear'
+alias cl='clear'
 alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
@@ -19,7 +19,8 @@ function c() {
   cursor "$TARGET_PATH"
 }
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
-alias cl="claude"
+alias cc="claude" # claude code
+alias ccs="claude /start"
 
 # cd aliases
 alias ..='cd ..'
