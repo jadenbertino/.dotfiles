@@ -1,4 +1,35 @@
+#!/usr/bin/env bash
+#
+# Doppler Environment Loader with Caching
+#
+# Usage:
+#   source doppler.sh [--force]
+#
+# Options:
+#   --force    Force refresh of Doppler secrets cache, ignoring existing cache
+#
+# This script loads Doppler environment variables with intelligent caching.
+# Secrets are cached for 24 hours to avoid unnecessary API calls.
+# Use --force to bypass cache and fetch fresh secrets immediately.
+
 function load_doppler_env() {
+    local FORCE_REFRESH=false
+    
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --force)
+                FORCE_REFRESH=true
+                shift
+                ;;
+            *)
+                echo "❌ Unknown option: $1"
+                echo "Usage: load_doppler_env [--force]"
+                return 1
+                ;;
+        esac
+    done
+
     # Validate that doppler CLI is installed
     if ! command -v doppler &> /dev/null; then
         echo "doppler could not be found. Please install it'"
@@ -24,8 +55,8 @@ function load_doppler_env() {
     CACHE_FILE="$XDG_CACHE_HOME/doppler_secrets_cache"
     CACHE_DURATION=$((24 * 60 * 60)) # 24 hours
 
-    # Check if cache exists and is fresh
-    if [ -f "$CACHE_FILE" ]; then
+    # Check if cache exists and is fresh (unless force refresh is requested)
+    if [ "$FORCE_REFRESH" = false ] && [ -f "$CACHE_FILE" ]; then
         CACHE_AGE=$(($(date +%s) - $(stat -c %Y "$CACHE_FILE" 2>/dev/null || stat -f %m "$CACHE_FILE" 2>/dev/null || echo 0)))
         if [ "$CACHE_AGE" -lt "$CACHE_DURATION" ]; then
             # Use cached secrets
@@ -34,9 +65,6 @@ function load_doppler_env() {
         fi
     fi
 
-    # Cache is stale or doesn't exist, fetch fresh secrets
-    echo "🔄 Refreshing Doppler secrets cache..."
-    
     # Create cache directory if it doesn't exist
     mkdir -p "$(dirname "$CACHE_FILE")"
     
@@ -44,6 +72,10 @@ function load_doppler_env() {
     if doppler secrets download --no-file --format env > "$CACHE_FILE.tmp" 2>/dev/null; then
         mv "$CACHE_FILE.tmp" "$CACHE_FILE"
         source "$CACHE_FILE"
+        # Cache is stale, doesn't exist, or force refresh was requested
+        if [ "$FORCE_REFRESH" = true ]; then
+            echo "🔄 Force refreshing Doppler secrets cache..."
+        fi
     else
         echo "❌ Failed to download Doppler secrets"
         # Clean up failed attempt
@@ -53,6 +85,7 @@ function load_doppler_env() {
 }
 
 # Load doppler environment with caching
-if ! load_doppler_env; then
+# Pass any script arguments to the function
+if ! load_doppler_env "$@"; then
     echo "⚠️  Warning: Failed to load Doppler environment"
 fi
