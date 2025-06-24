@@ -12,7 +12,7 @@ extensions=(
   # Syntax Highlighting
   prisma.prisma
   naumovs.color-highlight
-  fabiospampinato.vscode-highlight
+  wayou.vscode-todo-highlight
 
   # Language Servers
   redhat.vscode-yaml
@@ -50,11 +50,9 @@ extensions=(
 
 function install_extensions() {
   config_extensions=($(printf '%s\n' "${extensions[@]}" | sort))
-
-  # Get currently installed extensions
   current_extensions=($(code --list-extensions | sort))
 
-  # Find untracked extensions (installed but not in config)
+  # Uninstall untracked extensions
   untracked_extensions=()
   for ext in "${current_extensions[@]}"; do
     if [[ ! " ${config_extensions[*]} " =~ " ${ext} " ]]; then
@@ -62,8 +60,10 @@ function install_extensions() {
     fi
   done
   if [[ ${#untracked_extensions[@]} -gt 0 ]]; then
-    echo "=== UNTRACKED EXTENSIONS ==="
-    printf '%s\n' "${untracked_extensions[@]}"
+    for extension in "${untracked_extensions[@]}"; do
+      code --uninstall-extension "$extension" > /dev/null
+      echo "🗑️  Uninstalled $extension"
+    done
     echo ""
   fi
 
