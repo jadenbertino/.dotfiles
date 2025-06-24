@@ -1,10 +1,6 @@
 [
-  /* ************************** ⭐ CURSOR ⭐ ************************** */
-  {
-    "key": "alt+'",
-    "command": "cursorEnd",
-    "when": "textInputFocus"
-  },
+  /* ************************** ⭐ CURSOR (alt) ⭐ ************************** */
+  // Basic navigation (up/down/left/right)
   {
     "key": "alt+l",
     "command": "cursorRight",
@@ -25,9 +21,15 @@
     "command": "cursorDown",
     "when": "textInputFocus"
   },
+
+  // Intermediate - move further
   {
-    "key": "ctrl+alt+l",
-    "command": "cursorWordEndRight",
+    "key": "alt+h",
+    "command": "cursorWordEndLeft"
+  },
+  {
+    "key": "alt+'",
+    "command": "cursorEnd",
     "when": "textInputFocus"
   },
   {
@@ -36,23 +38,24 @@
     "when": "textInputFocus"
   },
   {
-    "key": "ctrl+alt+j",
-    "command": "cursorWordEndLeft"
-  },
-  {
-    "key": "alt+h",
-    "command": "cursorWordEndLeft"
-  },
-  {
-    "key": "ctrl+alt+h",
-    "command": "cursorLineStart",
-    "when": "textInputFocus"
-  },
-  {
     "key": "alt+,",
     "command": "cursorBottom",
     "when": "editorTextFocus"
   },
+
+  // Forward + Back
+  {
+    "key": "alt+]",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+  {
+    "key": "alt+]",
+    "command": "workbench.action.navigateForward",
+    "when": "canNavigateForward"
+  },
+
+  // Multi-cursor
   {
     "key": "ctrl+alt+arrowUp",
     "command": "editor.action.insertCursorAbove",
@@ -63,30 +66,8 @@
     "command": "editor.action.insertCursorBelow",
     "when": "editorTextFocus"
   },
-  
-  /* ************************** ⭐ NAVIGATION ⭐ ************************** */
-  {
-    "key": "alt+]",
-    "command": "workbench.action.navigateForward",
-    "when": "canNavigateForward"
-  },
-  {
-    "key": "ctrl+]",
-    "command": "workbench.action.navigateForward",
-    "when": "canNavigateForward"
-  },
-  {
-    "key": "alt+[",
-    "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
-  },
-  {
-    "key": "ctrl+[",
-    "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
-  },
 
-  /* ************************** ⭐ SELECTION ⭐ ************************** */
+  // Selection
   {
     "key": "alt+shift+j",
     "command": "cursorWordEndLeftSelect",
@@ -107,6 +88,8 @@
     "command": "cursorUpSelect",
     "when": "textInputFocus"
   },
+
+  /* ************************** ⭐ ???? ⭐ ************************** */
   {
     "key": "ctrl+shift+l",
     "command": "copyRelativeFilePath"
