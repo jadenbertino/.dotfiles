@@ -10,11 +10,16 @@
 #     OS="wsl", DISTRO="ubuntu", VERSION="22.04"
 #     OS="linux", DISTRO="debian", VERSION="12"
 #     OS="macos", DISTRO="", VERSION="14.4.1"
+#     OS="windows", DISTRO="", VERSION="10.0.19045"
 detect_os() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         OS="macos"
         DISTRO=""
         VERSION=$(sw_vers -productVersion)
+    elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+        OS="windows"
+        DISTRO=""
+        VERSION=$(cmd.exe /c ver 2>/dev/null | grep -o "Version [0-9.]*" | cut -d' ' -f2 || echo "unknown")
     elif [ -f /etc/os-release ]; then
         . /etc/os-release
         DISTRO=$ID
