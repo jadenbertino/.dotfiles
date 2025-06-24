@@ -61,3 +61,5 @@ copy_cursor_config() {
     # Copy all files from dotfiles Cursor directory to target directory
     cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
 }
+
+copy_cursor_config

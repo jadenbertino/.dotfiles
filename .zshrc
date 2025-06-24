@@ -21,6 +21,7 @@ source $ZSH_CONFIG_HOME/tmux.sh
 source $ZSH_CONFIG_HOME/path.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/doppler.sh
+source $ZSH_CONFIG_HOME/cursor.sh
 
 # Set email on a per repo basis!
 git config --global --unset user.email
