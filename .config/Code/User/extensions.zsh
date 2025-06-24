@@ -76,6 +76,7 @@ function install_extensions() {
   if [[ ${#extensions_to_install[@]} -gt 0 ]]; then
     for extension in "${extensions_to_install[@]}"; do
       code --install-extension "$extension" > /dev/null
+      echo "✅ Installed $extension"
     done
   fi
 }
