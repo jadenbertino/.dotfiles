@@ -3,9 +3,8 @@
 # Source utility functions
 source "$HOME/.config/zsh/utils.sh"
 
-# Get the directory of this script, go one directory up, then to .config/Code/User
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_DIR="$(dirname "$SCRIPT_DIR")/.config/Code/User"
+CURSOR_SOURCE_DIR="$(dirname "$SCRIPT_DIR")/.config/Code/User"
 
 detect_target_dir() {
     detect_os
@@ -40,9 +39,8 @@ detect_target_dir() {
     echo "$cursor_dir"
 }
 
-# copy_cursor_config
 # Copies the Cursor config files to the correct location based on the user's OS
-copy_cursor_config() {
+sync_cursor() {
     detect_os
     # Verify target dir exists
     local TARGET_DIR
@@ -53,13 +51,33 @@ copy_cursor_config() {
     fi
     
     # Verify source dir exists
-    if [[ ! -d "$SOURCE_DIR" ]]; then
-        echo "Error: Local cursor directory does not exist: $SOURCE_DIR" >&2
+    if [[ ! -d "$CURSOR_SOURCE_DIR" ]]; then
+        echo "Error: Local cursor directory does not exist: $CURSOR_SOURCE_DIR" >&2
         return 1
     fi
 
     # Copy all files from dotfiles Cursor directory to target directory
-    cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
+    cp -r "$CURSOR_SOURCE_DIR"/* "$TARGET_DIR/"
+
+    # Install extensions
+    source "$HOME/.config/Code/User/extensions.zsh" && install_extensions
 }
 
-copy_cursor_config
+sync_cursor_with_cache() {
+    local cache_file="$XDG_CACHE_HOME/.cursor_config_synced"
+    
+    # If cursor is not installed, do nothing
+    if ! command -v cursor &> /dev/null; then
+        echo "Failed to sync cursor config: cursor not installed"
+        return 1
+    fi
+
+    # Cache check: sync only if no cache file OR source has changed after last cache file update
+    if [[ ! -f "$cache_file" ]] || find "$CURSOR_SOURCE_DIR" -newer "$cache_file" -print -quit | grep -q .; then
+        sync_cursor
+        touch "$cache_file"
+        echo "Cursor config synced"
+    fi
+}
+
+sync_cursor_with_cache
