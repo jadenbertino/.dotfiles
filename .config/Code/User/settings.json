@@ -1,0 +1,208 @@
+{
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "One Dark Pro Mix",
+  "editor.mouseWheelZoom": true,
+  "editor.suggest.insertMode": "replace",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.sortImports": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.minimap.enabled": false,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "css.lint.emptyRules": "ignore",
+  "explorer.confirmDragAndDrop": false,
+  "editor.guides.bracketPairs": true,
+  "editor.guides.bracketPairsHorizontal": false,
+  "editor.guides.highlightActiveBracketPair": false,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "editor.renderWhitespace": "all",
+  "editor.fontFamily": "Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
+  "workbench.editor.closeOnFileDelete": true,
+  "indentRainbow.indicatorStyle": "light",
+  "indentRainbow.lightIndicatorStyleLineWidth": 1,
+  "indentRainbow.colors": [
+    "rgba(255,255,64,0.3)",
+    "rgba(127,255,127,0.3)",
+    "rgba(255,127,255,0.3)",
+    "rgba(79,236,236,0.3)"
+  ],
+  "indentRainbow.excludedLanguages": ["plaintext"],
+  "editor.stickyTabStops": true,
+  "workbench.startupEditor": "none",
+  "extensions.ignoreRecommendations": true,
+  "liveServer.settings.donotVerifyTags": true,
+  "settingsSync.ignoredSettings": ["-emmet.extensionsPath"],
+  "html-css-class-completion.enableEmmetSupport": true,
+  "editor.linkedEditing": true,
+  "explorer.compactFolders": false,
+  "bookmarks.useWorkaroundForFormatters": true,
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "prettier.printWidth": 120,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "emmet.syntaxProfiles": {
+    "xml": {
+      "attr_quotes": "single"
+    },
+    "html": {
+      "attr_quotes": "single"
+    },
+    "js": {
+      "attr_quotes": "single",
+      "self_closing_tag": true
+    },
+    "jsx": {
+      "attr_quotes": "single",
+      "self_closing_tag": true
+    }
+  },
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+      "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    },
+    "Ubuntu (WSL)": {
+      "path": "C:\\WINDOWS\\System32\\wsl.exe",
+      "args": ["-d", "Ubuntu"]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "html.completion.attributeDefaultValue": "singlequotes",
+  "scss.lint.emptyRules": "ignore",
+  "aws.codeWhisperer.shareCodeWhispererContentWithAWS": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.colorDecorators": false,
+  "editor.accessibilitySupport": "off",
+  "git.suggestSmartCommit": false,
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": false
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/lib": true
+  },
+  "git.openRepositoryInParentFolders": "never",
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+    "editor.formatOnSave": true
+  },
+  "redhat.telemetry.enabled": false,
+  "scm.diffDecorationsGutterWidth": 2,
+  "scm.diffDecorationsGutterAction": "none",
+  "files.autoSave": "afterDelay",
+  "prettier.useEditorConfig": false,
+  "editor.tabSize": 2,
+  "remote.autoForwardPortsSource": "hybrid",
+  "prettier.semi": false,
+  "prettier.configPath": ".prettierrc.cjs",
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": true,
+  "git.confirmSync": false,
+  "prisma.showPrismaDataPlatformNotification": false,
+  "terminal.integrated.env.linux": {},
+  "github.copilot.editor.enableAutoCompletions": true,
+  "supermaven.allowGitignore": true,
+  "git.repositoryScanIgnoredFolders": ["node_modules", "external/**/*"],
+  "git.detectSubmodules": false,
+  "security.allowedUNCHosts": ["diskstation"],
+  "prettier.trailingComma": "all",
+  "editor.formatOnPaste": true,
+  "scm.showHistoryGraph": false,
+  "scm.showChangesSummary": false,
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": "onlyEnabledExtensions",
+  "security.workspace.trust.untrustedFiles": "open",
+  "cursor.cpp.disabledLanguages": ["scminput"],
+  "workbench.layoutControl.enabled": false,
+  "window.menuBarVisibility": "compact",
+  "highlight.regexes": {
+    "// BOOKMARK:": {
+      "decorations": [
+        {
+          "backgroundColor": "#2196F3",
+          "color": "#ffffff",
+          "fontWeight": "bold",
+          "overviewRulerColor": "#2196F3",
+          "overviewRulerLane": 2
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *TODO(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#ffcc00",
+          "backgroundColor": "#ffcc00",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#ffcc00",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:FIXME|FIX|BUG|UGLY|DEBUG|HACK)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#cc0000",
+          "backgroundColor": "#cc0000",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#cc0000",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:REVIEW|OPTIMIZE|TSC)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#00ccff",
+          "backgroundColor": "#00ccff",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#00ccff",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:IDEA)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#cc00cc",
+          "backgroundColor": "#cc00cc",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#cc00cc",
+          "color": "#1f1f1f"
+        }
+      ]
+    }
+  }
+}
