@@ -70,11 +70,17 @@ function load_doppler_env() {
     
     # Download secrets to cache file
     if doppler secrets download --no-file --format env > "$CACHE_FILE.tmp" 2>/dev/null; then
-        mv "$CACHE_FILE.tmp" "$CACHE_FILE"
-        source "$CACHE_FILE"
-        # Cache is stale, doesn't exist, or force refresh was requested
-        if [ "$FORCE_REFRESH" = true ]; then
-            echo "🔄 Force refreshing Doppler secrets cache..."
+        # Verify the temp file was actually created before trying to move it
+        if [ -f "$CACHE_FILE.tmp" ]; then
+            mv "$CACHE_FILE.tmp" "$CACHE_FILE"
+            source "$CACHE_FILE"
+            # Cache is stale, doesn't exist, or force refresh was requested
+            if [ "$FORCE_REFRESH" = true ]; then
+                echo "🔄 Force refreshing Doppler secrets cache..."
+            fi
+        else
+            echo "❌ Doppler command succeeded but no output file was created"
+            return 1
         fi
     else
         echo "❌ Failed to download Doppler secrets"
