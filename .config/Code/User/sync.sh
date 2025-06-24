@@ -76,7 +76,7 @@ sync_cursor_with_cache() {
     if [[ ! -f "$cache_file" ]] || find "$CURSOR_SOURCE_DIR" -newer "$cache_file" -print -quit | grep -q .; then
         sync_cursor
         touch "$cache_file"
-        echo "Cursor config synced"
+        echo "🔁 Cursor config synced"
     fi
 }
 
