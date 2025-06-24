@@ -30,5 +30,4 @@ _darcs
 ^stow\.sh$
 
 ^\.config/?$    # stow subfolders of .config but not the .config folder itself
-^\.config/Code
 ^scripts/
