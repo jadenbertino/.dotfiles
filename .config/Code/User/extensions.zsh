@@ -12,6 +12,7 @@ extensions=(
   # Syntax Highlighting
   prisma.prisma
   naumovs.color-highlight
+  fabiospampinato.vscode-highlight
 
   # Language Servers
   redhat.vscode-yaml
