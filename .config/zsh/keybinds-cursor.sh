@@ -59,9 +59,5 @@ copy_cursor_config() {
     fi
 
     # Copy all files from dotfiles Cursor directory to target directory
-    echo "Copying Cursor config..."
-    echo "  Source: $SOURCE_DIR"
-    echo "  Target: $TARGET_DIR"
     cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
-    echo "Cursor config successfully copied!"
 }
