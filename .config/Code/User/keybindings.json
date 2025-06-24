@@ -254,12 +254,8 @@
   },
 
   // Bookmarks
-  // {
-  //   "key": "ctrl+b",
-  //   "command": "bookmarks.toggleLabeled"
-  // },
   {
-    "key": "ctrl+shift+b",
+    "key": "ctrl+b",
     "command": "bookmarks.toggle"
   },
   {
