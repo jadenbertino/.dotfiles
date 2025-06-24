@@ -1,5 +1,5 @@
 [
-  /* ************************** ⭐ CURSOR (alt) ⭐ ************************** */
+  /* ************************** ⭐ CURSOR NAVIGATION (alt) ⭐ ************************** */
   // Basic navigation (up/down/left/right)
   {
     "key": "alt+l",
@@ -89,6 +89,28 @@
     "when": "textInputFocus"
   },
 
+  // Suggestions
+  {
+    "key": "alt+k",
+    "command": "selectNextSuggestion",
+    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+  },
+  {
+    "key": "alt+i",
+    "command": "selectPrevSuggestion",
+    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+  },
+  {
+    "key": "alt+k",
+    "command": "workbench.action.quickOpenSelectNext",
+    "when": "inQuickOpen"
+  },
+  {
+    "key": "alt+i",
+    "command": "workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen"
+  },
+
   /* ************************** ⭐ ???? ⭐ ************************** */
   {
     "key": "ctrl+shift+l",
@@ -96,6 +118,19 @@
   },
 
   /* ************************** ⭐ EDITING ⭐ ************************** */
+  // Line Movement
+  {
+    "key": "ctrl+alt+i",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+alt+k",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  
+  // 
   {
     "key": "alt+x",
     "command": "editor.action.clipboardCutAction"
@@ -130,16 +165,6 @@
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "ctrl+alt+i",
-    "command": "editor.action.moveLinesUpAction",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
-    "key": "ctrl+alt+k",
-    "command": "editor.action.moveLinesDownAction",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
     "key": "ctrl+shift+k",
     "command": "editor.action.copyLinesDownAction",
     "when": "editorTextFocus && !editorReadonly"
@@ -155,12 +180,6 @@
     "key": "ctrl+enter",
     "command": "editor.toggleFold",
     "when": "editorTextFocus && foldingEnabled"
-  },
-
-  /* ************************** ⭐ FORMATTING ⭐ ************************** */
-  {
-    "key": "ctrl+alt+s",
-    "command": "editor.action.formatDocument"
   },
 
   /* ************************** ⭐ SEARCH & QUICK OPEN ⭐ ************************** */
@@ -188,7 +207,63 @@
     "command": "bookmarksExplorer.focus"
   },
 
-  /* ************************** ⭐ WORKBENCH & VIEWS ⭐ ************************** */
+  /* ************************** ⭐ Workspace Navigation ⭐ ************************** */
+
+  //  "ctrl + [" -> toggles file explorer
+  {
+    "key": "ctrl+[",
+    "command": "workbench.view.explorer",
+    "when": "!sideBarVisible || !explorerViewletVisible",
+  },
+  {
+    "key": "ctrl+[",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "sideBarVisible && explorerViewletVisible",
+  },
+
+  // "ctrl + ]" -> toggles search
+  {
+    "key": "ctrl+]",
+    "command": "workbench.view.search",
+    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.search'",
+  },
+  {
+    "key": "ctrl+]",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "focusedView == 'workbench.view.search'",
+  },
+
+  // "ctrl + \" -> toggles source control
+  {
+    "key": "ctrl+\\",
+    "command": "workbench.view.scm",
+    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'",
+  },
+  {
+    "key": "ctrl+\\",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "focusedView == 'workbench.view.scm'",
+  },
+
+  // "ctrl + j" -> toggles terminal
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.terminal.focus",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.terminal.toggleTerminal",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+alt+j",
+    "command": "workbench.action.terminal.split",
+    "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile"
+  },
+  
+
+  // Tab Navigation
   {
     "key": "ctrl+1",
     "command": "workbench.action.openEditorAtIndex1"
@@ -243,32 +318,6 @@
     "command": "workbench.files.action.collapseExplorerFolders"
   },
 
-  /* ************************** ⭐ TERMINAL ⭐ ************************** */
-  {
-    "key": "ctrl+j",
-    "command": "workbench.action.terminal.focus",
-    "when": "!terminalFocus"
-  },
-  {
-    "key": "ctrl+j",
-    "command": "workbench.action.terminal.toggleTerminal",
-    "when": "terminalFocus"
-  },
-  {
-    "key": "ctrl+alt+j",
-    "command": "workbench.action.terminal.split",
-    "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile"
-  },
-  {
-    "key": "ctrl+alt+k",
-    "command": "workbench.action.terminal.navigationModeFocusNext",
-    "when": "accessibilityModeEnabled && terminalA11yTreeFocus && terminalNavigationModeActive && terminalProcessSupported || accessibilityModeEnabled && terminalFocus && terminalNavigationModeActive && terminalProcessSupported"
-  },
-  {
-    "key": "ctrl+shift+r",
-    "command": "workbench.action.terminal.runSelectedText"
-  },
-
   /* ************************** ⭐ EXTENSIONS & AI ⭐ ************************** */
   {
     "key": "ctrl+i",
@@ -303,26 +352,7 @@
   },
 
   /* ************************** ⭐ SUGGESTIONS & AUTOCOMPLETE ⭐ ************************** */
-  {
-    "key": "alt+k",
-    "command": "selectNextSuggestion",
-    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-  },
-  {
-    "key": "alt+i",
-    "command": "selectPrevSuggestion",
-    "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-  },
-  {
-    "key": "alt+k",
-    "command": "workbench.action.quickOpenSelectNext",
-    "when": "inQuickOpen"
-  },
-  {
-    "key": "alt+i",
-    "command": "workbench.action.quickOpenSelectPrevious",
-    "when": "inQuickOpen"
-  },
+
   {
     "key": "tab",
     "command": "editor.emmet.action.expandAbbreviation",
