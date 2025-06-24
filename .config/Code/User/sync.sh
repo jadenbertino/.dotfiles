@@ -3,8 +3,7 @@
 # Source utility functions
 source "$HOME/.config/zsh/utils.sh"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CURSOR_SOURCE_DIR="$(dirname "$SCRIPT_DIR")/.config/Code/User"
+CURSOR_SOURCE_DIR="$HOME/.config/Code/User"
 
 detect_target_dir() {
     detect_os
@@ -69,6 +68,12 @@ sync_cursor_with_cache() {
     # If cursor is not installed, do nothing
     if ! command -v cursor &> /dev/null; then
         echo "Failed to sync cursor config: cursor not installed"
+        return 1
+    fi
+
+    # If source dir does not exist, do nothing
+    if [[ ! -d "$CURSOR_SOURCE_DIR" ]]; then
+        echo "Error: Local cursor directory does not exist: $CURSOR_SOURCE_DIR" >&2
         return 1
     fi
 
