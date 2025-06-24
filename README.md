@@ -38,7 +38,7 @@
 
 1. Clone this repo into your home directory
 2. `cd` into the repo
-3. Run `./stow.sh`
+3. Run `./scripts/stow.sh`
 4. Review and make changes to files in the repo
 5. Run `source ~/.zshrc` to load the config
 
