@@ -35,9 +35,9 @@ extensions=(
   grapecity.gc-excelviewer
 
   # Git
-  coderabbit.coderabbit-vscode
-  github.vscode-pull-request-github
-  mhutchie.git-graph
+  # coderabbit.coderabbit-vscode
+  # github.vscode-pull-request-github # doesn't work in cursor
+  # mhutchie.git-graph
 
   # Markdown
   # yzhang.markdown-all-in-one

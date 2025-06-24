@@ -1,5 +1,5 @@
 [
-  /* ************************** ⭐ NAVIGATION ⭐ ************************** */
+  /* ************************** ⭐ CURSOR ⭐ ************************** */
   {
     "key": "alt+'",
     "command": "cursorEnd",
@@ -49,20 +49,22 @@
     "when": "textInputFocus"
   },
   {
-    "key": "ctrl+;",
+    "key": "alt+,",
     "command": "cursorBottom",
     "when": "editorTextFocus"
   },
   {
-    "key": "pageup",
-    "command": "cursorTop",
+    "key": "ctrl+alt+arrowUp",
+    "command": "editor.action.insertCursorAbove",
     "when": "editorTextFocus"
   },
   {
-    "key": "pagedown",
-    "command": "cursorBottom",
-    "when": "textInputFocus"
+    "key": "ctrl+alt+arrowDown",
+    "command": "editor.action.insertCursorBelow",
+    "when": "editorTextFocus"
   },
+  
+  /* ************************** ⭐ NAVIGATION ⭐ ************************** */
   {
     "key": "alt+]",
     "command": "workbench.action.navigateForward",
@@ -93,11 +95,6 @@
   {
     "key": "alt+shift+l",
     "command": "cursorWordEndRightSelect",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "ctrl+shift+l",
-    "command": "cursorRightSelect",
     "when": "textInputFocus"
   },
   {
@@ -167,18 +164,6 @@
   {
     "key": "ctrl+shift+x",
     "command": "macros.replaceLine",
-    "when": "editorTextFocus"
-  },
-
-  /* ************************** ⭐ MULTI-CURSOR ⭐ ************************** */
-  {
-    "key": "ctrl+alt+arrowUp",
-    "command": "editor.action.insertCursorAbove",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "ctrl+alt+arrowDown",
-    "command": "editor.action.insertCursorBelow",
     "when": "editorTextFocus"
   },
 
