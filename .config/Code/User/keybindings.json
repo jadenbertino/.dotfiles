@@ -1,5 +1,5 @@
 [
-  // NAVIGATION
+  /* ************************** ⭐ NAVIGATION ⭐ ************************** */
   {
     "key": "alt+'",
     "command": "cursorEnd",
@@ -551,5 +551,9 @@
     "key": "ctrl+shift+y",
     "command": "-editor.action.inlineDiffs.acceptPartialEdit",
     "when": "editorHasPromptBar && editorPromptBarFocused"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "copyRelativeFilePath"
   }
 ]
