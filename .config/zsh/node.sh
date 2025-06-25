@@ -37,7 +37,7 @@ load_nvm() {
     # Load nvm
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+    # npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 }
 
 # Lazy load npx, nvm, node, npm
