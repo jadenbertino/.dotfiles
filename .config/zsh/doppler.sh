@@ -76,7 +76,7 @@ function load_doppler_env() {
             source "$CACHE_FILE"
             # Cache is stale, doesn't exist, or force refresh was requested
             if [ "$FORCE_REFRESH" = true ]; then
-                echo "🔄 Force refreshing Doppler secrets cache..."
+                echo "🔄 Force refreshed Doppler secrets cache"
             fi
         else
             echo "❌ Doppler command succeeded but no output file was created"
@@ -88,6 +88,10 @@ function load_doppler_env() {
         rm -f "$CACHE_FILE.tmp"
         return 1
     fi
+}
+
+function refresh_doppler() {
+    load_doppler_env --force
 }
 
 # Load doppler environment with caching
