@@ -43,8 +43,21 @@ load_nvm() {
 # .npmrc with the auth token should be out of version control
 # .npmrc files are detected at multiple levels
 create_npmrc() {
-    printf "\n//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-    echo "Created .npmrc with auth token"
+    # Check if .npmrc already exists and has an auth token
+    if [ -f ".npmrc" ] && grep -q "//registry.npmjs.org/:_authToken=" .npmrc; then
+        echo ".npmrc already contains an auth token"
+        return 0
+    fi
+    
+    # Create or append the auth token
+    AUTH_TOKEN_LINE="//registry.npmjs.org/:_authToken=$NPM_TOKEN"
+    if [ -f ".npmrc" ]; then
+        printf "\n$AUTH_TOKEN_LINE" >> .npmrc
+        echo "Added auth token to existing .npmrc"
+    else
+        printf "$AUTH_TOKEN_LINE" > .npmrc
+        echo "Created .npmrc with auth token"
+    fi
 }
 
 # Lazy load npx, nvm, node, npm
