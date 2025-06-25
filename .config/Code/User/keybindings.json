@@ -126,21 +126,12 @@
   {
     "key": "ctrl+alt+k",
     "command": "editor.action.moveLinesDownAction",
-    "when": "editorTextFocus && !editorReadonly"
+    "when": "editorTextFocus && !edit>orReadonly"
   },
   {
     "key": "ctrl+shift+k",
     "command": "editor.action.copyLinesDownAction",
     "when": "editorTextFocus && !editorReadonly"
-  },
-    {
-    "key": "ctrl+enter",
-    "command": "editor.toggleFold",
-    "when": "editorTextFocus && foldingEnabled"
-  },
-  {
-    "key": "ctrl+enter",
-    "command": "workbench.files.action.collapseExplorerFolders"
   },
   {
     "key": "alt+enter",
@@ -151,6 +142,17 @@
     "key": "shift+alt+enter",
     "command": "editor.action.insertLineBefore",
     "when": "editorTextFocus && !editorReadonly"
+  },
+
+  // Fold
+  {
+    "key": "ctrl+enter",
+    "command": "editor.toggleFold",
+    "when": "editorTextFocus && foldingEnabled"
+  },
+  {
+    "key": "ctrl+enter",
+    "command": "workbench.files.action.collapseExplorerFolders"
   },
 
   // Delete
@@ -199,41 +201,40 @@
     "when": "!notebookEditorFocused && editorLangId == 'markdown'"
   },
 
-
   //  "ctrl + [" -> toggles file explorer
   {
     "key": "ctrl+[",
     "command": "workbench.view.explorer",
-    "when": "!sideBarVisible || !explorerViewletVisible",
+    "when": "!sideBarVisible || !explorerViewletVisible"
   },
   {
     "key": "ctrl+[",
     "command": "workbench.action.toggleSidebarVisibility",
-    "when": "sideBarVisible && explorerViewletVisible",
+    "when": "sideBarVisible && explorerViewletVisible"
   },
 
   // "ctrl + ]" -> toggles search
   {
     "key": "ctrl+]",
     "command": "workbench.view.search",
-    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.search'",
+    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.search'"
   },
   {
     "key": "ctrl+]",
     "command": "workbench.action.toggleSidebarVisibility",
-    "when": "focusedView == 'workbench.view.search'",
+    "when": "focusedView == 'workbench.view.search'"
   },
 
   // "ctrl + \" -> toggles source control
   {
     "key": "ctrl+\\",
     "command": "workbench.view.scm",
-    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'",
+    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'"
   },
   {
     "key": "ctrl+\\",
     "command": "workbench.action.toggleSidebarVisibility",
-    "when": "focusedView == 'workbench.view.scm'",
+    "when": "focusedView == 'workbench.view.scm'"
   },
 
   // "ctrl + j" -> toggles terminal
@@ -304,7 +305,6 @@
     "key": "ctrl+9",
     "command": "workbench.action.openEditorAtIndex9"
   },
-
 
   /* ************************** ⭐ SUGGESTIONS & AUTOCOMPLETE ⭐ ************************** */
 
