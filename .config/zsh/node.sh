@@ -37,7 +37,14 @@ load_nvm() {
     # Load nvm
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    # npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+}
+
+# Function to create a .npmrc with the NPM_TOKEN in current directory
+# .npmrc with the auth token should be out of version control
+# .npmrc files are detected at multiple levels
+create_npmrc() {
+    printf "\n//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+    echo "Created .npmrc with auth token"
 }
 
 # Lazy load npx, nvm, node, npm
