@@ -25,6 +25,7 @@ alias ccp="cc /plan"
 alias lz="eza"
 alias lza="eza --tree --git-ignore --level=3 --no-permissions --no-user --no-time --all"
 alias sb="supabase"
+alias d="docker"
 
 # cd aliases
 alias ..='cd ..'
