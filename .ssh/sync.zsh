@@ -49,14 +49,8 @@ sync_ssh() {
     fi
 
     # Copy all files from dotfiles SSH directory to target directory
-    cp -r "$SSH_SOURCE_DIR"/* "$TARGET_DIR/"
-    
-    # Set proper permissions on Windows SSH directory
-    chmod 700 "$TARGET_DIR"
-    find "$TARGET_DIR" -type f -name "*.pem" -exec chmod 600 {} \;
-    find "$TARGET_DIR" -type f -name "*config" -exec chmod 600 {} \;
-    find "$TARGET_DIR" -type f -name "*_rsa" -exec chmod 600 {} \;
-    find "$TARGET_DIR" -type f -name "*_ed25519" -exec chmod 600 {} \;
+    # Use -L to follow symlinks and copy the actual file content
+    rsync -aL --delete "$SSH_SOURCE_DIR/" "$TARGET_DIR/"
 }
 
 sync_ssh_with_cache() {

@@ -22,7 +22,7 @@ source $ZSH_CONFIG_HOME/tmux.sh
 source $ZSH_CONFIG_HOME/path.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/doppler.sh
-source $ZSH_CONFIG_HOME/ssh.zsh
+source $HOME/.ssh/sync.zsh
 source $XDG_CONFIG_HOME/Code/User/sync.sh
 
 # Set email on a per repo basis!

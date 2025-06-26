@@ -2,6 +2,7 @@
 .ssh/**/*
 !.ssh/**/*.md
 !.ssh/**/config
+!.ssh/**/*.zsh
 
 # Ignore .env files
 .env*
