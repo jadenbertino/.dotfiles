@@ -56,7 +56,7 @@ sync_cursor() {
     fi
 
     # Copy all files from dotfiles Cursor directory to target directory
-    cp -r "$CURSOR_SOURCE_DIR"/* "$TARGET_DIR/"
+    rsync -aL --delete $CURSOR_SOURCE_DIR $TARGET_DIR
 
     # Install extensions
     source "$HOME/.config/Code/User/extensions.zsh" && install_extensions
