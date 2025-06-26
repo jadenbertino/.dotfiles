@@ -66,3 +66,25 @@ install_package() {
         esac
     fi
 }
+
+# Generic function to sync a directory with caching
+# Usage: sync_dir_with_caching <source_dir> <sync_function> <cache_file_name>
+sync_dir_with_caching() {
+    local source_dir="$1"
+    local sync_function="$2"
+    local cache_file_name="$3"
+    
+    local cache_file="$XDG_CACHE_HOME/$cache_file_name"
+
+    # If source dir does not exist, do nothing
+    if [[ ! -d "$source_dir" ]]; then
+        echo "Error: Source directory does not exist: $source_dir" >&2
+        return 1
+    fi
+
+    # Cache check: sync only if no cache file OR source has changed after last cache file update
+    if [[ ! -f "$cache_file" ]] || find "$source_dir" -newer "$cache_file" -print -quit | grep -q .; then
+        "$sync_function"
+        touch "$cache_file"
+    fi
+}

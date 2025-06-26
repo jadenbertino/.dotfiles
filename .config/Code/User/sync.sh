@@ -63,26 +63,14 @@ sync_cursor() {
 }
 
 sync_cursor_with_cache() {
-    local cache_file="$XDG_CACHE_HOME/.cursor_config_synced"
-    
     # If cursor is not installed, do nothing
     if ! command -v cursor &> /dev/null; then
         echo "Failed to sync cursor config: cursor not installed"
         return 1
     fi
-
-    # If source dir does not exist, do nothing
-    if [[ ! -d "$CURSOR_SOURCE_DIR" ]]; then
-        echo "Error: Local cursor directory does not exist: $CURSOR_SOURCE_DIR" >&2
-        return 1
-    fi
-
-    # Cache check: sync only if no cache file OR source has changed after last cache file update
-    if [[ ! -f "$cache_file" ]] || find "$CURSOR_SOURCE_DIR" -newer "$cache_file" -print -quit | grep -q .; then
-        sync_cursor
-        touch "$cache_file"
-        echo "🔁 Cursor config synced"
-    fi
+    
+    sync_dir_with_caching "$CURSOR_SOURCE_DIR" "sync_cursor" ".cursor_config_synced"
+    echo "🔁 Cursor config synced"
 }
 
 sync_cursor_with_cache
