@@ -18,6 +18,13 @@ function c() {
   # Open file in cursor
   cursor "$TARGET_PATH"
 }
+
+function zc() {
+  local TARGET_PATH="${1:-.}"
+  z "$TARGET_PATH"
+  cursor .
+}
+
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias cc="npx claude" # claude code
 alias ccs="cc /start"
