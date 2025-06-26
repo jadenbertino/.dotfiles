@@ -69,8 +69,7 @@ sync_cursor_with_cache() {
         return 1
     fi
     
-    sync_dir_with_caching "$CURSOR_SOURCE_DIR" "sync_cursor" ".cursor_config_synced"
-    echo "🔁 Cursor config synced"
+    sync_dir_with_caching "$CURSOR_SOURCE_DIR" "sync_cursor" ".cursor_config_synced" "🔁 Cursor config synced"
 }
 
 sync_cursor_with_cache

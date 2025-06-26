@@ -66,8 +66,7 @@ sync_ssh_with_cache() {
         return 0
     fi
     
-    sync_dir_with_caching "$SSH_SOURCE_DIR" "sync_ssh" ".ssh_config_synced"
-    echo "🔑 SSH config synced to Windows"
+    sync_dir_with_caching "$SSH_SOURCE_DIR" "sync_ssh" ".ssh_config_synced" "🔑 SSH config synced to Windows"
 }
 
 sync_ssh_with_cache

@@ -73,6 +73,7 @@ sync_dir_with_caching() {
     local source_dir="$1"
     local sync_function="$2"
     local cache_file_name="$3"
+    local success_message="${4:-"Synced $source_dir"}"
     
     local cache_file="$XDG_CACHE_HOME/$cache_file_name"
 
@@ -83,8 +84,9 @@ sync_dir_with_caching() {
     fi
 
     # Cache check: sync only if no cache file OR source has changed after last cache file update
-    if [[ ! -f "$cache_file" ]] || find "$source_dir" -newer "$cache_file" -print -quit | grep -q .; then
+    if [[ ! -f "$cache_file" ]] || find -L "$source_dir" -newer "$cache_file" -print -quit | grep -q .; then
         "$sync_function"
         touch "$cache_file"
+        echo "$success_message"
     fi
 }
