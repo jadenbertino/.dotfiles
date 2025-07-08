@@ -1,5 +1,36 @@
 # Prerequisites
 
+### Setup GitHub SSH Key
+
+- Make SSH directory: `mkdir -p ~/.ssh && cd ~/.ssh`
+- Create SSH key: `ssh-keygen -t ed25519`
+  - Name it `personal`
+  - No passphrase
+- Get the public key: `cat personal.pub`
+- Add the public key to GitHub (Settings -> SSH and GPG keys -> New SSH key)
+- Update SSH config: `vim ~/.ssh/config`
+```
+# Personal
+Host github-personal.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/personal
+
+# Work (OSSA)
+Host github-ossa.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/ossa
+
+# Global defaults for all hosts
+Host *
+    IdentitiesOnly yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+```
+- Test SSH connection: `ssh -T git@github-personal.com`
+- You should get a message like: `Hi <your-username>! You've successfully authenticated...`
+
 ### Install a Nerd Font
 
 - Recommended: `JetBrainsMono Nerd Font`
