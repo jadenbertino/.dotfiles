@@ -33,16 +33,19 @@ Host *
 
 ### Install a Nerd Font
 
-- Recommended: `JetBrainsMono Nerd Font`
+> Recommended: `JetBrainsMono Nerd Font`
+
 - Go to [Nerd Fonts Releases](https://github.com/ryanoasis/nerd-fonts/releases)
-- Go to assets section of latest version and expand
-- Search for your font zip
-- Download the font zip
-- Unzip the download
+- Go to assets section of latest version and click `Show all assets`
+- Search for your font 
+- Download the `.tar.xz` file
+- Unzip the file
+  - Windows: Use 7zip
+  - Mac / Linux: `tar -xvf <filename>`
 - Install the fonts
   - Mac: Open up `Font Book` and drag and drop the fonts into the app
   - Ubuntu: Copy the .ttf files to `/usr/local/share/fonts`
-  - PC: Select all .ttf files -> right click -> Install
+    - PC: Select all .ttf files -> right click -> Install. If this doesn't work then just open the .ttf file you want to use (e.g. `JetBrainsMonoNerdFont-Regular.ttf`)
 - Ensure your terminal is using the font
   - Mac (`ghostty`): This will work automatically if you have the font installed due to the `ghostty` config file
   - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
