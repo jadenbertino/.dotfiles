@@ -90,3 +90,16 @@ sync_dir_with_caching() {
         echo "$success_message"
     fi
 }
+
+add_to_path() {
+    local PATH_TO_ADD="$1"
+    case ":$PATH:" in
+        *":$PATH_TO_ADD:"*) :;; # already in PATH, do nothing
+        *) export PATH="$PATH_TO_ADD:$PATH";;
+    esac
+}
+
+remove_from_path() {
+    local PATH_TO_REMOVE="$1"
+    export PATH="$(echo "$PATH" | awk -v RS=: -v ORS=: -v p="$PATH_TO_REMOVE" '$0 != p' | sed 's/:$//')"
+}
