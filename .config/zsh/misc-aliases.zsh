@@ -1,9 +1,12 @@
 alias ls='ls --color'
 alias la='ls -a'
 alias cl='clear'
-alias nv='nvim'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
+
+# IDE aliases
+alias v='nvim'
+alias nv='nvim'
 function c() {
   local TARGET_PATH="${1:-.}"
   
@@ -15,14 +18,13 @@ function c() {
     fi
   fi
   
-  # Open file in cursor
-  cursor "$TARGET_PATH"
+  # Open file in editor
+  code "$TARGET_PATH"
 }
-
 function zc() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
-  cursor .
+  code .
 }
 
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
