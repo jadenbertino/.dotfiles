@@ -33,3 +33,5 @@ _darcs
 ^scripts/
 
 ^\.claude/?$
+
+^docs/?$
