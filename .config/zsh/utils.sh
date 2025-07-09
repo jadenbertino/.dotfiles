@@ -67,6 +67,25 @@ install_package() {
     fi
 }
 
+verify_package() {
+    local PKG=$1
+    if [[ -z "$PKG" ]]; then
+        echo "Error: Package name required" >&2
+        return 1
+    fi
+    
+    if is_command_available "$PKG"; then
+        return 0
+    else
+        if install_package "$PKG"; then
+            echo "$PKG installed successfully"
+        else
+            echo "Failed to install $PKG" >&2
+            return 1
+        fi
+    fi
+}
+
 # Generic function to sync a directory with caching
 # Usage: sync_dir_with_caching <source_dir> <sync_function> <cache_file_name>
 sync_dir_with_caching() {

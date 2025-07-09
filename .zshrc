@@ -13,13 +13,13 @@ fi
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME .
 ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
+source $ZSH_CONFIG_HOME/utils.sh
 source $ZSH_CONFIG_HOME/plugins.zsh
 source $ZSH_CONFIG_HOME/alias.zsh
 source $ZSH_CONFIG_HOME/git-aliases.zsh
 source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
 source $ZSH_CONFIG_HOME/node.sh # NVM 
 source $ZSH_CONFIG_HOME/tmux.sh
-source $ZSH_CONFIG_HOME/path.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/doppler.sh
 source $ZSH_CONFIG_HOME/nvim.sh && install_neovim
@@ -28,3 +28,18 @@ source $XDG_CONFIG_HOME/Code/User/sync.sh
 
 # Set email on a per repo basis!
 git config --global --unset user.email
+
+# Misc paths
+(
+  GCLOUD_CLI_DIR='/home/jaden/.google-cloud-sdk'
+  if [ -f '$GCLOUD_CLI_DIR/path.bash.inc' ]; then . '$GCLOUD_CLI_DIR/path.bash.inc'; fi
+  if [ -f '$GCLOUD_CLI_DIR/completion.bash.inc' ]; then . '$GCLOUD_CLI_DIR/completion.bash.inc'; fi
+  add_to_path "$GCLOUD_CLI_DIR/bin"
+)
+[ -x "$(command -v brew)" ] && eval "$(brew shellenv)" # Make homebrew apps available in path
+add_to_path "$HOME/.local/bin"
+
+# Packages
+verify_package zsh
+verify_package zoxide
+verify_package stow
