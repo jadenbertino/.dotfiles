@@ -17,8 +17,7 @@
   "editor.guides.highlightActiveBracketPair": false,
   "javascript.updateImportsOnFileMove.enabled": "always",
   "editor.renderWhitespace": "all",
-  "editor.fontFamily": "Consolas, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
   "workbench.editor.closeOnFileDelete": true,
   "indentRainbow.indicatorStyle": "light",
   "indentRainbow.lightIndicatorStyleLineWidth": 1,
@@ -60,7 +59,10 @@
       "icon": "terminal-powershell"
     },
     "Command Prompt": {
-      "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
       "args": [],
       "icon": "terminal-cmd"
     },

@@ -76,6 +76,44 @@ detect_target_dir() {
     detect_cursor_target_dir
 }
 
+# Helper function to sync directories reliably across WSL/Windows boundary
+sync_directory() {
+    local source_dir="$1"
+    local target_dir="$2"
+    
+    # Remove trailing slashes for consistency
+    source_dir="${source_dir%/}"
+    target_dir="${target_dir%/}"
+    
+    detect_os
+    
+    if [[ "$OS" == "wsl" ]]; then
+        # For WSL, use PowerShell which handles cross-filesystem copying better
+        # echo "Syncing $source_dir -> $target_dir"
+        
+        # Clear the target directory first (equivalent to --delete)
+        # Skip files that might be locked by running applications
+        if [[ -d "$target_dir" ]]; then
+            find "$target_dir" -type f -not -name "*.vscdb" -not -name "*.log" -delete 2>/dev/null || true
+            find "$target_dir" -type d -empty -delete 2>/dev/null || true
+        fi
+        
+        # Create target directory if it doesn't exist
+        mkdir -p "$target_dir"
+        
+        # Copy all contents using cp (which works well across WSL/Windows)
+        cp -r "$source_dir"/. "$target_dir"/
+        
+        if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to copy files from $source_dir to $target_dir" >&2
+            return 1
+        fi
+    else
+        # For non-WSL systems, use traditional rsync
+        rsync -aL --delete "$source_dir/" "$target_dir/"
+    fi
+}
+
 # Copies the Cursor config files to the correct location based on the user's OS
 sync_cursor() {
     detect_os
@@ -94,7 +132,7 @@ sync_cursor() {
     fi
 
     # Copy all files from dotfiles Cursor directory to target directory
-    rsync -aL --delete $CURSOR_SOURCE_DIR $TARGET_DIR
+    sync_directory "$CURSOR_SOURCE_DIR" "$TARGET_DIR"
 
     # Install extensions
     # Just using a .vscode/extensions.json now cuz the install takes so long and cursor has issues due to having a different extension marketplace
@@ -119,7 +157,7 @@ sync_vscode() {
     fi
 
     # Copy all files from dotfiles directory to VS Code target directory
-    rsync -aL --delete $CURSOR_SOURCE_DIR $TARGET_DIR
+    sync_directory "$CURSOR_SOURCE_DIR" "$TARGET_DIR"
 }
 
 sync_cursor_with_cache() {
