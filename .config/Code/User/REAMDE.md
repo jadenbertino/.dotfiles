@@ -1,0 +1,1 @@
+I believe this folder is deprecated at this point because vs code syncs this stuff anyways.
