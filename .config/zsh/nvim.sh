@@ -6,7 +6,6 @@ source "$HOME/.config/zsh/utils.sh"
 install_neovim() {
     # Check if nvim is already installed
     if is_command_available nvim; then
-        echo "Neovim is already installed"
         return 0
     fi
 
@@ -21,7 +20,7 @@ install_neovim() {
             fi
 
             # Download and extract Neovim
-            $(
+            (
                 cd /tmp
                 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
                 sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
