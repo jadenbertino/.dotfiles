@@ -1,85 +1,87 @@
-#! /bin/zsh
+# DEPRECATED IN FAVOR OF .vscode/extensions.json
 
-extensions=(
-  # //TODO: must install this manually, it fails if you install with code --install-extension for some reason
-  # I believe this is because cursor and vscode have different extension marketplaces
-  # ldez.ignore-files
+# #! /bin/zsh
 
-  # Formatting
-  esbenp.prettier-vscode
-  ms-python.black-formatter
+# extensions=(
+#   # //TODO: must install this manually, it fails if you install with code --install-extension for some reason
+#   # I believe this is because cursor and vscode have different extension marketplaces
+#   # ldez.ignore-files
 
-  # Syntax Highlighting
-  prisma.prisma
-  naumovs.color-highlight
-  wayou.vscode-todo-highlight
+#   # Formatting
+#   esbenp.prettier-vscode
+#   ms-python.black-formatter
 
-  # Language Servers
-  redhat.vscode-yaml
-  bradlc.vscode-tailwindcss
-  ms-python.vscode-pylance
-  ms-python.debugpy
-  ms-python.python
-  dbaeumer.vscode-eslint
+#   # Syntax Highlighting
+#   prisma.prisma
+#   naumovs.color-highlight
+#   wayou.vscode-todo-highlight
 
-  # Aesthetics
-  pkief.material-icon-theme
-  yoavbls.pretty-ts-errors
-  oderwat.indent-rainbow
-  zhuangtongfa.material-theme # one dark pro
+#   # Language Servers
+#   redhat.vscode-yaml
+#   bradlc.vscode-tailwindcss
+#   ms-python.vscode-pylance
+#   ms-python.debugpy
+#   ms-python.python
+#   dbaeumer.vscode-eslint
 
-  # File Handlers
-  tomoki1207.pdf
-  mechatroner.rainbow-csv
-  janisdd.vscode-edit-csv
-  grapecity.gc-excelviewer
+#   # Aesthetics
+#   pkief.material-icon-theme
+#   yoavbls.pretty-ts-errors
+#   oderwat.indent-rainbow
+#   zhuangtongfa.material-theme # one dark pro
 
-  # Git
-  # coderabbit.coderabbit-vscode
-  # github.vscode-pull-request-github # doesn't work in cursor
-  # mhutchie.git-graph
+#   # File Handlers
+#   tomoki1207.pdf
+#   mechatroner.rainbow-csv
+#   janisdd.vscode-edit-csv
+#   grapecity.gc-excelviewer
 
-  # Markdown
-  # yzhang.markdown-all-in-one
-  # ozaki.markdown-github-dark
-  # bierner.markdown-checkbox
+#   # Git
+#   # coderabbit.coderabbit-vscode
+#   # github.vscode-pull-request-github # doesn't work in cursor
+#   # mhutchie.git-graph
 
-  # Misc
-  anthropic.claude-code
-)
+#   # Markdown
+#   # yzhang.markdown-all-in-one
+#   # ozaki.markdown-github-dark
+#   # bierner.markdown-checkbox
 
-function install_extensions() {
-  config_extensions=($(printf '%s\n' "${extensions[@]}" | sort))
-  current_extensions=($(code --list-extensions | sort))
+#   # Misc
+#   anthropic.claude-code
+# )
 
-  # Uninstall untracked extensions
-  untracked_extensions=()
-  for ext in "${current_extensions[@]}"; do
-    if [[ ! " ${config_extensions[*]} " =~ " ${ext} " ]]; then
-      untracked_extensions+=("$ext")
-    fi
-  done
-  if [[ ${#untracked_extensions[@]} -gt 0 ]]; then
-    for extension in "${untracked_extensions[@]}"; do
-      code --uninstall-extension "$extension" > /dev/null
-      echo "🗑️  Uninstalled $extension"
-    done
-    echo ""
-  fi
+# function install_extensions() {
+#   config_extensions=($(printf '%s\n' "${extensions[@]}" | sort))
+#   current_extensions=($(code --list-extensions | sort))
 
-  # Install missing extensions
-  extensions_to_install=()
-  for ext in "${config_extensions[@]}"; do
-    if [[ ! " ${current_extensions[*]} " =~ " ${ext} " ]]; then
-      extensions_to_install+=("$ext")
-    fi
-  done
-  if [[ ${#extensions_to_install[@]} -gt 0 ]]; then
-    for extension in "${extensions_to_install[@]}"; do
-      code --install-extension "$extension" > /dev/null
-      echo "✅ Installed $extension"
-    done
-  fi
-}
+#   # Uninstall untracked extensions
+#   untracked_extensions=()
+#   for ext in "${current_extensions[@]}"; do
+#     if [[ ! " ${config_extensions[*]} " =~ " ${ext} " ]]; then
+#       untracked_extensions+=("$ext")
+#     fi
+#   done
+#   if [[ ${#untracked_extensions[@]} -gt 0 ]]; then
+#     for extension in "${untracked_extensions[@]}"; do
+#       code --uninstall-extension "$extension" > /dev/null
+#       echo "🗑️  Uninstalled $extension"
+#     done
+#     echo ""
+#   fi
 
-install_extensions
+#   # Install missing extensions
+#   extensions_to_install=()
+#   for ext in "${config_extensions[@]}"; do
+#     if [[ ! " ${current_extensions[*]} " =~ " ${ext} " ]]; then
+#       extensions_to_install+=("$ext")
+#     fi
+#   done
+#   if [[ ${#extensions_to_install[@]} -gt 0 ]]; then
+#     for extension in "${extensions_to_install[@]}"; do
+#       code --install-extension "$extension" > /dev/null
+#       echo "✅ Installed $extension"
+#     done
+#   fi
+# }
+
+# install_extensions

@@ -14,7 +14,7 @@ fi
 stow -d $HOME/.dotfiles -t $HOME .
 ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 source $ZSH_CONFIG_HOME/plugins.zsh
-source $ZSH_CONFIG_HOME/misc-aliases.zsh
+source $ZSH_CONFIG_HOME/alias.zsh
 source $ZSH_CONFIG_HOME/git-aliases.zsh
 source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
 source $ZSH_CONFIG_HOME/node.sh # NVM 
@@ -24,7 +24,7 @@ source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/doppler.sh
 source $ZSH_CONFIG_HOME/nvim.sh && install_neovim
 source $HOME/.ssh/sync.zsh
-# source $XDG_CONFIG_HOME/Code/User/sync.sh
+source $XDG_CONFIG_HOME/Code/User/sync.sh
 
 # Set email on a per repo basis!
 git config --global --unset user.email

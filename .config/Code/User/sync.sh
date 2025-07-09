@@ -59,7 +59,8 @@ sync_cursor() {
     rsync -aL --delete $CURSOR_SOURCE_DIR $TARGET_DIR
 
     # Install extensions
-    source "$HOME/.config/Code/User/extensions.zsh" && install_extensions
+    # Just using a .vscode/extensions.json now cuz the install takes so long and cursor has issues due to having a different extension marketplace
+    # source "$HOME/.config/Code/User/extensions.zsh" && install_extensions
 }
 
 sync_cursor_with_cache() {

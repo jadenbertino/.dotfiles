@@ -19,12 +19,12 @@ function c() {
   fi
   
   # Open file in editor
-  code "$TARGET_PATH"
+  cursor "$TARGET_PATH"
 }
 function zc() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
-  code .
+  cursor .
 }
 
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive

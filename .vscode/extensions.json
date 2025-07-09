@@ -1,0 +1,35 @@
+{
+  "recommendations": [
+    // Formatting
+    "esbenp.prettier-vscode",
+    "ms-python.black-formatter",
+
+    // Syntax Highlighting
+    "prisma.prisma",
+    "naumovs.color-highlight",
+    "wayou.vscode-todo-highlight",
+
+    // Language Servers
+    "redhat.vscode-yaml",
+    "bradlc.vscode-tailwindcss",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-python.python",
+    "dbaeumer.vscode-eslint",
+
+    // Aesthetics
+    "pkief.material-icon-theme",
+    "yoavbls.pretty-ts-errors",
+    "oderwat.indent-rainbow",
+    "zhuangtongfa.material-theme", // one dark pro
+
+    // File Handlers
+    "tomoki1207.pdf",
+    "mechatroner.rainbow-csv",
+    "janisdd.vscode-edit-csv",
+    "grapecity.gc-excelviewer",
+
+    // Misc
+    "anthropic.claude-code"
+  ]
+}
