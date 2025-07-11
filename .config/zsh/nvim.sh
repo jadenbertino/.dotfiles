@@ -4,16 +4,17 @@
 source "$HOME/.config/zsh/utils.sh"
 
 install_neovim() {
-    # Check if nvim is already installed
-    if is_command_available nvim; then
-        return 0
-    fi
-
-    echo "Installing Neovim..."
     detect_os
 
     case "$OS" in
         "linux"|"wsl")
+            # Add to PATH if not already there
+            add_to_path "/opt/nvim-linux-x86_64/bin"
+
+            if is_command_available "nvim"; then
+                return 0
+            fi
+
             echo "Installing Neovim for Linux/WSL..."
             if [ -d /opt/nvim ]; then
                 sudo rm -rf /opt/nvim
@@ -27,12 +28,15 @@ install_neovim() {
                 rm nvim-linux-x86_64.tar.gz
             )
 
-            # Add to PATH if not already there
-            add_to_path "/opt/nvim-linux-x86_64/bin"
+
             
             echo "Neovim installed successfully"
             ;;
         "macos")
+            if is_command_available "nvim"; then
+                return 0
+            fi
+        
             echo "Installing Neovim for macOS..."
             if ! command -v brew &> /dev/null; then
                 echo "Homebrew is not installed. Please install Homebrew first."
@@ -48,7 +52,4 @@ install_neovim() {
     esac
 }
 
-# Only run if script is executed directly, not sourced
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    install_neovim
-fi
+install_neovim
