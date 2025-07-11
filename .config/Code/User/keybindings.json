@@ -356,6 +356,10 @@
 
   /* ************************** ⭐ DISABLED DEFAULTS ⭐ ************************** */
   {
+    "key": "ctrl+p",
+    "command": "-workbench.action.quickOpen"
+  },
+  {
     "key": "ctrl+]",
     "command": "-editor.action.indentLines",
     "when": "editorTextFocus && !editorReadonly"
