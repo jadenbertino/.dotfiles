@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "browser-tools": {
+      "command": "/home/jaden/.local/bin/browser-tools-mcp.sh"
+    }
+  }
+}
