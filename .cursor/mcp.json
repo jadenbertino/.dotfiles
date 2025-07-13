@@ -4,7 +4,7 @@
       "url": "https://mcp.context7.com/mcp"
     },
     "browser-tools": {
-      "command": "/home/jaden/.local/bin/browser-tools-mcp.sh"
+      "command": "/home/jaden/.local/bin/mcp-browser-tools.sh"
     }
   }
 }
