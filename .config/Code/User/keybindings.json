@@ -255,6 +255,11 @@
     "when": "terminalFocus && terminalProcessSupported || terminalFocus && terminalWebExtensionContributedProfile"
   },
   {
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.terminal.kill",
+    "when": "terminalFocus"
+  },
+  {
     // claude code
     "key": "shift+enter",
     "command": "workbench.action.terminal.sendSequence",
@@ -529,5 +534,15 @@
     "key": "ctrl+shift+y",
     "command": "-editor.action.inlineDiffs.acceptPartialEdit",
     "when": "editorHasPromptBar && editorPromptBarFocused"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "-aiSettings.action.open",
+    "when": "!isSettingsPaneOpen"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "-aiSettings.action.openhidden",
+    "when": "!isSettingsPaneOpen"
   }
 ]
