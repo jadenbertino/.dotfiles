@@ -1,3 +1,5 @@
+node_modules
+
 # Ignore files in .ssh except `*.md` & `config`
 .ssh/**/*
 !.ssh/**/*.md
