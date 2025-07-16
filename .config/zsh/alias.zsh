@@ -7,7 +7,7 @@ alias reload='source ~/.zshrc'
 # IDE aliases
 alias v='nvim'
 alias nv='nvim'
-function c() {
+c() {
   local TARGET_PATH="${1:-.}"
   
   # If file doesn't exist, try to create it
@@ -21,7 +21,7 @@ function c() {
   # Open file in editor
   cursor "$TARGET_PATH"
 }
-function zc() {
+zc() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
   cursor .

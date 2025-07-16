@@ -25,6 +25,11 @@ tat() {
     tmux new-session -s "$name"
   fi
 }
+zat() {
+  local TARGET_PATH="${1:-.}"
+  z "$TARGET_PATH"
+  tat
+}
 
 # Install tmux if it doesn't exist
 source ~/.config/zsh/utils.sh
