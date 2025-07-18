@@ -44,15 +44,16 @@ Host *
 - Unzip the file
   - Windows: Use 7zip
   - Mac / Linux: `tar -xvf <filename>`
-- Install the fonts
+- Install the fonts (recommended: `JetBrainsMonoNLNerdFont-Regular.ttf`)
   - Mac: Open up `Font Book` and drag and drop the fonts into the app
   - Ubuntu: Copy the .ttf files to `/usr/local/share/fonts`
     - PC: Select all .ttf files -> right click -> Install. If this doesn't work then just open the .ttf file you want to use (e.g. `JetBrainsMonoNerdFont-Regular.ttf`)
 - Ensure your terminal is using the font
-  - Mac (`ghostty`): This will work automatically if you have the font installed due to the `ghostty` config file
+  - Mac (`ghostty`): This will work automatically if you have the font installed due to the `ghostty` config file (once you setup this repo)
   - Windows (`Terminal`): Settings -> Defaults -> Appearance -> Font family
-  - VSCode: Command Palette -> `Preferences: Open Settings (JSON)`
-    ```json
-    "editor.fontFamily": "Consolas, 'Courier New', monospace",
-    "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
-    ```
+  - VSCode / Cursor: Should work automatically once you setup this repo
+    - If you need to install manually then do: Command Palette -> `Preferences: Open Settings (JSON)`
+      ```json
+      "editor.fontFamily": "Consolas, 'Courier New', monospace",
+      "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
+      ```
