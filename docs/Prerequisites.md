@@ -7,7 +7,7 @@
   - Name it `personal`
   - No passphrase
 - Get the public key: `cat personal.pub`
-- Add the public key to GitHub (Settings -> SSH and GPG keys -> New SSH key)
+- Add the public key to [GitHub (Settings -> SSH and GPG keys -> New SSH key)](https://github.com/settings/keys)
 - Update SSH config: `vim ~/.ssh/config`
 
 ```
