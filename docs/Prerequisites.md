@@ -57,3 +57,9 @@ Host *
       "editor.fontFamily": "Consolas, 'Courier New', monospace",
       "terminal.integrated.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
       ```
+
+## Install packages
+
+- Install stow
+  - Mac: `brew install stow`
+  - WSL (Ubuntu): `sudo apt install stow`
