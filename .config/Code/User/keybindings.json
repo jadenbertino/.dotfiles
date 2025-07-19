@@ -544,5 +544,9 @@
     "key": "ctrl+shift+j",
     "command": "-aiSettings.action.openhidden",
     "when": "!isSettingsPaneOpen"
+  },
+  {
+    "key": "cmd+w",
+    "command": "-workbench.action.closeWindow"
   }
 ]
