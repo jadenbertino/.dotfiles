@@ -11,7 +11,7 @@ if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
 fi
 
 # Load config files
-stow -d $HOME/.dotfiles -t $HOME .
+stow -d $HOME/.dotfiles -t $HOME --adopt .
 ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 source $ZSH_CONFIG_HOME/utils.sh
 source $ZSH_CONFIG_HOME/plugins.zsh
