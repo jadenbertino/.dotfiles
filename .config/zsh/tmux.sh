@@ -31,27 +31,31 @@ zat() {
   tat
 }
 
-# Install tmux if it doesn't exist
-source ~/.config/zsh/utils.sh
-if ! is_command_available "tmux"; then
-  echo "Installing tmux..."
-  install_package "tmux"
-  echo "tmux installed successfully"
-fi
+setup_tmux() {
+  # Install tmux if it doesn't exist
+  source ~/.config/zsh/utils.sh
+  if ! is_command_available "tmux"; then
+    echo "Installing tmux..."
+    install_package "tmux"
+    echo "tmux installed successfully"
+  fi
 
-# Install TPM (tmux plugin manager)
-TPM_DIR="$HOME/.tmux/plugins/tpm"
-if [ ! -d "$TPM_DIR" ]; then
-  echo "Installing TPM..."
-  git clone -q https://github.com/tmux-plugins/tpm "$TPM_DIR" > /dev/null
-  echo "TPM installed successfully"
-fi
+  # Install TPM (tmux plugin manager)
+  TPM_DIR="$HOME/.tmux/plugins/tpm"
+  if [ ! -d "$TPM_DIR" ]; then
+    echo "Installing TPM..."
+    git clone -q https://github.com/tmux-plugins/tpm "$TPM_DIR" > /dev/null
+    echo "TPM installed successfully"
+  fi
 
-# Install Catpuccin theme
-CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
-if [ ! -d "$CATPUCCIN_DIR" ]; then
-  echo "Installing Catpuccin theme..."
-  mkdir -p "$CATPUCCIN_DIR"
-  git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
-  echo "Catpuccin theme installed successfully"
-fi
+  # Install Catpuccin theme
+  CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
+  if [ ! -d "$CATPUCCIN_DIR" ]; then
+    echo "Installing Catpuccin theme..."
+    mkdir -p "$CATPUCCIN_DIR"
+    git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
+    echo "Catpuccin theme installed successfully"
+  fi
+}
+
+setup_tmux
