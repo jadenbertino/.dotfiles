@@ -1,0 +1,4 @@
+#!/bin/zsh
+# NPX shim with lazy loading
+source "$HOME/.config/zsh/node.sh"
+npx "$@" 

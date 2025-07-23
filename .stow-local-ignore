@@ -36,5 +36,4 @@ _darcs
 
 ^docs/?$
 
-^\.local$            # stow subfolders of .local not the dir itself
 ^\.local/share/?$    # don't stow the share folder

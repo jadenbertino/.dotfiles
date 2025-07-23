@@ -1,0 +1,4 @@
+#!/bin/zsh
+# PNPM shim with lazy loading
+source "$HOME/.config/zsh/node.sh"
+pnpm "$@" 
