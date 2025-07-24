@@ -4,6 +4,7 @@
 alias cc="npx claude --dangerously-skip-permissions"
 alias ccs="cc /start"
 alias ccp="cc /plan"
+alias ccr="cc /resume"
 
 # gemini cli
 # npm install -g @google/gemini-cli

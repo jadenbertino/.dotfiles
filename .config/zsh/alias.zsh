@@ -3,6 +3,7 @@ alias la='ls -a'
 alias cl='clear'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc'
+alias rmf='rm -rf'
 
 # IDE aliases
 alias v='nvim'
