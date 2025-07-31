@@ -97,6 +97,9 @@
   "scm.diffDecorationsGutterWidth": 2,
   "scm.diffDecorationsGutterAction": "none",
   "files.autoSave": "afterDelay",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "prettier.useEditorConfig": false,
   "editor.tabSize": 2,
   "remote.autoForwardPortsSource": "hybrid",
