@@ -8,6 +8,11 @@ alias rmf='rm -rf'
 # IDE aliases
 alias v='nvim'
 alias nv='nvim'
+edit_file() {
+  local TARGET_PATH="${1:-.}"
+  { cursor "$TARGET_PATH" > /dev/null 2>&1 & } 2>/dev/null # don't block the shell, suppress job control
+  disown # don't kill the process if shell exits
+}
 c() {
   local TARGET_PATH="${1:-.}"
   
@@ -18,14 +23,12 @@ c() {
       return 1
     fi
   fi
-  
-  # Open file in editor
-  cursor "$TARGET_PATH"
+  edit_file "$TARGET_PATH"
 }
 zc() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
-  cursor .
+  edit_file "."
 }
 
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
