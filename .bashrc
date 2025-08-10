@@ -139,3 +139,5 @@ if [ -f '/home/jaden/google-cloud-sdk/path.bash.inc' ]; then . '/home/jaden/goog
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/jaden/google-cloud-sdk/completion.bash.inc' ]; then . '/home/jaden/google-cloud-sdk/completion.bash.inc'; fi
+
+[[ -s "/home/jaden/.gvm/scripts/gvm" ]] && source "/home/jaden/.gvm/scripts/gvm"
