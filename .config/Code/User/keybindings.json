@@ -235,7 +235,7 @@
   {
     "key": "ctrl+\\",
     "command": "workbench.action.toggleSidebarVisibility",
-    "when": "focusedView == 'workbench.view.scm'"
+    "when": "workbench.scm.active"
   },
 
   // "ctrl + j" -> toggles terminal

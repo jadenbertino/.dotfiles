@@ -23,6 +23,7 @@ source $ZSH_CONFIG_HOME/tmux.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/nvim.sh
 source $ZSH_CONFIG_HOME/ai.zsh
+source $ZSH_CONFIG_HOME/go.zsh
 
 # Synced files
 source $HOME/.ssh/sync.zsh
