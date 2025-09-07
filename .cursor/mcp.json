@@ -5,6 +5,10 @@
     },
     "browser-tools": {
       "command": "/home/jaden/.local/bin/mcp-browser-tools.sh"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
     }
   }
 }
