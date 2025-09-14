@@ -336,7 +336,7 @@
   {
     "key": "tab",
     "command": "acceptSelectedSuggestion",
-    "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
+    "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus && !cpp.shouldAcceptTab"
   },
   {
     "key": "tab",
