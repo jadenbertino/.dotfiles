@@ -1,6 +1,9 @@
 {
   "workbench.iconTheme": "material-icon-theme",
   "workbench.colorTheme": "One Dark Pro Mix",
+  "workbench.editor.closeOnFileDelete": true,
+  "workbench.panel.defaultLocation": "right",
+  "workbench.layoutControl.enabled": false,
   "editor.mouseWheelZoom": true,
   "editor.suggest.insertMode": "replace",
   "editor.codeActionsOnSave": {
@@ -18,7 +21,6 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "editor.renderWhitespace": "all",
   "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
-  "workbench.editor.closeOnFileDelete": true,
   "indentRainbow.indicatorStyle": "light",
   "indentRainbow.lightIndicatorStyleLineWidth": 1,
   "indentRainbow.colors": [
@@ -117,7 +119,6 @@
   "extensions.autoUpdate": "onlyEnabledExtensions",
   "security.workspace.trust.untrustedFiles": "open",
   "cursor.cpp.disabledLanguages": ["scminput"],
-  "workbench.layoutControl.enabled": false,
   "window.menuBarVisibility": "compact",
   "todohighlight.keywordsPattern": "⭐"
 }
