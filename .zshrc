@@ -29,9 +29,8 @@ source $ZSH_CONFIG_HOME/go.zsh
 source $HOME/.ssh/sync.zsh
 source $XDG_CONFIG_HOME/Code/User/sync.sh
 
-# Set email on a per repo basis!
-git config --global user.name "Jaden Bertino"
-git config --global --unset user.email
+# git config --global user.name "Jaden Bertino"
+# git config --global --unset user.email
 
 # Misc paths
 (
