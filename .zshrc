@@ -2,6 +2,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
+export ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -16,7 +17,6 @@ auto_update_dotfiles
 
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME --adopt .
-ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 source $ZSH_CONFIG_HOME/utils.sh
 source $ZSH_CONFIG_HOME/plugins.zsh
 source $ZSH_CONFIG_HOME/alias.zsh
