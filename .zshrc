@@ -10,6 +10,10 @@ if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Auto-update dotfiles once per day
+source $ZSH_CONFIG_HOME/auto-update.zsh
+auto_update_dotfiles
+
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME --adopt .
 ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
