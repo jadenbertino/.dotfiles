@@ -1,0 +1,16 @@
+#!/bin/zsh
+CONF=~/.config/zsh/claude_notify.sh
+# Read current value, default to 0 if unset
+CURRENT=$(grep "^export CLAUDE_NOTIFY=" $CONF | sed 's/export CLAUDE_NOTIFY=//')
+NEWVAL=$((1-CURRENT))
+# Remove existing line
+sed -i '/^export CLAUDE_NOTIFY=/d' $CONF
+# Add new value
+echo "export CLAUDE_NOTIFY=$NEWVAL" >> $CONF
+# For immediate effect in current shell:
+export CLAUDE_NOTIFY=$NEWVAL
+if [[ "$NEWVAL" == "1" ]]; then
+  echo "Claude notifications ON"
+else
+  echo "Claude notifications OFF"
+fi

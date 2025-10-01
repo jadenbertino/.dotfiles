@@ -1,0 +1,14 @@
+#!/bin/bash
+source ~/.config/zsh/utils.sh
+source ~/.config/zsh/claude_notify.sh
+
+detect_os
+
+if [[ "$CLAUDE_NOTIFY" == "1" ]]; then
+  if [[ "$OS" == "wsl" ]]; then
+    # https://github.com/Windos/BurntToast
+    powershell.exe -Command "Import-Module BurntToast; New-BurntToastNotification -Text 'Claude Code Complete!'"
+  fi
+
+  # TODO: macOS
+fi

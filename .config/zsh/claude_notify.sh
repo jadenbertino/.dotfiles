@@ -1,0 +1,1 @@
+export CLAUDE_NOTIFY=1
