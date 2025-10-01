@@ -9,8 +9,4 @@ sed -i '/^export CLAUDE_NOTIFY=/d' $CONF
 echo "export CLAUDE_NOTIFY=$NEWVAL" >> $CONF
 # For immediate effect in current shell:
 export CLAUDE_NOTIFY=$NEWVAL
-if [[ "$NEWVAL" == "1" ]]; then
-  echo "Claude notifications ON"
-else
-  echo "Claude notifications OFF"
-fi
+notify_status
