@@ -2,6 +2,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
+export ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -10,9 +11,12 @@ if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Auto-update dotfiles once per day
+source $ZSH_CONFIG_HOME/auto-update.zsh
+auto_update_dotfiles
+
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME --adopt .
-ZSH_CONFIG_HOME="$XDG_CONFIG_HOME/zsh"
 source $ZSH_CONFIG_HOME/utils.sh
 source $ZSH_CONFIG_HOME/plugins.zsh
 source $ZSH_CONFIG_HOME/alias.zsh
@@ -46,3 +50,4 @@ add_to_path "$HOME/.local/bin"
 verify_package zsh
 verify_package zoxide
 verify_package stow
+[[ -s "/Users/jaden/.gvm/scripts/gvm" ]] && source "/Users/jaden/.gvm/scripts/gvm" # go version manager
