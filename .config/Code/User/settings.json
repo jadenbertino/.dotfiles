@@ -15,7 +15,6 @@
   "editor.minimap.enabled": false,
   "css.lint.emptyRules": "ignore",
   "explorer.confirmDragAndDrop": false,
-  "explorer.excludeGitIgnore": true,
   "explorer.compactFolders": false,
   "editor.guides.bracketPairs": true,
   "editor.guides.bracketPairsHorizontal": false,
@@ -102,6 +101,11 @@
   "files.autoSave": "afterDelay",
   "files.associations": {
     "*.css": "tailwindcss"
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/node_modules": true
   },
   "prettier.useEditorConfig": false,
   "editor.tabSize": 2,
