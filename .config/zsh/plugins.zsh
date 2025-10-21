@@ -12,27 +12,8 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 # Load completions plugin
 zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
 
-# Define completions
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
-zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
-
-# load asdf + init completions
-if [ -x "$(command -v asdf)" ]; then
-  source "$(dirname "$0")/utils.sh"
-  add_to_path "${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
-  . <(asdf completion zsh)
-  mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
-  asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
-  fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
-fi
-
-# Then initialize completions (optimized with -C flag to skip security checks)
-autoload -Uz compinit && compinit -C
-zinit cdreplay -q
+# Load completion configuration (must be done before fzf-tab and other widget-wrapping plugins)
+source "$(dirname "$0")/completions.zsh"
 
 # fzf (must be before fzf tab)
 # install from github because the package manager version is outdated
