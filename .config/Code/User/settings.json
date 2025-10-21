@@ -1,17 +1,9 @@
 {
-  "workbench.iconTheme": "material-icon-theme",
-  "workbench.colorTheme": "One Dark Pro Mix",
   "workbench.editor.closeOnFileDelete": true,
   "workbench.panel.defaultLocation": "right",
   "workbench.layoutControl.enabled": false,
   "editor.mouseWheelZoom": true,
   "editor.suggest.insertMode": "replace",
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.sortImports": "explicit"
-  },
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.minimap.enabled": false,
   "css.lint.emptyRules": "ignore",
   "explorer.confirmDragAndDrop": false,
@@ -19,24 +11,11 @@
   "editor.guides.bracketPairs": true,
   "editor.guides.bracketPairsHorizontal": false,
   "editor.guides.highlightActiveBracketPair": false,
-  "javascript.updateImportsOnFileMove.enabled": "always",
   "editor.renderWhitespace": "all",
-  "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
-  "indentRainbow.indicatorStyle": "light",
-  "indentRainbow.lightIndicatorStyleLineWidth": 1,
-  "indentRainbow.colors": [
-    "rgba(255,255,64,0.3)",
-    "rgba(127,255,127,0.3)",
-    "rgba(255,127,255,0.3)",
-    "rgba(79,236,236,0.3)"
-  ],
-  "indentRainbow.excludedLanguages": ["plaintext"],
   "editor.stickyTabStops": true,
   "extensions.ignoreRecommendations": true,
   "editor.linkedEditing": true,
-  "bookmarks.useWorkaroundForFormatters": true,
   "editor.suggest.snippetsPreventQuickSuggestions": false,
-  "prettier.printWidth": 120,
   "diffEditor.ignoreTrimWhitespace": false,
   "emmet.syntaxProfiles": {
     "xml": {
@@ -54,6 +33,79 @@
       "self_closing_tag": true
     }
   },
+  "scss.lint.emptyRules": "ignore",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.colorDecorators": false,
+  "editor.accessibilitySupport": "off",
+  "editor.inlineSuggest.enabled": true,
+  "search.exclude": {
+    "**/dist": true,
+    "**/lib": true
+  },
+  "redhat.telemetry.enabled": false,
+  "files.autoSave": "afterDelay",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/node_modules": true
+  },
+  "remote.autoForwardPortsSource": "hybrid",
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": "onlyEnabledExtensions",
+  "security.workspace.trust.untrustedFiles": "open",
+  "cursor.cpp.disabledLanguages": ["scminput"],
+  "window.menuBarVisibility": "compact",
+
+  // Formatting
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.tabSize": 4
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.sortImports": "explicit"
+  },
+  "prettier.semi": false,
+  "prettier.configPath": ".prettierrc.cjs",
+  "prettier.singleQuote": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.useEditorConfig": false,
+  "prettier.printWidth": 120,
+  "prettier.trailingComma": "all",
+  "editor.tabSize": 2,
+  "bookmarks.useWorkaroundForFormatters": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "html.completion.attributeDefaultValue": "singlequotes",
+
+  // Visuals
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "One Dark Pro Mix",
+  "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
+  "indentRainbow.indicatorStyle": "light",
+  "indentRainbow.lightIndicatorStyleLineWidth": 1,
+  "indentRainbow.colors": [
+    "rgba(255,255,64,0.3)",
+    "rgba(127,255,127,0.3)",
+    "rgba(255,127,255,0.3)",
+    "rgba(79,236,236,0.3)"
+  ],
+  "indentRainbow.excludedLanguages": ["plaintext"],
+  "todohighlight.keywordsPattern": "⭐",
+  "scm.diffDecorationsGutterWidth": 2,
+  "scm.diffDecorationsGutterAction": "none",
+
+  // Terminal
   "terminal.integrated.enableMultiLinePasteWarning": false,
   "terminal.integrated.profiles.windows": {
     "PowerShell": {
@@ -77,53 +129,14 @@
     }
   },
   "terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)",
-  "javascript.preferences.quoteStyle": "single",
-  "typescript.preferences.quoteStyle": "single",
-  "html.completion.attributeDefaultValue": "singlequotes",
-  "scss.lint.emptyRules": "ignore",
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "editor.colorDecorators": false,
-  "editor.accessibilitySupport": "off",
-  "git.suggestSmartCommit": false,
-  "editor.inlineSuggest.enabled": true,
-  "search.exclude": {
-    "**/dist": true,
-    "**/lib": true
-  },
-  "git.openRepositoryInParentFolders": "never",
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma",
-    "editor.formatOnSave": true
-  },
-  "redhat.telemetry.enabled": false,
-  "scm.diffDecorationsGutterWidth": 2,
-  "scm.diffDecorationsGutterAction": "none",
-  "files.autoSave": "afterDelay",
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/.venv": true,
-    "**/node_modules": true
-  },
-  "prettier.useEditorConfig": false,
-  "editor.tabSize": 2,
-  "remote.autoForwardPortsSource": "hybrid",
-  "prettier.semi": false,
-  "prettier.configPath": ".prettierrc.cjs",
-  "prettier.singleQuote": true,
-  "prettier.jsxSingleQuote": true,
-  "git.confirmSync": false,
   "terminal.integrated.env.linux": {},
+
+  // Git
+  "git.suggestSmartCommit": false,
+  "git.openRepositoryInParentFolders": "never",
+  "git.confirmSync": false,
   "git.repositoryScanIgnoredFolders": ["node_modules", "external/**/*"],
   "git.detectSubmodules": false,
-  "prettier.trailingComma": "all",
-  "editor.formatOnPaste": true,
-  "extensions.autoCheckUpdates": false,
-  "extensions.autoUpdate": "onlyEnabledExtensions",
-  "security.workspace.trust.untrustedFiles": "open",
-  "cursor.cpp.disabledLanguages": ["scminput"],
-  "window.menuBarVisibility": "compact",
-  "todohighlight.keywordsPattern": "⭐"
+
+  
 }
