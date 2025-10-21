@@ -2,7 +2,8 @@
   "recommendations": [
     // Formatting
     "esbenp.prettier-vscode",
-    "ms-python.black-formatter",
+    // "ms-python.black-formatter",
+    "charliermarsh.ruff",
 
     // Syntax Highlighting
     "prisma.prisma",

@@ -13,7 +13,7 @@
   "editor.guides.highlightActiveBracketPair": false,
   "editor.renderWhitespace": "all",
   "editor.stickyTabStops": true,
-  "extensions.ignoreRecommendations": true,
+  "extensions.ignoreRecommendations": false,
   "editor.linkedEditing": true,
   "editor.suggest.snippetsPreventQuickSuggestions": false,
   "diffEditor.ignoreTrimWhitespace": false,
@@ -63,7 +63,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.tabSize": 4
   },
   "[prisma]": {
