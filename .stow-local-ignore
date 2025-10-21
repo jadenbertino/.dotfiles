@@ -32,8 +32,6 @@ _darcs
 ^\.config/?$    # stow subfolders of .config but not the .config folder itself
 ^scripts/
 
-^\.claude/?$
-
 ^docs/?$
 
 ^\.local/share/?$    # don't stow the share folder
