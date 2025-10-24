@@ -83,14 +83,16 @@
   "typescript.preferences.quoteStyle": "single",
   "html.completion.attributeDefaultValue": "singlequotes",
 
-  // Visuals
+  // Hide / show files in explorer
+  "explorer.excludeGitIgnore": true, // hide gitignored files
   "files.exclude": {
-    // hide files/folders in explorer
-    ".playwright-mcp": true,
-    "**/__pycache__": true,
-    "**/.venv": true,
-    "**/node_modules": true
+    "**/.playwright-mcp": true,
+
+    // SHOW these
+    "!**/env": true
   },
+
+  // Visuals
   "workbench.iconTheme": "material-icon-theme",
   "workbench.colorTheme": "One Dark Pro Mix",
   "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
