@@ -47,11 +47,6 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/.venv": true,
-    "**/node_modules": true
-  },
   "remote.autoForwardPortsSource": "hybrid",
   "extensions.autoCheckUpdates": false,
   "extensions.autoUpdate": "onlyEnabledExtensions",
@@ -89,6 +84,13 @@
   "html.completion.attributeDefaultValue": "singlequotes",
 
   // Visuals
+  "files.exclude": {
+    // hide files/folders in explorer
+    ".playwright-mcp": true,
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/node_modules": true
+  },
   "workbench.iconTheme": "material-icon-theme",
   "workbench.colorTheme": "One Dark Pro Mix",
   "editor.fontFamily": "'JetBrainsMonoNL Nerd Font', Consolas, 'Courier New', monospace",
@@ -136,7 +138,5 @@
   "git.openRepositoryInParentFolders": "never",
   "git.confirmSync": false,
   "git.repositoryScanIgnoredFolders": ["node_modules", "external/**/*"],
-  "git.detectSubmodules": false,
-
-  
+  "git.detectSubmodules": false
 }
