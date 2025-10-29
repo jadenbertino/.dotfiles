@@ -6,6 +6,7 @@ alias reload='source ~/.zshrc'
 alias rmf='rm -rf'
 
 # IDE aliases
+alias b='bash'
 alias v='nvim'
 alias nv='nvim'
 edit_file() {
