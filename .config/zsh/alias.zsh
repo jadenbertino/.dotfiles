@@ -11,7 +11,7 @@ alias v='nvim'
 alias nv='nvim'
 edit_file() {
   local TARGET_PATH="${1:-.}"
-  { cursor "$TARGET_PATH" > /dev/null 2>&1 & } 2>/dev/null # don't block the shell, suppress job control
+  { code "$TARGET_PATH" > /dev/null 2>&1 & } 2>/dev/null # don't block the shell, suppress job control
   disown # don't kill the process if shell exits
 }
 c() {
