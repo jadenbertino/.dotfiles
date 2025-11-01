@@ -9,27 +9,36 @@ alias rmf='rm -rf'
 alias b='bash'
 alias v='nvim'
 alias nv='nvim'
-edit_file() {
-  local TARGET_PATH="${1:-.}"
-  { code "$TARGET_PATH" > /dev/null 2>&1 & } 2>/dev/null # don't block the shell, suppress job control
-  disown # don't kill the process if shell exits
-}
-c() {
-  local TARGET_PATH="${1:-.}"
-  
-  # If file doesn't exist, try to create it
+
+edit() {
+  local EDITOR_CMD="$1"
+  local TARGET_PATH="${2:-.}"
+
+  # Ensure path exists
   if [ ! -e "$TARGET_PATH" ]; then
     if ! mkdir -p "$(dirname "$TARGET_PATH")" || ! touch "$TARGET_PATH"; then
       echo "c: Failed to create '$TARGET_PATH'" >&2
       return 1
     fi
   fi
-  edit_file "$TARGET_PATH"
+
+  # Open (non blocking)
+  { "$EDITOR_CMD" "$TARGET_PATH" > /dev/null 2>&1 & } 2>/dev/null # don't block the shell, suppress job control
+  disown # don't kill the process if shell exits
 }
+
+c() {
+  edit cursor "${1:-.}"
+}
+
+co() {
+  edit code "${1:-.}"
+}
+
 zc() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
-  edit_file "."
+  edit "."
 }
 
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
