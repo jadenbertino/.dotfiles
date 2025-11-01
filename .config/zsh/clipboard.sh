@@ -25,3 +25,4 @@ fi
 runclip() {
   pasteclip | bash -x
 }
+alias rc=runclip
