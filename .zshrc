@@ -22,7 +22,7 @@ source $ZSH_CONFIG_HOME/plugins.zsh
 source $ZSH_CONFIG_HOME/alias.zsh
 source $ZSH_CONFIG_HOME/git-aliases.zsh
 source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
-source $ZSH_CONFIG_HOME/node.sh # NVM 
+source $ZSH_CONFIG_HOME/node.sh # NVM
 source $ZSH_CONFIG_HOME/tmux.sh
 source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/nvim.sh

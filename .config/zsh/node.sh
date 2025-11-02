@@ -95,3 +95,4 @@ setup_node() {
 }
 
 setup_node
+load_nvm # no more lazy loading
