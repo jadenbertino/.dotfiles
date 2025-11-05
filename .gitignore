@@ -15,4 +15,5 @@ node_modules
 
 .local/share
 
-.cursor/extensions
+.cursor
+!.cursor/mcp.json
