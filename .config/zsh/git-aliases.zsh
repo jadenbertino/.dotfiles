@@ -47,11 +47,16 @@ update_on_hash_change() {
   
   # Only setup aliases if hash has changed
   if [[ "$current_hash" != "$stored_hash" ]]; then
-    for alias_name in ${(k)git_aliases}; do
-      git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
-    done
+    update_aliases
     git config --global dotfiles.last-executed-hash "$current_hash"
   fi
+}
+
+update_aliases() {
+  for alias_name in ${(k)git_aliases}; do
+    git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"
+  done
+  echo "updated aliases"
 }
 
 update_on_hash_change

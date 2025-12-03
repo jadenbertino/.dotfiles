@@ -49,13 +49,13 @@ setup_tmux() {
   fi
 
   # Install Catpuccin theme
-  CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
-  if [ ! -d "$CATPUCCIN_DIR" ]; then
-    echo "Installing Catpuccin theme..."
-    mkdir -p "$CATPUCCIN_DIR"
-    git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
-    echo "Catpuccin theme installed successfully"
-  fi
+  # CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
+  # if [ ! -d "$CATPUCCIN_DIR" ]; then
+  #   echo "Installing Catpuccin theme..."
+  #   mkdir -p "$CATPUCCIN_DIR"
+  #   git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
+  #   echo "Catpuccin theme installed successfully"
+  # fi
 }
 
 setup_tmux

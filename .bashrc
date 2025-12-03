@@ -1,3 +1,9 @@
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
 # Auto-switch to zsh if available
 if [ -n "$PS1" ] && [ "${SHELL##*/}" != "zsh" ] && command -v zsh > /dev/null 2>&1; then
     exec zsh
@@ -10,11 +16,6 @@ fi
 # NVM - Lazy Loading (saves ~0.58s on startup!)
 source ~/.config/zsh/node.sh
 
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
@@ -141,3 +142,5 @@ if [ -f '/home/jaden/google-cloud-sdk/path.bash.inc' ]; then . '/home/jaden/goog
 if [ -f '/home/jaden/google-cloud-sdk/completion.bash.inc' ]; then . '/home/jaden/google-cloud-sdk/completion.bash.inc'; fi
 
 [[ -s "/home/jaden/.gvm/scripts/gvm" ]] && source "/home/jaden/.gvm/scripts/gvm"
+
+[[ -s "/home/node/.gvm/scripts/gvm" ]] && source "/home/node/.gvm/scripts/gvm"
