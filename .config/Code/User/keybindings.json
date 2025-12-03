@@ -240,7 +240,7 @@
 
   // "ctrl + j" -> toggles terminal
   {
-    "key": "ctrl+;",
+    "key": "cmd+;",
     "command": "runCommands",
     "args": {
       "commands": [
@@ -251,7 +251,7 @@
     "when": "!terminalFocus"
   },
   {
-    "key": "ctrl+;",
+    "key": "cmd+;",
     "command": "workbench.action.terminal.toggleTerminal",
     "when": "terminalFocus"
   },
