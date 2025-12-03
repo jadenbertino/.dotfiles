@@ -226,19 +226,25 @@
     "when": "focusedView == 'workbench.view.search'"
   },
 
+  // "cmd + l" -> claude code
+  {
+    "key": "cmd+l",
+    "command": "claude-vscode.sidebar.open"
+  },
+
   // "ctrl + \" -> toggles source control
   {
-    "key": "ctrl+\\",
+    "key": "cmd+\\",
     "command": "workbench.view.scm",
     "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'"
   },
   {
-    "key": "ctrl+\\",
+    "key": "cmd+\\",
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "workbench.scm.active"
   },
 
-  // "ctrl + j" -> toggles terminal
+  // "cmd + ;" -> toggles terminal
   {
     "key": "cmd+;",
     "command": "runCommands",
@@ -255,6 +261,8 @@
     "command": "workbench.action.terminal.toggleTerminal",
     "when": "terminalFocus"
   },
+
+  // misc terminal
   {
     "key": "ctrl+alt+j",
     "command": "workbench.action.terminal.split",
@@ -265,8 +273,9 @@
     "command": "workbench.action.terminal.kill",
     "when": "terminalFocus"
   },
+  
   {
-    // claude code
+    // newlines in claude code
     "key": "shift+enter",
     "command": "workbench.action.terminal.sendSequence",
     "args": {
