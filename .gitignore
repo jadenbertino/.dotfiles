@@ -3,7 +3,7 @@ node_modules
 # Ignore files in .ssh except `*.md` & `config`
 .ssh/**/*
 !.ssh/**/*.md
-!.ssh/**/config
+!.ssh/**/config*
 !.ssh/**/*.zsh
 
 # Ignore .env files
