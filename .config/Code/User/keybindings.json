@@ -232,14 +232,14 @@
     "command": "claude-vscode.sidebar.open"
   },
 
-  // "ctrl + \" -> toggles source control
+  // "ctrl + j" -> toggles sidebar
   {
-    "key": "cmd+\\",
-    "command": "workbench.view.scm",
+    "key": "cmd+j",
+    "command": "workbench.scm.focus",
     "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'"
   },
   {
-    "key": "cmd+\\",
+    "key": "cmd+j",
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "workbench.scm.active"
   },
