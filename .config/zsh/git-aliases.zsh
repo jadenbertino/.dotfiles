@@ -34,7 +34,7 @@ typeset -A git_aliases=(
     ["l"]="log --oneline"
     ["ll"]="!git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
     ["last"]="log -1 HEAD"
-    ["prs"]='!git_pr_search'
+    ["prs"]='!f() { SEARCH_TERM="$1"; BASE_BRANCH="${2:-main}"; AUTHOR_NAME="$(git config user.name)"; git log --author="${AUTHOR_NAME}" -p "${BASE_BRANCH}"...HEAD | grep -C 5 "${SEARCH_TERM}"; }; f'
     
     # Delete all branches except current
     ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
@@ -60,7 +60,7 @@ update_aliases() {
   echo "updated aliases"
 }
 
-update_on_hash_change
+update_aliases
 
 # For inspo see: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 alias g="git"
