@@ -273,6 +273,13 @@
     "command": "workbench.action.terminal.kill",
     "when": "terminalFocus"
   },
+
+  // Bypass git commit verification
+  {
+    "key": "cmd+enter",
+    "command": "git.commitStagedNoVerify",
+    "when": "focusedView == 'workbench.scm'"
+  },
   
   {
     // newlines in claude code
