@@ -52,3 +52,11 @@ verify_package zsh
 verify_package zoxide
 verify_package stow
 [[ -s "/Users/jaden/.gvm/scripts/gvm" ]] && source "/Users/jaden/.gvm/scripts/gvm" # go version manager
+
+# must define here, not in git-aliases cuz that is only occasionally sourced
+git_pr_search() {
+  local SEARCH_TERM="$1"
+  local BASE_BRANCH="${2:-main}"
+  local AUTHOR_NAME="$(git config user.name)"
+  git log --author="${AUTHOR_NAME}" -p "${BASE_BRANCH}"...HEAD | grep -C 5 "${SEARCH_TERM}"
+}

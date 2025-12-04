@@ -3,7 +3,7 @@ node_modules
 # Ignore files in .ssh except `*.md` & `config`
 .ssh/**/*
 !.ssh/**/*.md
-!.ssh/**/config
+!.ssh/**/config_defaults
 !.ssh/**/*.zsh
 
 # Ignore .env files
@@ -17,3 +17,4 @@ node_modules
 
 .cursor
 !.cursor/mcp.json
+.claude
