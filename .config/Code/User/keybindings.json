@@ -188,43 +188,38 @@
 
   // misc
   {
-    "key": "ctrl+p",
-    "command": "workbench.action.quickOpen",
-    "when": "!terminalFocus"
-  },
-  {
-    "key": "ctrl+shift+l",
+    "key": "cmd+shift+l",
     "command": "copyRelativeFilePath"
   },
   {
-    "key": "ctrl+shift+p",
+    "key": "cmd+shift+p",
     "command": "markdown.showPreview",
     "when": "!notebookEditorFocused && editorLangId == 'markdown'"
   },
 
-  //  "ctrl + [" -> toggles file explorer
+  //  "cmd + [" -> toggles file explorer
   {
-    "key": "ctrl+[",
+    "key": "cmd+[",
     "command": "workbench.view.explorer",
     "when": "!sideBarVisible || !explorerViewletVisible"
   },
   {
-    "key": "ctrl+[",
+    "key": "cmd+[",
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarVisible && explorerViewletVisible"
   },
 
-  // "ctrl + ]" -> toggles search
-  {
-    "key": "ctrl+]",
-    "command": "workbench.view.search",
-    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.search'"
-  },
-  {
-    "key": "ctrl+]",
-    "command": "workbench.action.toggleSidebarVisibility",
-    "when": "focusedView == 'workbench.view.search'"
-  },
+  // // "ctrl + ]" -> toggles search
+  // {
+  //   "key": "ctrl+]",
+  //   "command": "workbench.view.search",
+  //   "when": "!sideBarVisible || activeViewlet !== 'workbench.view.search'"
+  // },
+  // {
+  //   "key": "ctrl+]",
+  //   "command": "workbench.action.toggleSidebarVisibility",
+  //   "when": "focusedView == 'workbench.view.search'"
+  // },
 
   // "cmd + l" -> claude code
   {
@@ -232,7 +227,7 @@
     "command": "claude-vscode.sidebar.open"
   },
 
-  // "ctrl + j" -> toggles sidebar
+  // "cmd + j" -> toggles sidebar
   {
     "key": "cmd+j",
     "command": "workbench.scm.focus",
