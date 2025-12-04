@@ -208,6 +208,13 @@
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarVisible && explorerViewletVisible"
   },
+
+  // "cmd + [" -> back
+  {
+    "key": "cmd+[",
+    "command": "workbench.action.navigateBack",
+    "when": "canNavigateBack"
+  },
   {
     "key": "cmd+[",
     "command": "-editor.action.outdentLines",
