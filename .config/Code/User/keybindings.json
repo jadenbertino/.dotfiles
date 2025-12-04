@@ -197,14 +197,14 @@
     "when": "!notebookEditorFocused && editorLangId == 'markdown'"
   },
 
-  //  "cmd + [" -> toggles file explorer
+  //  "cmd + \" -> toggles file explorer
   {
-    "key": "cmd+[",
+    "key": "cmd+\\",
     "command": "workbench.view.explorer",
     "when": "!sideBarVisible || !explorerViewletVisible"
   },
   {
-    "key": "cmd+[",
+    "key": "cmd+\\",
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarVisible && explorerViewletVisible"
   },
