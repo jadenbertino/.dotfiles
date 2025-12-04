@@ -56,7 +56,6 @@
 
   // Formatting
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.tabSize": 4
@@ -69,13 +68,6 @@
     "source.fixAll": "explicit",
     "source.sortImports": "explicit"
   },
-  "prettier.semi": false,
-  "prettier.configPath": ".prettierrc.cjs",
-  "prettier.singleQuote": true,
-  "prettier.jsxSingleQuote": true,
-  "prettier.useEditorConfig": false,
-  "prettier.printWidth": 120,
-  "prettier.trailingComma": "all",
   "editor.tabSize": 2,
   "bookmarks.useWorkaroundForFormatters": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
