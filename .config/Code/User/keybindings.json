@@ -226,6 +226,16 @@
     "when": "sideBarVisible && workbench.scm.active"
   },
 
+  // cmd + shift + ] -> splitscreen
+  {
+    "key": "shift+cmd+]",
+    "command": "workbench.action.splitEditor"
+  },
+  {
+    "key": "cmd+\\",
+    "command": "-workbench.action.splitEditor"
+  },
+
   // // "ctrl + ]" -> toggles search
   // {
   //   "key": "ctrl+]",
