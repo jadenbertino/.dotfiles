@@ -214,6 +214,18 @@
     "when": "editorTextFocus && !editorReadonly"
   },
 
+  // "cmd + ]" -> git
+  {
+    "key": "cmd+]",
+    "command": "workbench.scm.focus",
+    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'"
+  },
+  {
+    "key": "cmd+]",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "sideBarVisible && workbench.scm.active"
+  },
+
   // // "ctrl + ]" -> toggles search
   // {
   //   "key": "ctrl+]",
@@ -230,18 +242,6 @@
   {
     "key": "cmd+l",
     "command": "claude-vscode.sidebar.open"
-  },
-
-  // "cmd + j" -> toggles sidebar
-  {
-    "key": "cmd+j",
-    "command": "workbench.scm.focus",
-    "when": "!sideBarVisible || activeViewlet !== 'workbench.view.scm'"
-  },
-  {
-    "key": "cmd+j",
-    "command": "workbench.action.toggleSidebarVisibility",
-    "when": "workbench.scm.active"
   },
 
   // "cmd + ;" -> toggles terminal
