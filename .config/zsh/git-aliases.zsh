@@ -34,7 +34,8 @@ typeset -A git_aliases=(
     ["l"]="log --oneline"
     ["ll"]="!git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
     ["last"]="log -1 HEAD"
-
+    ["prs"]='!git_pr_search'
+    
     # Delete all branches except current
     ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
 )
