@@ -133,5 +133,5 @@
   "git.confirmSync": false,
   "git.repositoryScanIgnoredFolders": ["node_modules", "external/**/*"],
   "git.detectSubmodules": false,
-  "git.confirmNoVerifyCommit": false
+  "git.allowNoVerifyCommit": true
 }
