@@ -21,7 +21,6 @@
     "command": "cursorDown",
     "when": "textInputFocus"
   },
-
   // Intermediate - move further
   {
     "key": "alt+h",
@@ -42,7 +41,6 @@
     "command": "cursorBottom",
     "when": "editorTextFocus"
   },
-
   // Forward + Back
   {
     "key": "alt+]",
@@ -54,7 +52,6 @@
     "command": "workbench.action.navigateForward",
     "when": "canNavigateForward"
   },
-
   // Multi-cursor
   {
     "key": "ctrl+alt+arrowUp",
@@ -66,7 +63,6 @@
     "command": "editor.action.insertCursorBelow",
     "when": "editorTextFocus"
   },
-
   // Selection
   {
     "key": "alt+shift+j",
@@ -88,7 +84,6 @@
     "command": "cursorUpSelect",
     "when": "textInputFocus"
   },
-
   // Suggestions
   {
     "key": "alt+k",
@@ -115,7 +110,6 @@
     "command": "editor.action.inlineDiffs.acceptPartialEdit",
     "when": "editorHasPromptBar && editorPromptBarFocused"
   },
-
   /* ************************** ⭐ EDITING ⭐ ************************** */
   // Line Manipulation
   {
@@ -143,7 +137,6 @@
     "command": "editor.action.insertLineBefore",
     "when": "editorTextFocus && !editorReadonly"
   },
-
   // Fold
   {
     "key": "ctrl+enter",
@@ -154,7 +147,6 @@
     "key": "ctrl+enter",
     "command": "workbench.files.action.collapseExplorerFolders"
   },
-
   // Delete
   {
     "key": "alt+backspace",
@@ -166,7 +158,6 @@
     "command": "deleteWordRight",
     "when": "textInputFocus && !editorReadonly"
   },
-
   // Copy/Paste
   {
     "key": "alt+x",
@@ -176,16 +167,13 @@
     "key": "alt+v",
     "command": "editor.action.clipboardPasteAction"
   },
-
   // Misc
   {
     "key": "alt+/",
     "command": "editor.action.commentLine",
     "when": "editorTextFocus && !editorReadonly"
   },
-
   /* ************************** ⭐ Workspace Navigation ⭐ ************************** */
-
   // misc
   {
     "key": "cmd+shift+l",
@@ -196,7 +184,6 @@
     "command": "markdown.showPreview",
     "when": "!notebookEditorFocused && editorLangId == 'markdown'"
   },
-
   //  "cmd + \" -> toggles file explorer
   {
     "key": "cmd+\\",
@@ -208,19 +195,6 @@
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarVisible && explorerViewletVisible"
   },
-
-  // "cmd + [" -> back
-  {
-    "key": "cmd+[",
-    "command": "workbench.action.navigateBack",
-    "when": "canNavigateBack"
-  },
-  {
-    "key": "cmd+[",
-    "command": "-editor.action.outdentLines",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-
   // "cmd + ]" -> git
   {
     "key": "cmd+]",
@@ -232,7 +206,6 @@
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarVisible && workbench.scm.active"
   },
-
   // cmd + shift + ] -> splitscreen
   {
     "key": "shift+cmd+]",
@@ -242,7 +215,6 @@
     "key": "cmd+\\",
     "command": "-workbench.action.splitEditor"
   },
-
   // // "ctrl + ]" -> toggles search
   // {
   //   "key": "ctrl+]",
@@ -254,13 +226,11 @@
   //   "command": "workbench.action.toggleSidebarVisibility",
   //   "when": "focusedView == 'workbench.view.search'"
   // },
-
   // "cmd + l" -> claude code
   {
     "key": "cmd+l",
     "command": "claude-vscode.sidebar.open"
   },
-
   // "cmd + ;" -> toggles terminal
   {
     "key": "cmd+;",
@@ -278,7 +248,6 @@
     "command": "workbench.action.terminal.toggleTerminal",
     "when": "terminalFocus"
   },
-
   // misc terminal
   {
     "key": "ctrl+alt+j",
@@ -290,14 +259,12 @@
     "command": "workbench.action.terminal.kill",
     "when": "terminalFocus"
   },
-
   // Bypass git commit verification
   {
     "key": "cmd+enter",
     "command": "git.commitStagedNoVerify",
     "when": "focusedView == 'workbench.scm'"
   },
-  
   {
     // newlines in claude code
     "key": "shift+enter",
@@ -307,7 +274,6 @@
     },
     "when": "terminalFocus"
   },
-
   // Bookmarks
   {
     "key": "ctrl+b",
@@ -317,7 +283,6 @@
     "key": "ctrl+shift+b",
     "command": "bookmarksExplorer.focus"
   },
-
   // Tab Navigation
   {
     "key": "ctrl+shift+t",
@@ -359,9 +324,7 @@
     "key": "ctrl+9",
     "command": "workbench.action.openEditorAtIndex9"
   },
-
   /* ************************** ⭐ SUGGESTIONS & AUTOCOMPLETE ⭐ ************************** */
-
   {
     "key": "tab",
     "command": "editor.emmet.action.expandAbbreviation",
@@ -397,7 +360,6 @@
     "command": "editor.action.inlineSuggest.commit",
     "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorTabMovesFocus"
   },
-
   /* ************************** ⭐ DISABLED DEFAULTS ⭐ ************************** */
   {
     "key": "ctrl+p",
@@ -587,5 +549,10 @@
   {
     "key": "cmd+w",
     "command": "-workbench.action.closeWindow"
+  },
+  {
+    "key": "shift+cmd+k",
+    "command": "-editor.action.deleteLines",
+    "when": "textInputFocus && !editorReadonly"
   }
 ]
