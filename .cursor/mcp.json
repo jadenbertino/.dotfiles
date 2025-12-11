@@ -8,7 +8,9 @@
     },
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     },
     "shadcn": {
       "command": "npx",
@@ -16,6 +18,17 @@
         "shadcn@latest",
         "mcp"
       ]
+    },
+    "v0": {
+      "command": "npx",
+      "args": [
+        "v0",
+        "mcp",
+        "server"
+      ],
+      "env": {
+        "V0_API_KEY": "v1:dus2oYhQug6OBh2FEy5BnJEg:pGw9vP6ptdWpM3pBiYMCaxny"
+      }
     }
   }
 }

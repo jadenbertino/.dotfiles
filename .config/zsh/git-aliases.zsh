@@ -60,7 +60,7 @@ update_aliases() {
   echo "updated aliases"
 }
 
-update_aliases
+update_on_hash_change
 
 # For inspo see: https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git
 alias g="git"
