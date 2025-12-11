@@ -28,7 +28,7 @@ edit() {
 }
 
 c() {
-  edit cursor "${1:-.}"
+  edit code "${1:-.}"
 }
 
 co() {
