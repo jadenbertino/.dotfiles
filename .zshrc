@@ -32,7 +32,7 @@ source $ZSH_CONFIG_HOME/clipboard.sh
 
 # Synced files
 source $HOME/.ssh/sync.zsh
-source $XDG_CONFIG_HOME/Code/User/sync.sh
+# source $XDG_CONFIG_HOME/Code/User/sync.sh
 
 # git config --global user.name "Jaden Bertino"
 # git config --global --unset user.email
