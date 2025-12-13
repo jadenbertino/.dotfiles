@@ -45,9 +45,9 @@ install_gvm_dependencies() {
 
 # Optional bootstrap: install GVM if missing (fast no-op when already installed)
 setup_go() {
+  install_gvm_dependencies
   if [ ! -d "$GVM_DIR" ]; then
     echo "Installing gvm dependencies..."
-    install_gvm_dependencies
 
     echo "Installing gvm..."
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)" || {
