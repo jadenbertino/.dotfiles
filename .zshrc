@@ -16,18 +16,31 @@ source $ZSH_CONFIG_HOME/auto-update.zsh
 auto_update_dotfiles
 
 # Load config files
-stow -d $HOME/.dotfiles -t $HOME --adopt .
+echo "[DEBUG .zshrc] Running stow..."
+stow -d $HOME/.dotfiles -t $HOME --adopt . 2>&1 || echo "[DEBUG .zshrc] stow failed with exit code $?"
+echo "[DEBUG .zshrc] Sourcing utils.sh..."
 source $ZSH_CONFIG_HOME/utils.sh
+echo "[DEBUG .zshrc] Sourcing plugins.zsh..."
 source $ZSH_CONFIG_HOME/plugins.zsh
+echo "[DEBUG .zshrc] Sourcing alias.zsh..."
 source $ZSH_CONFIG_HOME/alias.zsh
+echo "[DEBUG .zshrc] Sourcing git-aliases.zsh..."
 source $ZSH_CONFIG_HOME/git-aliases.zsh
+echo "[DEBUG .zshrc] Sourcing ssh-agent.sh..."
 source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
+echo "[DEBUG .zshrc] Sourcing node.sh..."
 source $ZSH_CONFIG_HOME/node.sh # NVM
+echo "[DEBUG .zshrc] Sourcing tmux.sh..."
 source $ZSH_CONFIG_HOME/tmux.sh
+echo "[DEBUG .zshrc] Sourcing keybinds.zsh..."
 source $ZSH_CONFIG_HOME/keybinds.zsh
+echo "[DEBUG .zshrc] Sourcing nvim.sh..."
 source $ZSH_CONFIG_HOME/nvim.sh
+echo "[DEBUG .zshrc] Sourcing ai.zsh..."
 source $ZSH_CONFIG_HOME/ai.zsh
+echo "[DEBUG .zshrc] Sourcing go.zsh..."
 source $ZSH_CONFIG_HOME/go.zsh
+echo "[DEBUG .zshrc] Sourcing clipboard.sh..."
 source $ZSH_CONFIG_HOME/clipboard.sh
 
 # Synced files
