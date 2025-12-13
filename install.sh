@@ -7,4 +7,4 @@ if ! is_command_available stow; then
   install_package stow
 fi
 
-stow -d "$DIR" -t "$HOME" .
+stow --adopt -d "$DIR" -t "$HOME" .
