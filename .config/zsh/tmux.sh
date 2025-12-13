@@ -32,27 +32,31 @@ zat() {
 }
 
 setup_tmux() {
-  # Install tmux if it doesn't exist
   source ~/.config/zsh/utils.sh
+
   if ! is_command_available "tmux"; then
     echo "Installing tmux..."
-    install_package "tmux"
+    detect_os
+
+    if [[ "$OS" == "macos" ]]; then
+      brew install tmux
+    else
+      # Build from source for latest version on Linux
+      (
+        set -e
+        sudo apt-get update && sudo apt-get install -y libevent-dev ncurses-dev build-essential bison pkg-config
+        cd /tmp
+        TMUX_VERSION="3.6"
+        curl -LO "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
+        tar -xzf "tmux-${TMUX_VERSION}.tar.gz"
+        cd "tmux-${TMUX_VERSION}"
+        ./configure && make
+        sudo make install
+        cd /tmp && rm -rf "tmux-${TMUX_VERSION}"*
+      )
+    fi
     echo "tmux installed successfully"
   fi
-
-  # Can also install like this
-  # (
-  #   set -e
-  #   sudo apt update && sudo apt install -y libevent-dev ncurses-dev build-essential bison pkg-config
-  #   cd /tmp
-  #   TMUX_VERSION="3.6"
-  #   curl -LO "https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz"
-  #   tar -xzf "tmux-${TMUX_VERSION}.tar.gz"
-  #   cd "tmux-${TMUX_VERSION}"
-  #   ./configure && make
-  #   sudo make install
-  #   cd /tmp && rm -rf "tmux-${TMUX_VERSION}"*
-  # )
   
 
   # Install TPM (tmux plugin manager)
