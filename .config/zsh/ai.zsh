@@ -1,7 +1,7 @@
 # claude code (anthropic)
 # npm install -g @anthropic-ai/claude-code
 # https://www.anthropic.com/claude-code
-alias cc="npx claude --dangerously-skip-permissions"
+alias cc="claude --dangerously-skip-permissions"
 alias ccs="cc /start"
 alias ccp="cc /plan"
 alias ccr="cc /resume"

@@ -5,6 +5,7 @@ alias tma='~/.local/bin/tmux-sessionizer.sh'
 alias tmd='tmux detach'
 alias tmc='tmux new-session -s'
 alias tmka='tmux kill-server'
+
 tmk() {
     # kill a session
     if [[ $# -eq 0 ]]; then
@@ -13,6 +14,7 @@ tmk() {
         tmux kill-session -t "$1"
     fi
 }
+
 tat() {
   # attach to or create a new session based on the current directory name
   name=$(basename `pwd` | sed -e 's/\.//g')
@@ -25,48 +27,9 @@ tat() {
     tmux new-session -s "$name"
   fi
 }
+
 zat() {
   local TARGET_PATH="${1:-.}"
   z "$TARGET_PATH"
   tat
 }
-
-setup_tmux() {
-  source ~/.config/zsh/utils.sh
-
-  if ! is_command_available "tmux"; then
-    echo "Installing tmux..."
-    detect_os
-
-    if [[ "$OS" == "macos" ]]; then
-      # may get some issues if tmux < 3.4
-      brew install tmux
-    else
-      # Build from source for latest version on Linux
-      (
-        sudo apt update && sudo apt install -y libevent-dev ncurses-dev build-essential bison pkg-config && wget https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz && tar -zxf tmux-3.4.tar.gz && cd tmux-3.4 && ./configure && make && sudo make install
-      )
-    fi
-    echo "tmux installed successfully"
-  fi
-  
-
-  # Install TPM (tmux plugin manager)
-  TPM_DIR="$HOME/.tmux/plugins/tpm"
-  if [ ! -d "$TPM_DIR" ]; then
-    echo "Installing TPM..."
-    git clone -q https://github.com/tmux-plugins/tpm "$TPM_DIR" > /dev/null
-    echo "TPM installed successfully"
-  fi
-
-  # Install Catpuccin theme
-  CATPUCCIN_DIR="$HOME/.config/tmux/plugins/catppuccin/tmux"
-  if [ ! -d "$CATPUCCIN_DIR" ]; then
-    echo "Installing Catpuccin theme..."
-    mkdir -p "$CATPUCCIN_DIR"
-    git clone -q -b v2.1.3 https://github.com/catppuccin/tmux.git "$CATPUCCIN_DIR" > /dev/null
-    echo "Catpuccin theme installed successfully"
-  fi
-}
-
-setup_tmux
