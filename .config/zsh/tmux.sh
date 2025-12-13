@@ -39,6 +39,7 @@ setup_tmux() {
     detect_os
 
     if [[ "$OS" == "macos" ]]; then
+      # may get some issues if tmux < 3.4
       brew install tmux
     else
       # Build from source for latest version on Linux
