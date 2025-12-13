@@ -44,7 +44,9 @@ setup_tmux() {
 
 install_claude() {
   if ! is_command_available "claude"; then
+    echo "Installing claude"
     curl -fsSL https://claude.ai/install.sh | bash
+    echo "Installed claude"
   fi
 }
 
