@@ -25,20 +25,23 @@ install_gvm_dependencies() {
   source "$HOME/.config/zsh/utils.sh"
   detect_os
 
-  # GVM requires: git, curl, bison, gcc, make, binutils (ar)
+  # GVM requires: git, curl, bison, gcc, make, binutils (provides 'ar')
+  # Format: "command:package" or just "command" if same as package
   local deps
   if [[ "$OS" == "macos" ]]; then
     # macOS: Xcode CLI tools provide most deps, just need bison
     deps=(bison)
   else
     # Linux: need build essentials
-    deps=(git curl bison gcc make binutils)
+    deps=(git curl bison gcc make ar:binutils)
   fi
 
-  for dep in "${deps[@]}"; do
-    if ! is_command_available "$dep" && ! is_command_available "${dep%utils}"; then
-      echo "Installing GVM dependency: $dep..."
-      install_package "$dep" || echo "Warning: Failed to install $dep"
+  for entry in "${deps[@]}"; do
+    local cmd="${entry%%:*}"
+    local pkg="${entry##*:}"
+    if ! is_command_available "$cmd"; then
+      echo "Installing GVM dependency: $pkg..."
+      install_package "$pkg" || echo "Warning: Failed to install $pkg"
     fi
   done
 }
