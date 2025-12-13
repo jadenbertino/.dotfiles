@@ -44,27 +44,38 @@ is_command_available() {
 install_package() {
     local PKG=$1
     detect_os
+
+    # Trap to catch and log any errors
+    trap 'echo "[DEBUG install_package] Error on line $LINENO, exit code $?, command: $BASH_COMMAND" >&2' ERR
+
     if [[ "$OS" == "macos" ]]; then
         if ! command -v brew &> /dev/null; then
             echo "Homebrew is not installed. Please install Homebrew first."
+            trap - ERR
             exit 1
         fi
-        brew install "$PKG" >/dev/null
+        echo "[DEBUG install_package] Running: brew install $PKG"
+        brew install "$PKG" 2>&1 || { echo "[DEBUG install_package] brew install failed with exit code $?" >&2; trap - ERR; return 1; }
     else
         case "$DISTRO" in
             ubuntu|debian)
+                echo "[DEBUG install_package] Running: apt-get install $PKG"
                 sudo apt-get update -y >/dev/null
-                sudo apt-get install -y "$PKG" >/dev/null
+                sudo apt-get install -y "$PKG" 2>&1 || { echo "[DEBUG install_package] apt-get install failed with exit code $?" >&2; trap - ERR; return 1; }
                 ;;
             fedora|rhel)
-                sudo dnf install -y "$PKG" >/dev/null
+                echo "[DEBUG install_package] Running: dnf install $PKG"
+                sudo dnf install -y "$PKG" 2>&1 || { echo "[DEBUG install_package] dnf install failed with exit code $?" >&2; trap - ERR; return 1; }
                 ;;
             *)
                 echo "Unsupported Linux distribution: $DISTRO"
+                trap - ERR
                 return 1
                 ;;
         esac
     fi
+
+    trap - ERR
 }
 
 verify_package() {
