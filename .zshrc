@@ -51,7 +51,6 @@ add_to_path "$HOME/.local/bin"
 verify_package zsh
 verify_package zoxide
 verify_package stow
-[[ -s "/Users/jaden/.gvm/scripts/gvm" ]] && source "/Users/jaden/.gvm/scripts/gvm" # go version manager
 
 # must define here, not in git-aliases cuz that is only occasionally sourced
 git_pr_search() {
