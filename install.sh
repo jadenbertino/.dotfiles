@@ -2,7 +2,7 @@
 
 # this file installs a bunch of programs
 
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 source "$DIR/.config/zsh/utils.sh"
 detect_os
 
