@@ -99,6 +99,29 @@ install_neovim() {
     esac
 }
 
+install_stow() {
+  if is_command_available "stow"; then
+    return 0
+  fi
+
+  echo "Installing stow..."
+
+  case "$OS" in
+    "macos")
+      brew install stow
+      ;;
+    "linux"|"wsl")
+      sudo apt update && sudo apt install -y stow
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+
+  echo "stow installed successfully"
+}
+
 install_neovim
 
 setup_tmux
