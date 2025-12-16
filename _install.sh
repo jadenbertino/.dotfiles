@@ -1,5 +1,7 @@
 #/bin/bash
 
+# File is prefixed with an underscore so that github codespaces doesn't run it (this file isn't intended to be used by it.)
+
 # this file installs a bunch of programs
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
