@@ -40,6 +40,7 @@ typeset -A git_aliases=(
     ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
 )
 
+# Keep in a function, used by ./git-aliases-cached.zsh + ./alias.zsh
 update_git_aliases() {
   for alias_name in ${(k)git_aliases}; do
     git config --global "alias.$alias_name" "${git_aliases[$alias_name]}"

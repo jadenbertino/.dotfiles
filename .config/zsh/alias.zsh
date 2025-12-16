@@ -2,7 +2,7 @@ alias ls='ls --color'
 alias la='ls -a'
 alias cl='clear'
 alias dr='doppler run --'
-alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh'
+alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'
 alias rmf='rm -rf'
 
 # IDE aliases
