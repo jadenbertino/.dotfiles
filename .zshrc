@@ -1,3 +1,9 @@
+# Exit if not running in zsh
+if [[ -z "$ZSH_VERSION" ]]; then
+  echo "Warning: .zshrc is intended for zsh, but current shell is not zsh"
+  return 0
+fi
+
 # Explicitly set XDG paths - https://specifications.freedesktop.org/basedir-spec/latest/
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
