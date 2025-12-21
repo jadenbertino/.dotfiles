@@ -124,6 +124,16 @@ install_stow() {
   echo "stow installed successfully"
 }
 
+install_uv() {
+  if is_command_available "uv"; then
+    return 0
+  fi
+
+  echo "Installing uv..."
+  wget -qO- https://astral.sh/uv/install.sh | sh
+  echo "uv installed successfully"
+}
+
 install_neovim
 
 setup_tmux
