@@ -1,14 +1,19 @@
 start_mcp_servers() {
+  local starting=false
+
   # 1. Serena (SSE or long-lived mode)
-  if ! pgrep -f "serena start-mcp-server" >/dev/null 2>&1; then
+  if ! curl -fsS http://127.0.0.1:9121/health >/dev/null 2>&1; then
     echo "Starting Serena MCP server..."
     uvx --from git+https://github.com/oraios/serena \
       serena start-mcp-server --transport sse --port 9121 \
       >/tmp/serena.log 2>&1 &
     disown
+    starting=true
   fi
-  
-  sleep 2  # brief delay to let everything boot
+
+  if $starting; then
+    sleep 2
+  fi
 }
 
 # claude code (anthropic)
