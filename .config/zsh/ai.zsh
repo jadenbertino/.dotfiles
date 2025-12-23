@@ -8,14 +8,10 @@ start_mcp_servers() {
       serena start-mcp-server --transport sse --port 9121 \
       >/tmp/serena.log 2>&1 &
     disown
-    echo "Started Serena MCP server!"
+    echo "Started Serena MCP server (it may take a couple seconds to load)"
+    echo ""
     echo "Stop it by running:"
     echo "stop_mcp_servers"
-    starting=true
-  fi
-
-  if $starting; then
-    sleep 2
   fi
 }
 
