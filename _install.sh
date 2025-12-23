@@ -1,6 +1,7 @@
 #/bin/bash
 
-# File is prefixed with an underscore so that github codespaces doesn't run it (this file isn't intended to be used by it.)
+# File is prefixed with an underscore so that github codespaces doesn't run it
+# (this file isn't intended to be used by it.)
 
 # this file installs a bunch of programs
 

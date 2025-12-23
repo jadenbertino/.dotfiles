@@ -38,3 +38,6 @@ _install\.sh$
 ^docs/?$
 
 ^\.local/share/?$    # don't stow the share folder
+
+# TODO: only stow explictly stowed files / dirs instead of ignoring a bunch of stuff
+.local/bin/claude
