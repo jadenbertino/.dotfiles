@@ -2,13 +2,15 @@ start_mcp_servers() {
   local starting=false
 
   # 1. Serena (SSE or long-lived mode)
-  if ! pgrep -f "serena start-mcp-server --transport sse --port 9121" >/dev/null 2>&1; then
+  SERENA_PORT="9121"
+  if ! pgrep -f "serena start-mcp-server --transport sse --port $SERENA_PORT" >/dev/null 2>&1; then
     echo "Starting Serena MCP server..."
     uvx --from git+https://github.com/oraios/serena \
-      serena start-mcp-server --transport sse --port 9121 \
+      serena start-mcp-server --transport sse --port $SERENA_PORT \
       >/tmp/serena.log 2>&1 &
     disown
-    echo "Started Serena MCP server (it may take a couple seconds to load)"
+    echo "Started Serena MCP server on port $SERENA_PORT"
+    echo "(it may take a couple seconds to load)"
     echo ""
     echo "Stop it by running:"
     echo "stop_mcp_servers"
