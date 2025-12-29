@@ -10,6 +10,10 @@ alias b='bash'
 alias v='nvim'
 alias nv='nvim'
 
+# yarn
+alias y='yarn'
+alias yw='yarn workspace'
+
 edit() {
   local EDITOR_CMD="$1"
   local TARGET_PATH="${2:-.}"
