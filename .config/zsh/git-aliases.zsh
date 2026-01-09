@@ -8,7 +8,9 @@ typeset -A git_aliases=(
 
     # Tracking
     ["a"]='!git add . && git status -sb'
-    ["st"]="status -sb"
+    ["sl"]="status -sb"
+
+    ["st"]="stash"
     ["sa"]="stash apply"
 
     # Commit
@@ -35,7 +37,7 @@ typeset -A git_aliases=(
     ["ll"]="!git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
     ["last"]="log -1 HEAD"
     ["prs"]='!f() { SEARCH_TERM="$1"; BASE_BRANCH="${2:-main}"; AUTHOR_NAME="$(git config user.name)"; git log --author="${AUTHOR_NAME}" -p "${BASE_BRANCH}"...HEAD | grep -C 5 "${SEARCH_TERM}"; }; f'
-    
+
     # Delete all branches except current
     ["clear"]='!f() { current_branch=$(git rev-parse --abbrev-ref HEAD); git branch --format="%(refname:short)" | grep -v "^${current_branch}$" | xargs -I {} git branch -D "{}"; }; f'
 )
