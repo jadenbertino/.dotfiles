@@ -13,6 +13,7 @@ alias nv='nvim'
 # yarn
 alias y='yarn'
 alias yw='yarn workspace'
+alias yd='yarn dev'
 
 edit() {
   local EDITOR_CMD="$1"
