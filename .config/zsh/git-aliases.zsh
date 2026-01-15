@@ -19,6 +19,7 @@ typeset -A git_aliases=(
     ["cp"]="cherry-pick"
 
     # Branches
+    ["recent"]="for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)'"
     ["p"]="pull"
     ["s"]="switch"
     ["sc"]="switch -c"
