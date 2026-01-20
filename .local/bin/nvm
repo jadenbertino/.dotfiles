@@ -1,4 +1,0 @@
-#!/bin/zsh
-# NVM shim with lazy loading
-source "$HOME/.config/zsh/node.sh"
-nvm "$@" 

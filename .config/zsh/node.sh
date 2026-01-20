@@ -11,25 +11,25 @@ load_nvm() {
 }
 
 # Lazy load npx, nvm, node, npm
-npx() {
-    load_nvm
-    npx "$@"
-}
+# npx() {
+#     load_nvm
+#     npx "$@"
+# }
 
-nvm() {
-    load_nvm
-    nvm "$@"
-}
+# nvm() {
+#     load_nvm
+#     nvm "$@"
+# }
 
-node() {
-    load_nvm
-    node "$@"
-}
+# node() {
+#     load_nvm
+#     node "$@"
+# }
 
-npm() {
-    load_nvm
-    npm "$@"
-}
+# npm() {
+#     load_nvm
+#     npm "$@"
+# }
 
 # PNPM - Lazy Loading Configuration
 # must set this up after nvm is loaded
