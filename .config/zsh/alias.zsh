@@ -14,6 +14,7 @@ alias nv='nvim'
 alias y='yarn'
 alias yw='yarn workspace'
 alias yd='yarn dev'
+alias yf='yarn workspaces foreach --all run'
 
 edit() {
   local EDITOR_CMD="$1"
