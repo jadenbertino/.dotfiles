@@ -15,7 +15,7 @@ typeset -A git_aliases=(
 
     # Commit
     ["cam"]="commit -a -m"
-    ["cm"]="commit -m"
+    ["cm"]="commit --no-verify -m"
     ["cp"]="cherry-pick"
 
     # Branches
