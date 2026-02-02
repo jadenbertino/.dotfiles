@@ -7,7 +7,19 @@
 5. Run `bash scripts/stow.sh`
 6. Review and make changes to files in the repo
 7. Run `source ~/.zshrc` to load the config
-    - After you source the first time, you can just run `reload` to reload the config
+   - After you source the first time, you can just run `reload` to reload the config
+
+# Codespaces
+
+if using this in codespaces
+
+1. clone the repo into home dir: `cd && gh repo clone jadenbertino/.dotfiles`
+2. install stow: `sudo apt-get update && sudo apt-get install stow`
+3. attempt to stow (will fail): `cd ~/.dotfiles && stow .`
+4. delete all the conflicting files
+5. stow again
+6. ???
+7. profit
 
 # Additional Notes
 

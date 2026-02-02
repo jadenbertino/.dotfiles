@@ -23,7 +23,7 @@ _darcs
 .+~          # emacs backup files
 \#.*\#       # emacs autosave files
 
-^/[^/]*\.md$     # All .md files at root level 
+^/README.md
 ^/LICENSE.*
 ^/COPYING
 
