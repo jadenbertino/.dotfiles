@@ -15,6 +15,7 @@ You receive a spec folder:
 .claude/specs/TICKET-ID/
 ├── spec.md
 ├── _status.json        # you create/update this
+├── learnings.md        # you append to this
 └── ...
 ```
 
@@ -46,10 +47,26 @@ For each step in the spec:
    git add [filesChanged]
    git commit -m "TICKET-ID: [step summary]"
    ```
-4. **Update `_status.json`**
-5. **Proceed to next step**
+4. **Write learnings** — append to `learnings.md` (ok to skip if nothing to add)
+5. **Update `_status.json`**
+6. **Proceed to next step**
 
 Always commit after each successful step. This makes it easier to bisect, revert, and recover from failures in later steps.
+
+#### Learnings
+
+Append to `.claude/specs/TICKET-ID/learnings.md` after each step. Focus on "what I wish I knew earlier" — generalized patterns that help future specs, not feature-specific details.
+
+**Good:** patterns that apply to building anything
+
+- "API routes require both handler + schema updates"
+- "State changes propagate to 3 places: store, context, URL params"
+- "Test runner requires explicit date mocking"
+
+**Bad:** feature-specific details
+
+- "TransactionFilter uses useState"
+- "Added endpoint at /api/transactions/filter"
 
 ### 3. Handle Failures
 
