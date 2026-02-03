@@ -33,6 +33,7 @@ Use subagents to investigate:
 - Identify files that need modification
 - Locate utilities/functions to reuse
 - Understand existing patterns (error handling, API structure, component patterns)
+- **Find relevant test files** — search for tests covering similar features or the files being modified (e.g., `*.test.ts`, `*.spec.ts`, `__tests__/`)
 
 ### 3. Generate the Spec
 
@@ -72,6 +73,11 @@ One sentence describing what we're building and why.
 
 - `path/to/util.ts` — [which functions]
 
+### Test Files
+
+- `path/to/feature.test.ts` — [tests for similar feature, use as pattern]
+- `path/to/modified-file.test.ts` — [existing tests that may need updates]
+
 ### References
 
 - CLAUDE.md for general patterns
@@ -94,14 +100,6 @@ One sentence describing what we're building and why.
 How to verify the feature works end-to-end.
 ```
 
-### 4. Generate Step Files
-
-For each implementation step, create a separate file:
-
-`.claude/specs/TICKET-ID/1_descriptive_name.md`
-
-Use `~/.claude/agents/_implementation_step_template.md` as the template.
-
 ## Output
 
 When complete, report:
@@ -116,3 +114,4 @@ When complete, report:
 - Each step should be independently verifiable
 - Err on the side of too much context, not too little
 - If automated tests can verify something, prefer that over manual checks
+- Always include test file locations — implementing agents need to know where to add tests and what patterns to follow
