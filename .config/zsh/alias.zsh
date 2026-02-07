@@ -16,6 +16,9 @@ alias yw='yarn workspace'
 alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
 
+# youtube downloader
+alias ytd="yt-dlp -x --audio-format mp3 --audio-quality 0"
+
 edit() {
   local EDITOR_CMD="$1"
   local TARGET_PATH="${2:-.}"
