@@ -35,8 +35,8 @@ typeset -A git_aliases=(
     ["amend"]="commit --amend"
 
     # Logs
-    ["l"]="log --oneline"
-    ["ll"]="!git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+    ["l"]="log --oneline --reverse"
+    ["ll"]="!git log --reverse --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
     ["last"]="log -1 HEAD"
     ["prs"]='!f() { SEARCH_TERM="$1"; BASE_BRANCH="${2:-main}"; AUTHOR_NAME="$(git config user.name)"; git log --author="${AUTHOR_NAME}" -p "${BASE_BRANCH}"...HEAD | grep -C 5 "${SEARCH_TERM}"; }; f'
 
