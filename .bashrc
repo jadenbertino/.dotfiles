@@ -1,3 +1,5 @@
+alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
