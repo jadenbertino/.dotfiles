@@ -41,3 +41,4 @@ _install\.sh$
 
 # TODO: only stow explictly stowed files / dirs instead of ignoring a bunch of stuff
 .local/bin/claude
+\.claude-ntfy

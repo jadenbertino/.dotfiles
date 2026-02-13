@@ -36,3 +36,4 @@ node_modules
 .claude/*.local.json
 .claude/stats-cache.json
 .local/bin/claude
+.claude-ntfy
