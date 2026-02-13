@@ -17,7 +17,7 @@ alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
 
 # toggle claude notifications
-alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Notifications OFF" || (touch ~/.claude-ntfy && echo "Notifications ON")'
+alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
 
 # youtube downloader
 alias ytd="yt-dlp -x --audio-format mp3 --audio-quality 0"
