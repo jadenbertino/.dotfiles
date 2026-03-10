@@ -67,3 +67,33 @@ git_pr_search() {
 . "$HOME/.local/share/../bin/env"
 export PATH="$HOME/bin:$PATH"
 export CLAUDE_NTFY_TOPIC="377f6693-0c64-4cbc-8b9d-e122c3e98226"
+
+y2mp3() {
+  if ! command -v yt-dlp &>/dev/null; then
+    echo "Error: yt-dlp is not installed. Install with: brew install yt-dlp" >&2
+    return 1
+  fi
+  if ! command -v ffmpeg &>/dev/null; then
+    echo "Error: ffmpeg is not installed. Install with: brew install ffmpeg" >&2
+    return 1
+  fi
+
+  if [ -z "$1" ]; then
+    echo "Usage: y2mp3 <youtube-url> [start] [end]"
+    echo "  y2mp3 https://youtube.com/watch?v=abc123"
+    echo "  y2mp3 https://youtube.com/watch?v=abc123 54:20 57:37"
+    return 1
+  fi
+
+  local url="$1"
+  local tmpfile
+
+  if [ -n "$2" ] && [ -n "$3" ]; then
+    tmpfile="$(mktemp /tmp/y2mp3_XXXXXX.mp3)"
+    yt-dlp -x --audio-format mp3 --audio-quality 0 -o "$tmpfile" "$url" && \
+    ffmpeg -i "$tmpfile" -ss "$2" -to "$3" -c copy "clip_${2//:/-}_to_${3//:/-}.mp3" && \
+    rm "$tmpfile"
+  else
+    yt-dlp -x --audio-format mp3 --audio-quality 0 -o "%(title)s.%(ext)s" "$url"
+  fi
+}
