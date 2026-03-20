@@ -6,21 +6,25 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 zstyle ':completion:*:cd:*' file-patterns '*(/):directories'
 
-# Load asdf completions
+# Add tool completion paths to fpath before compinit
 if [ -x "$(command -v asdf)" ]; then
   source "$(dirname "$0")/utils.sh"
   add_to_path "${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
-  . <(asdf completion zsh)
   mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
   asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
   fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 fi
 
-# Load uv completions
+# Initialize completions (optimized with -C flag to skip security checks)
+# Must run before any tool that emits compdef calls (uv, asdf, etc.)
+autoload -Uz compinit && compinit -C
+zinit cdreplay -q
+
+# Load tool completions (must be after compinit as they use compdef)
+if [ -x "$(command -v asdf)" ]; then
+  . <(asdf completion zsh)
+fi
+
 if [ -x "$(command -v uv)" ]; then
   eval "$(uv generate-shell-completion zsh)"
 fi
-
-# Initialize completions (optimized with -C flag to skip security checks)
-autoload -Uz compinit && compinit -C
-zinit cdreplay -q
