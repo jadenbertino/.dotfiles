@@ -66,7 +66,7 @@ git_pr_search() {
 }
 . "$HOME/.local/share/../bin/env"
 export PATH="$HOME/bin:$PATH"
-export CLAUDE_NTFY_TOPIC="377f6693-0c64-4cbc-8b9d-e122c3e98226"
+export NTFY_TOPIC="377f6693-0c64-4cbc-8b9d-e122c3e98226"
 
 y2mp3() {
   if ! command -v yt-dlp &>/dev/null; then

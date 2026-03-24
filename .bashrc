@@ -146,3 +146,5 @@ if [ -f '/home/jaden/google-cloud-sdk/completion.bash.inc' ]; then . '/home/jade
 [[ -s "/home/jaden/.gvm/scripts/gvm" ]] && source "/home/jaden/.gvm/scripts/gvm"
 
 [[ -s "/home/node/.gvm/scripts/gvm" ]] && source "/home/node/.gvm/scripts/gvm"
+
+. "$HOME/.local/share/../bin/env"

@@ -22,3 +22,4 @@
 [ -n "$PS1" ] && [ "${SHELL##*/}" != "zsh" ] && command -v zsh > /dev/null 2>&1 && exec zsh
 
 export XDG_CONFIG_HOME="$HOME/.config"
+. "$HOME/.local/share/../bin/env"

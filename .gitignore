@@ -19,21 +19,14 @@ node_modules
 !.cursor/mcp.json
 
 # claude
-.claude/cache
-.claude/debug
-.claude/downloads
-.claude/file-history
-.claude/ide
-.claude/plugins
-.claude/projects
-.claude/session-env
-.claude/shell-snapshots
-.claude/statsig
-.claude/telemetry
-.claude/todos
-.claude/history.jsonl
-.claude/stats-cache.jso
-.claude/*.local.json
-.claude/stats-cache.json
+.claude/**/*
+!.claude/AGENTS.md
+!.claude/CLAUDE.md
+!.claude/keybindings.json
+!.claude/commands
+!.claude/settings.json
+
 .local/bin/claude
 .claude-ntfy
+
+.serena

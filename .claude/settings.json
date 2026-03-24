@@ -10,10 +10,23 @@
           }
         ]
       }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/notify --permission"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {},
+  "voiceEnabled": true,
+  "skipDangerousModePermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754007386922
-  }
+  },
+  "model": "sonnet"
 }
