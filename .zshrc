@@ -75,7 +75,7 @@ git_pr_search() {
   local AUTHOR_NAME="$(git config user.name)"
   git log --author="${AUTHOR_NAME}" -p "${BASE_BRANCH}"...HEAD | grep -C 5 "${SEARCH_TERM}"
 }
-. "$HOME/.local/share/../bin/env"
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 export PATH="$HOME/bin:$PATH"
 export NTFY_TOPIC="377f6693-0c64-4cbc-8b9d-e122c3e98226"
 
