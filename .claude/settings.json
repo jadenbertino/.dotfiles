@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/notify"
+            "command": "[ -x ~/.local/bin/notify ] && ~/.local/bin/notify"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/notify --permission"
+            "command": "[ -x ~/.local/bin/notify ] && ~/.local/bin/notify --permission"
           }
         ]
       }
