@@ -1,26 +1,111 @@
 #!/usr/bin/env node
 
-const USAGE = `Usage: ddl <datadog-url>
+const USAGE = `Usage:
+  ddl <datadog-url>
+  ddl <query> --from <time> [--to <time>] [options]
 
-Fetch logs from Datadog by pasting a URL from the Logs Explorer.
+Fetch logs from Datadog.
+
+Arguments:
+  First argument is either a Datadog Logs Explorer URL or a query string.
+  URLs are detected automatically (starts with https://...datadoghq.com).
+
+Options:
+  --from <time>       Start time (required for query mode)
+  --to <time>         End time (default: now)
+  --limit <n>         Max number of logs to return (default: all)
+  --sort <dir>        Sort order: "desc" or "asc" (default: desc)
+  --json              Output raw JSON instead of formatted lines
+  --fields <list>     Comma-separated attribute fields to show
+  --site <host>       Datadog site (default: DD_SITE or us5.datadoghq.com)
+  -h, --help          Show this help
+
+Time formats:
+  Relative:  "30m ago", "2h ago", "1d ago"
+  Absolute:  "2026-03-28T05:00:00Z", epoch milliseconds
 
 Environment variables:
   DD_API_KEY   Datadog API key (required)
   DD_APP_KEY   Datadog Application key (required)
+  DD_SITE      Datadog site hostname (optional)
 
-Example:
-  ddl "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc123&from_ts=1774876020000&to_ts=1774877220000"`;
+Examples:
+  ddl "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc&from_ts=1774876020000&to_ts=1774877220000"
+  ddl "service:server status:error" --from "1h ago"
+  ddl "service:server" --from "2h ago" --limit 10 --json
+  ddl "@request_id:abc123" --from "30m ago" --fields message,host`;
 
-const PAGE_LIMIT = 100;
+const DEFAULT_SITE = "us5.datadoghq.com";
+const DEFAULT_PAGE_LIMIT = 100;
 
-function parseDatadogUrl(raw) {
-  const url = new URL(raw);
+// --- Argument parsing ---
 
-  if (!url.hostname.endsWith("datadoghq.com")) {
-    console.error("Error: URL must be a datadoghq.com URL");
+function parseArgs(argv) {
+  const args = argv.slice(2);
+  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
+    console.log(USAGE);
+    process.exit(0);
+  }
+
+  const positional = [];
+  const flags = {};
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith("--")) {
+      const key = args[i].slice(2);
+      if (key === "json") {
+        flags.json = true;
+      } else if (i + 1 < args.length) {
+        flags[key] = args[++i];
+      }
+    } else if (args[i] === "-h") {
+      console.log(USAGE);
+      process.exit(0);
+    } else {
+      positional.push(args[i]);
+    }
+  }
+
+  const input = positional[0];
+  if (!input) {
+    console.error("Error: query or URL is required");
     process.exit(1);
   }
 
+  if (isDatadogUrl(input)) {
+    return { ...parseDatadogUrl(input), ...overridesFromFlags(flags) };
+  }
+
+  return parseQueryMode(input, flags);
+}
+
+function isDatadogUrl(input) {
+  try {
+    const url = new URL(input);
+    return url.hostname.endsWith("datadoghq.com");
+  } catch {
+    return false;
+  }
+}
+
+function overridesFromFlags(flags) {
+  const result = {};
+  if (flags.json) {
+    result.json = true;
+  }
+  if (flags.fields) {
+    result.fields = flags.fields.split(",").map((f) => f.trim());
+  }
+  if (flags.limit) {
+    result.maxLogs = Number(flags.limit);
+  }
+  return result;
+}
+
+// --- URL mode ---
+
+function parseDatadogUrl(raw) {
+  const url = new URL(raw);
   const params = url.searchParams;
   const query = params.get("query") || "*";
   const fromTs = params.get("from_ts");
@@ -41,7 +126,73 @@ function parseDatadogUrl(raw) {
   };
 }
 
-async function fetchLogs({ site, query, from, to, sort }) {
+// --- Query mode ---
+
+function parseTime(input) {
+  if (!input) {
+    return undefined;
+  }
+
+  const relativeMatch = input.match(/^(\d+)(m|h|d)\s*ago$/);
+  if (relativeMatch) {
+    const amount = Number(relativeMatch[1]);
+    const unit = relativeMatch[2];
+    const ms = { m: 60_000, h: 3_600_000, d: 86_400_000 }[unit];
+    return new Date(Date.now() - amount * ms).toISOString();
+  }
+
+  if (/^\d{10,}$/.test(input)) {
+    const n = Number(input);
+    return new Date(n > 1e12 ? n : n * 1000).toISOString();
+  }
+
+  const d = new Date(input);
+  if (isNaN(d.getTime())) {
+    console.error(`Error: could not parse time "${input}"`);
+    process.exit(1);
+  }
+  return d.toISOString();
+}
+
+function parseQueryMode(query, flags) {
+  if (!flags.from) {
+    console.error("Error: --from is required when using a query string");
+    process.exit(1);
+  }
+
+  return {
+    site: flags.site || process.env.DD_SITE || DEFAULT_SITE,
+    query,
+    from: parseTime(flags.from),
+    to: parseTime(flags.to) || new Date().toISOString(),
+    sort: flags.sort === "asc" ? "timestamp" : "-timestamp",
+    json: flags.json || false,
+    fields: flags.fields ? flags.fields.split(",").map((f) => f.trim()) : undefined,
+    maxLogs: flags.limit ? Number(flags.limit) : undefined,
+  };
+}
+
+// --- Fetch + output ---
+
+function formatLog(log, fields) {
+  const attrs = log.attributes || {};
+  const timestamp = attrs.timestamp || "";
+  const status = attrs.status || "";
+  const service = attrs.service || "";
+
+  if (fields) {
+    const values = fields.map((f) => {
+      const val = attrs[f] ?? attrs.attributes?.[f] ?? "";
+      return typeof val === "object" ? JSON.stringify(val) : String(val);
+    });
+    return `${timestamp}  ${values.join("  ")}`;
+  }
+
+  const message = attrs.message || JSON.stringify(attrs.attributes || {});
+  return `${timestamp}  ${status.padEnd(7)}  ${service.padEnd(20)}  ${message}`;
+}
+
+async function fetchLogs(opts) {
   const apiKey = process.env.DD_API_KEY;
   const appKey = process.env.DD_APP_KEY;
 
@@ -50,15 +201,22 @@ async function fetchLogs({ site, query, from, to, sort }) {
     process.exit(1);
   }
 
+  const { site, query, from, to, sort, json, fields, maxLogs } = opts;
   const endpoint = `https://${site}/api/v2/logs/events/search`;
   let cursor = undefined;
   let total = 0;
+  const allLogs = json ? [] : null;
 
   while (true) {
+    const pageSize = maxLogs ? Math.min(DEFAULT_PAGE_LIMIT, maxLogs - total) : DEFAULT_PAGE_LIMIT;
+    if (pageSize <= 0) {
+      break;
+    }
+
     const body = {
       filter: { query, from, to },
       sort,
-      page: { limit: PAGE_LIMIT, ...(cursor ? { cursor } : {}) },
+      page: { limit: pageSize, ...(cursor ? { cursor } : {}) },
     };
 
     const res = await fetch(endpoint, {
@@ -78,37 +236,31 @@ async function fetchLogs({ site, query, from, to, sort }) {
       process.exit(1);
     }
 
-    const json = await res.json();
-    const logs = json.data || [];
+    const data = await res.json();
+    const logs = data.data || [];
 
-    for (const log of logs) {
-      const attrs = log.attributes || {};
-      const timestamp = attrs.timestamp || "";
-      const status = attrs.status || "";
-      const service = attrs.service || "";
-      const message = attrs.message || JSON.stringify(attrs.attributes || {});
-
-      console.log(`${timestamp}  ${status.padEnd(7)}  ${service.padEnd(20)}  ${message}`);
+    if (json) {
+      allLogs.push(...logs);
+    } else {
+      for (const log of logs) {
+        console.log(formatLog(log, fields));
+      }
     }
 
     total += logs.length;
-    cursor = json.meta?.page?.after;
+    cursor = data.meta?.page?.after;
 
-    if (!cursor || logs.length < PAGE_LIMIT) {
+    if (!cursor || logs.length < pageSize) {
       break;
     }
+  }
+
+  if (json) {
+    console.log(JSON.stringify(allLogs, null, 2));
   }
 
   console.error(`\n--- ${total} logs ---`);
 }
 
-const input = process.argv[2];
-
-if (!input || input === "--help" || input === "-h") {
-  console.log(USAGE);
-  process.exit(0);
-}
-
-const parsed = parseDatadogUrl(input);
-fetchLogs(parsed);
-
+const opts = parseArgs(process.argv);
+fetchLogs(opts);
