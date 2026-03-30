@@ -1,0 +1,114 @@
+#!/usr/bin/env node
+
+const USAGE = `Usage: ddl <datadog-url>
+
+Fetch logs from Datadog by pasting a URL from the Logs Explorer.
+
+Environment variables:
+  DD_API_KEY   Datadog API key (required)
+  DD_APP_KEY   Datadog Application key (required)
+
+Example:
+  ddl "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc123&from_ts=1774876020000&to_ts=1774877220000"`;
+
+const PAGE_LIMIT = 100;
+
+function parseDatadogUrl(raw) {
+  const url = new URL(raw);
+
+  if (!url.hostname.endsWith("datadoghq.com")) {
+    console.error("Error: URL must be a datadoghq.com URL");
+    process.exit(1);
+  }
+
+  const params = url.searchParams;
+  const query = params.get("query") || "*";
+  const fromTs = params.get("from_ts");
+  const toTs = params.get("to_ts");
+  const sort = params.get("stream_sort") === "asc" ? "timestamp" : "-timestamp";
+
+  if (!fromTs || !toTs) {
+    console.error("Error: URL must contain from_ts and to_ts parameters");
+    process.exit(1);
+  }
+
+  return {
+    site: url.hostname,
+    query,
+    from: new Date(Number(fromTs)).toISOString(),
+    to: new Date(Number(toTs)).toISOString(),
+    sort,
+  };
+}
+
+async function fetchLogs({ site, query, from, to, sort }) {
+  const apiKey = process.env.DD_API_KEY;
+  const appKey = process.env.DD_APP_KEY;
+
+  if (!apiKey || !appKey) {
+    console.error("Error: DD_API_KEY and DD_APP_KEY environment variables are required");
+    process.exit(1);
+  }
+
+  const endpoint = `https://${site}/api/v2/logs/events/search`;
+  let cursor = undefined;
+  let total = 0;
+
+  while (true) {
+    const body = {
+      filter: { query, from, to },
+      sort,
+      page: { limit: PAGE_LIMIT, ...(cursor ? { cursor } : {}) },
+    };
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "DD-API-KEY": apiKey,
+        "DD-APPLICATION-KEY": appKey,
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`Error: Datadog API returned ${res.status}`);
+      console.error(text);
+      process.exit(1);
+    }
+
+    const json = await res.json();
+    const logs = json.data || [];
+
+    for (const log of logs) {
+      const attrs = log.attributes || {};
+      const timestamp = attrs.timestamp || "";
+      const status = attrs.status || "";
+      const service = attrs.service || "";
+      const message = attrs.message || JSON.stringify(attrs.attributes || {});
+
+      console.log(`${timestamp}  ${status.padEnd(7)}  ${service.padEnd(20)}  ${message}`);
+    }
+
+    total += logs.length;
+    cursor = json.meta?.page?.after;
+
+    if (!cursor || logs.length < PAGE_LIMIT) {
+      break;
+    }
+  }
+
+  console.error(`\n--- ${total} logs ---`);
+}
+
+const input = process.argv[2];
+
+if (!input || input === "--help" || input === "-h") {
+  console.log(USAGE);
+  process.exit(0);
+}
+
+const parsed = parseDatadogUrl(input);
+fetchLogs(parsed);
+
