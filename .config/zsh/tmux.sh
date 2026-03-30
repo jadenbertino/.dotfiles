@@ -1,7 +1,7 @@
 # Aliases
 alias tm='tmux'
 alias tml='tmux list-sessions'
-alias tma='~/.local/bin/tmux-sessionizer.sh'
+alias tma='~/.local/bin-dotfiles/tmux-sessionizer.sh'
 alias tmd='tmux detach'
 alias tmc='tmux new-session -s'
 alias tmka='tmux kill-server'
