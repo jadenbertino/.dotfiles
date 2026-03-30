@@ -44,3 +44,4 @@
 
 font-family = "JetBrainsMonoNL Nerd Font Mono"
 theme = "Snazzy Soft"
+mouse-scroll-multiplier = 0.5

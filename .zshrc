@@ -4,6 +4,16 @@ if [[ -z "$ZSH_VERSION" ]]; then
   return 0
 fi
 
+precmd() {
+  if [ "$?" -ne 0 ] && [ -n "$FAHH" ]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      (afplay ~/fah.mp3 >/dev/null 2>&1 &)
+    elif [[ "$OSTYPE" == "linux"* ]]; then
+      (ffplay -autoexit -nodisp -volume 100 ~/fah.mp3 >/dev/null 2>&1 &)
+    fi
+  fi
+}
+
 # Explicitly set XDG paths - https://specifications.freedesktop.org/basedir-spec/latest/
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -51,6 +61,7 @@ source $HOME/.ssh/sync.zsh
 )
 [ -x "$(command -v brew)" ] && eval "$(brew shellenv)" # Make homebrew apps available in path
 add_to_path "$HOME/.local/bin"
+add_to_path "$HOME/.local/bin-dotfiles" # bin items that are tracked in dotfiles repo (e.g. custom scripts)
 
 # Packages
 verify_package zsh

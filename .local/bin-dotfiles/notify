@@ -1,0 +1,37 @@
+#!/bin/bash
+source ~/.config/zsh/utils.sh
+source ~/.config/zsh/claude_notify.sh
+
+[ -f ~/.claude-ntfy ] && [ -n "$NTFY_TOPIC" ] || exit 0
+
+input=$(cat)
+sid=$(echo "$input" | jq -r '.session_id // empty')
+
+tab=$(tmux display-message -p '#I:#W' 2>/dev/null)
+
+if [[ "$1" == "--permission" ]]; then
+  tool=$(echo "$input" | jq -r '.tool_name // "unknown tool"')
+  cmd=$(echo "$input" | jq -r '.tool_input.command // .tool_input.description // empty')
+  if [ -n "$cmd" ]; then
+    msg="Permission needed: $tool($cmd)"
+  else
+    msg="Permission needed: $tool"
+  fi
+else
+  msg='Claude finished'
+  if [ -n "$sid" ] && [ -f "/tmp/claude-statusline/$sid/summary" ]; then
+    msg=$(cat "/tmp/claude-statusline/$sid/summary" | sed 's/^↳ //')
+  fi
+fi
+
+if [ -n "$tab" ]; then
+  msg="[$tab] $msg"
+fi
+
+detect_os
+
+if [[ "$OS" == "wsl" ]]; then
+  powershell.exe -Command "Import-Module BurntToast; New-BurntToastNotification -Text '$msg'"
+elif [[ "$OS" == "macos" ]]; then
+  curl -s -d "$msg" "https://ntfy.sh/$NTFY_TOPIC" || true
+fi

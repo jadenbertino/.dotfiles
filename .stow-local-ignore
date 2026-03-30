@@ -38,7 +38,7 @@ _install\.sh$
 ^docs/?$
 
 ^\.local/share/?$    # don't stow the share folder
+^\.local/bin/?$      # don't stow the real bin folder
 
 # TODO: only stow explictly stowed files / dirs instead of ignoring a bunch of stuff
-.local/bin/claude
 \.claude-ntfy
