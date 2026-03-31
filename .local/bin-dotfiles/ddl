@@ -1,22 +1,23 @@
 #!/usr/bin/env node
 
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+const crypto = require("crypto");
+
 const USAGE = `Usage:
-  ddl <datadog-url>
-  ddl <query> --from <time> [--to <time>] [options]
+  ddl logs url <datadog-url> [options]
+  ddl logs query <query> --from <time> [--to <time>] [options]
+  ddl logs detail <log-id>
 
 Fetch logs from Datadog.
 
-Arguments:
-  First argument is either a Datadog Logs Explorer URL or a query string.
-  URLs are detected automatically (starts with https://...datadoghq.com).
-
 Options:
-  --from <time>       Start time (required for query mode)
   --to <time>         End time (default: now)
   --limit <n>         Max number of logs to return (default: all)
   --sort <dir>        Sort order: "desc" or "asc" (default: desc)
   --json              Output raw JSON instead of formatted lines
-  --fields <list>     Comma-separated attribute fields to show
+  -t, --truncate [n]  Truncate log message to n characters (default: 100, always on)
   --site <host>       Datadog site (default: DD_SITE or us5.datadoghq.com)
   -h, --help          Show this help
 
@@ -30,75 +31,95 @@ Environment variables:
   DD_SITE      Datadog site hostname (optional)
 
 Examples:
-  ddl "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc&from_ts=1774876020000&to_ts=1774877220000"
-  ddl "service:server status:error" --from "1h ago"
-  ddl "service:server" --from "2h ago" --limit 10 --json
-  ddl "@request_id:abc123" --from "30m ago" --fields message,host`;
+  ddl logs url "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc&from_ts=1774876020000&to_ts=1774877220000"
+  ddl logs query "service:server status:error" --from "1h ago"
+  ddl logs query "service:server" --from "2h ago" --limit 10 --json
+  ddl logs detail AAAAAWgn1234abcd`;
 
 const DEFAULT_SITE = "us5.datadoghq.com";
-const DEFAULT_PAGE_LIMIT = 100;
+const DEFAULT_PAGE_LIMIT = 50;
+const MAX_LOGS = 1000;
+const CACHE_DIR = path.join(
+  process.env.XDG_CACHE_HOME || path.join(os.homedir(), ".cache"),
+  "ddl"
+);
 
 // --- Argument parsing ---
 
-function parseArgs(argv) {
-  const args = argv.slice(2);
-  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-    console.log(USAGE);
-    process.exit(0);
-  }
-
-  const positional = [];
+function parseFlags(args) {
   const flags = {};
-
   for (let i = 0; i < args.length; i++) {
-    if (args[i].startsWith("--")) {
-      const key = args[i].slice(2);
+    const arg = args[i];
+    if (arg === "-t" || arg === "--truncate") {
+      const next = args[i + 1];
+      flags.truncate = next && !next.startsWith("-") ? Number(args[++i]) : 100;
+    } else if (arg.startsWith("--")) {
+      const key = arg.slice(2);
       if (key === "json") {
         flags.json = true;
       } else if (i + 1 < args.length) {
         flags[key] = args[++i];
       }
-    } else if (args[i] === "-h") {
+    }
+  }
+  return flags;
+}
+
+function parseArgs(argv) {
+  const args = argv.slice(2);
+
+  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
+    console.log(USAGE);
+    process.exit(0);
+  }
+
+  if (args[0] === "logs") {
+    const sub = args[1];
+
+    if (!sub || sub === "-h" || sub === "--help") {
       console.log(USAGE);
       process.exit(0);
-    } else {
-      positional.push(args[i]);
+    }
+
+    if (sub === "url") {
+      const input = args[2];
+      if (!input) {
+        console.error("Error: URL is required");
+        process.exit(1);
+      }
+      const flags = parseFlags(args.slice(3));
+      return { command: "logs", maxLogs: 50, ...parseDatadogUrl(input), ...overridesFromFlags(flags) };
+    }
+
+    if (sub === "query") {
+      const input = args[2];
+      if (!input) {
+        console.error("Error: query is required");
+        process.exit(1);
+      }
+      const flags = parseFlags(args.slice(3));
+      return { command: "logs", ...parseQueryMode(input, flags) };
+    }
+
+    if (sub === "detail") {
+      const logId = args[2];
+      if (!logId) {
+        console.error("Error: log-id is required");
+        process.exit(1);
+      }
+      return { command: "detail", logId };
     }
   }
 
-  const input = positional[0];
-  if (!input) {
-    console.error("Error: query or URL is required");
-    process.exit(1);
-  }
-
-  if (isDatadogUrl(input)) {
-    return { ...parseDatadogUrl(input), ...overridesFromFlags(flags) };
-  }
-
-  return parseQueryMode(input, flags);
-}
-
-function isDatadogUrl(input) {
-  try {
-    const url = new URL(input);
-    return url.hostname.endsWith("datadoghq.com");
-  } catch {
-    return false;
-  }
+  console.error("Error: unknown command. Run with --help for usage.");
+  process.exit(1);
 }
 
 function overridesFromFlags(flags) {
   const result = {};
-  if (flags.json) {
-    result.json = true;
-  }
-  if (flags.fields) {
-    result.fields = flags.fields.split(",").map((f) => f.trim());
-  }
-  if (flags.limit) {
-    result.maxLogs = Number(flags.limit);
-  }
+  if (flags.json) result.json = true;
+  if (flags.limit) result.maxLogs = Number(flags.limit);
+  result.truncate = flags.truncate != null ? flags.truncate : 100;
   return result;
 }
 
@@ -129,9 +150,7 @@ function parseDatadogUrl(raw) {
 // --- Query mode ---
 
 function parseTime(input) {
-  if (!input) {
-    return undefined;
-  }
+  if (!input) return undefined;
 
   const relativeMatch = input.match(/^(\d+)(m|h|d)\s*ago$/);
   if (relativeMatch) {
@@ -167,29 +186,60 @@ function parseQueryMode(query, flags) {
     to: parseTime(flags.to) || new Date().toISOString(),
     sort: flags.sort === "asc" ? "timestamp" : "-timestamp",
     json: flags.json || false,
-    fields: flags.fields ? flags.fields.split(",").map((f) => f.trim()) : undefined,
     maxLogs: flags.limit ? Number(flags.limit) : undefined,
+    truncate: flags.truncate != null ? flags.truncate : 100,
   };
 }
 
-// --- Fetch + output ---
+// --- Cache ---
 
-function formatLog(log, fields) {
-  const attrs = log.attributes || {};
-  const timestamp = attrs.timestamp || "";
-  const status = attrs.status || "";
-  const service = attrs.service || "";
+function cacheLog(log) {
+  const id = log.id;
+  if (!id) return;
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+  fs.writeFileSync(path.join(CACHE_DIR, `${id}.json`), JSON.stringify(log, null, 2));
+}
 
-  if (fields) {
-    const values = fields.map((f) => {
-      const val = attrs[f] ?? attrs.attributes?.[f] ?? "";
-      return typeof val === "object" ? JSON.stringify(val) : String(val);
-    });
-    return `${timestamp}  ${values.join("  ")}`;
+function showDetail(shortId) {
+  if (!fs.existsSync(CACHE_DIR)) {
+    console.error(`Error: no cached logs found`);
+    console.error(`Hint: run a logs query first to populate the cache`);
+    process.exit(1);
   }
 
-  const message = attrs.message || JSON.stringify(attrs.attributes || {});
-  return `${timestamp}  ${status.padEnd(7)}  ${service.padEnd(20)}  ${message}`;
+  const matches = fs.readdirSync(CACHE_DIR).filter((f) => {
+    const fullId = f.replace(".json", "");
+    const hash = crypto.createHash("sha256").update(fullId).digest("hex");
+    return hash.startsWith(shortId);
+  });
+
+  if (matches.length === 0) {
+    console.error(`Error: no cached detail for "${shortId}"`);
+    console.error(`Hint: run a logs query first to populate the cache`);
+    process.exit(1);
+  }
+  if (matches.length > 1) {
+    console.error(`Error: ambiguous ID "${shortId}" matches ${matches.length} logs — add more characters`);
+    process.exit(1);
+  }
+  console.log(fs.readFileSync(path.join(CACHE_DIR, matches[0]), "utf8"));
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// --- Format + Fetch ---
+
+function formatLog(log, truncate) {
+  const attrs = log.attributes || {};
+  const id = log.id ? crypto.createHash("sha256").update(log.id).digest("hex").slice(0, 8) : "????????";
+  const timestamp = attrs.timestamp || "";
+  const status = (attrs.status || "").padEnd(7);
+  const service = (attrs.service || "").padEnd(20);
+  let message = (attrs.message || JSON.stringify(attrs.attributes || {})).replace(/\s*\n\s*/g, " ");
+  if (truncate != null && message.length > truncate) {
+    message = message.slice(0, truncate) + "…";
+  }
+  return `${id}  ${timestamp}  ${status}  ${service}  ${message}`;
 }
 
 async function fetchLogs(opts) {
@@ -201,17 +251,21 @@ async function fetchLogs(opts) {
     process.exit(1);
   }
 
-  const { site, query, from, to, sort, json, fields, maxLogs } = opts;
+  const { site, query, from, to, sort, json, maxLogs, truncate } = opts;
   const endpoint = `https://${site}/api/v2/logs/events/search`;
   let cursor = undefined;
   let total = 0;
   const allLogs = json ? [] : null;
 
+  if (!json) {
+    console.log(`${"HASH".padEnd(8)}  ${"TIMESTAMP".padEnd(24)}  ${"STATUS".padEnd(7)}  ${"SERVICE".padEnd(20)}  MESSAGE`);
+    console.log(`${"-".repeat(8)}  ${"-".repeat(24)}  ${"-".repeat(7)}  ${"-".repeat(20)}  ${"-".repeat(40)}`);
+  }
+
   while (true) {
-    const pageSize = maxLogs ? Math.min(DEFAULT_PAGE_LIMIT, maxLogs - total) : DEFAULT_PAGE_LIMIT;
-    if (pageSize <= 0) {
-      break;
-    }
+    const effectiveMax = Math.min(maxLogs ?? Infinity, MAX_LOGS);
+    const pageSize = Math.min(DEFAULT_PAGE_LIMIT, effectiveMax - total);
+    if (pageSize <= 0) break;
 
     const body = {
       filter: { query, from, to },
@@ -219,40 +273,56 @@ async function fetchLogs(opts) {
       page: { limit: pageSize, ...(cursor ? { cursor } : {}) },
     };
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "DD-API-KEY": apiKey,
-        "DD-APPLICATION-KEY": appKey,
-      },
-      body: JSON.stringify(body),
-    });
+    let res;
+    while (true) {
+      res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "DD-API-KEY": apiKey,
+          "DD-APPLICATION-KEY": appKey,
+        },
+        body: JSON.stringify(body),
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error(`Error: Datadog API returned ${res.status}`);
-      console.error(text);
-      process.exit(1);
+      if (res.status === 429) {
+        const resetIn = Number(res.headers.get("X-RateLimit-Reset") ?? 1);
+        const waitMs = (resetIn + 1) * 1000;
+        console.error(`[ddl] rate limited, retrying in ${resetIn + 1}s...`);
+        await sleep(waitMs);
+        continue;
+      }
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error(`Error: Datadog API returned ${res.status}`);
+        console.error(text);
+        process.exit(1);
+      }
+
+      break;
     }
 
     const data = await res.json();
     const logs = data.data || [];
 
+    for (const log of logs) {
+      cacheLog(log);
+    }
+
     if (json) {
       allLogs.push(...logs);
     } else {
       for (const log of logs) {
-        console.log(formatLog(log, fields));
+        console.log(formatLog(log, truncate));
       }
     }
 
     total += logs.length;
     cursor = data.meta?.page?.after;
 
-    if (!cursor || logs.length < pageSize) {
-      break;
-    }
+    if (!cursor || logs.length < pageSize) break;
+    await sleep(300);
   }
 
   if (json) {
@@ -262,5 +332,12 @@ async function fetchLogs(opts) {
   console.error(`\n--- ${total} logs ---`);
 }
 
+// --- Entry point ---
+
 const opts = parseArgs(process.argv);
-fetchLogs(opts);
+
+if (opts.command === "detail") {
+  showDetail(opts.logId);
+} else {
+  fetchLogs(opts);
+}

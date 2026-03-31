@@ -110,15 +110,15 @@ y2mp3() {
 }
 # Doppler secrets
 export DOPPLER_ENV_FILE="$HOME/.env.doppler"
-
 _doppler_maybe_sync() {
   if [[ ! -f "$DOPPLER_ENV_FILE" ]] || \
      [[ $(( $(date +%s) - $(stat -f %m "$DOPPLER_ENV_FILE") )) -gt 86400 ]]; then
     echo "[doppler] secrets stale or missing, syncing..."
     ~/.local/bin-dotfiles/doppler-sync
   fi
-  [[ -f "$DOPPLER_ENV_FILE" ]] && source "$DOPPLER_ENV_FILE"
+  set -a; [[ -f "$DOPPLER_ENV_FILE" ]] && source "$DOPPLER_ENV_FILE"; set +a
 }
 _doppler_maybe_sync
 
 alias doppler-sync="~/.local/bin-dotfiles/doppler-sync && source \"$DOPPLER_ENV_FILE\""
+alias ds="doppler-sync" # shorthand alias
