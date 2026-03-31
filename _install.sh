@@ -102,6 +102,20 @@ install_neovim() {
     esac
 }
 
+install_homebrew() {
+  if [[ "$OS" != "macos" ]]; then
+    return 0
+  fi
+
+  if is_command_available "brew"; then
+    return 0
+  fi
+
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  echo "Homebrew installed successfully"
+}
+
 install_stow() {
   if is_command_available "stow"; then
     return 0
@@ -135,7 +149,51 @@ install_uv() {
   echo "uv installed successfully"
 }
 
+install_doppler() {
+  if is_command_available "doppler"; then
+    return 0
+  fi
+
+  echo "Installing doppler..."
+
+  case "$OS" in
+    "macos")
+      brew install gnupg
+      brew install dopplerhq/cli/doppler
+      ;;
+    "linux"|"wsl")
+      sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+
+      # Check for Ubuntu/Debian 22.04+ vs older
+      local version_id
+      version_id=$(. /etc/os-release && echo "$VERSION_ID")
+      local major_version="${version_id%%.*}"
+
+      if [[ "$major_version" -ge 22 ]]; then
+        curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+      else
+        curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
+        echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+      fi
+
+      sudo apt-get update && sudo apt-get install doppler
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+
+  echo "doppler installed successfully"
+  doppler --version
+  doppler update
+  doppler login
+}
+
+install_homebrew
 install_neovim
 
 setup_tmux
 install_claude
+install_doppler

@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+if ! command -v doppler &> /dev/null; then
+  echo "[doppler-sync] doppler is not installed, skipping"
+  exit 0
+fi
+
+SECRETS_FILE="$HOME/.env.doppler"
+
+doppler secrets download \
+  --no-file \
+  --format env \
+  --project dotfiles \
+  --config prd \
+  > "$SECRETS_FILE.tmp"
+
+# The .tmp + mv pattern ensures the file is never half-written if the fetch fails.
+chmod 600 "$SECRETS_FILE.tmp"
+mv "$SECRETS_FILE.tmp" "$SECRETS_FILE"
+
+echo "[doppler-sync] secrets synced to $SECRETS_FILE"
