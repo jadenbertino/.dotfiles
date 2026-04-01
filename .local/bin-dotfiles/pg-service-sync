@@ -12,17 +12,17 @@ if ! command -v jq &> /dev/null; then
 fi
 
 PROJECT="${1:-pg}"
-BASE_CONFIG="${2:-prd}"
+CONFIG_PREFIX="${2:-prd_}"
 SERVICE_FILE="$HOME/.pg_service.conf"
 PGPASS_FILE="$HOME/.pgpass"
 
-echo "[pg-service-sync] syncing database configs from doppler project '$PROJECT'..."
+echo "[pg-service-sync] syncing database configs from doppler project '$PROJECT' (prefix: $CONFIG_PREFIX)..."
 
-# Get all configs in the project
-CONFIGS=$(doppler configs --project "$PROJECT" --json 2>/dev/null | jq -r '.[] | select(.root_config.name == "'$BASE_CONFIG'") | .name')
+# Get all configs in the project with the specified prefix
+CONFIGS=$(doppler configs --project "$PROJECT" --json 2>/dev/null | jq -r '.[] | select(.name | startswith("'$CONFIG_PREFIX'")) | .name')
 
 if [ -z "$CONFIGS" ]; then
-  echo "[pg-service-sync] no configs found branching from '$BASE_CONFIG'"
+  echo "[pg-service-sync] no configs found with prefix '$CONFIG_PREFIX'"
   exit 1
 fi
 
@@ -42,7 +42,7 @@ fi
 # Add marker and header
 cat >> "$PGPASS_TMP" << EOF
 $PGPASS_MARKER
-# Auto-synced from Doppler project '$PROJECT'
+# Auto-synced from Doppler project '$PROJECT' (configs: $CONFIG_PREFIX*)
 # Last synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 EOF
 
@@ -106,7 +106,7 @@ EOF
     echo "$PGHOST:$PGPORT:$PGDATABASE:$PGUSER:$PGPASSWORD" >> "$PGPASS_TMP"
   fi
 
-  ((SYNCED_COUNT++))
+  SYNCED_COUNT=$((SYNCED_COUNT + 1))
 
 done <<< "$CONFIGS"
 

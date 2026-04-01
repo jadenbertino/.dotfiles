@@ -44,6 +44,7 @@ source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/ai.zsh
 source $ZSH_CONFIG_HOME/go.zsh
 source $ZSH_CONFIG_HOME/clipboard.sh
+source $ZSH_CONFIG_HOME/pg-service.zsh
 
 # Synced files
 source $HOME/.ssh/sync.zsh
