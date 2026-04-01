@@ -111,8 +111,13 @@ y2mp3() {
 # Doppler secrets
 export DOPPLER_ENV_FILE="$HOME/.env.doppler"
 _doppler_maybe_sync() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    _stat_mtime() { stat -f %m "$1"; }
+  else
+    _stat_mtime() { stat -c %Y "$1"; }
+  fi
   if [[ ! -f "$DOPPLER_ENV_FILE" ]] || \
-     [[ $(( $(date +%s) - $(stat -f %m "$DOPPLER_ENV_FILE") )) -gt 86400 ]]; then
+     [[ $(( $(date +%s) - $(_stat_mtime "$DOPPLER_ENV_FILE") )) -gt 86400 ]]; then
     echo "[doppler] secrets stale or missing, syncing..."
     ~/.local/bin-dotfiles/doppler-sync
   fi
