@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
-const crypto = require("crypto");
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+const crypto = require('crypto')
 
 const USAGE = `Usage:
   ddl logs url <datadog-url> [options]
@@ -34,110 +34,115 @@ Examples:
   ddl logs url "https://us5.datadoghq.com/logs?query=%40request_id%3Aabc&from_ts=1774876020000&to_ts=1774877220000"
   ddl logs query "service:server status:error" --from "1h ago"
   ddl logs query "service:server" --from "2h ago" --limit 10 --json
-  ddl logs detail AAAAAWgn1234abcd`;
+  ddl logs detail AAAAAWgn1234abcd`
 
-const DEFAULT_SITE = "us5.datadoghq.com";
-const DEFAULT_PAGE_LIMIT = 50;
-const MAX_LOGS = 1000;
+const DEFAULT_SITE = 'us5.datadoghq.com'
+const DEFAULT_PAGE_LIMIT = 50
+const MAX_LOGS = 1000
 const CACHE_DIR = path.join(
-  process.env.XDG_CACHE_HOME || path.join(os.homedir(), ".cache"),
-  "ddl"
-);
+  process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'),
+  'ddl',
+)
 
 // --- Argument parsing ---
 
 function parseFlags(args) {
-  const flags = {};
+  const flags = {}
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "-t" || arg === "--truncate") {
-      const next = args[i + 1];
-      flags.truncate = next && !next.startsWith("-") ? Number(args[++i]) : 100;
-    } else if (arg.startsWith("--")) {
-      const key = arg.slice(2);
-      if (key === "json") {
-        flags.json = true;
+    const arg = args[i]
+    if (arg === '-t' || arg === '--truncate') {
+      const next = args[i + 1]
+      flags.truncate = next && !next.startsWith('-') ? Number(args[++i]) : 100
+    } else if (arg.startsWith('--')) {
+      const key = arg.slice(2)
+      if (key === 'json') {
+        flags.json = true
       } else if (i + 1 < args.length) {
-        flags[key] = args[++i];
+        flags[key] = args[++i]
       }
     }
   }
-  return flags;
+  return flags
 }
 
 function parseArgs(argv) {
-  const args = argv.slice(2);
+  const args = argv.slice(2)
 
-  if (args.length === 0 || args[0] === "-h" || args[0] === "--help") {
-    console.log(USAGE);
-    process.exit(0);
+  if (args.length === 0 || args[0] === '-h' || args[0] === '--help') {
+    console.log(USAGE)
+    process.exit(0)
   }
 
-  if (args[0] === "logs") {
-    const sub = args[1];
+  if (args[0] === 'logs') {
+    const sub = args[1]
 
-    if (!sub || sub === "-h" || sub === "--help") {
-      console.log(USAGE);
-      process.exit(0);
+    if (!sub || sub === '-h' || sub === '--help') {
+      console.log(USAGE)
+      process.exit(0)
     }
 
-    if (sub === "url") {
-      const input = args[2];
+    if (sub === 'url') {
+      const input = args[2]
       if (!input) {
-        console.error("Error: URL is required");
-        process.exit(1);
+        console.error('Error: URL is required')
+        process.exit(1)
       }
-      const flags = parseFlags(args.slice(3));
-      return { command: "logs", maxLogs: 50, ...parseDatadogUrl(input), ...overridesFromFlags(flags) };
+      const flags = parseFlags(args.slice(3))
+      return {
+        command: 'logs',
+        maxLogs: 50,
+        ...parseDatadogUrl(input),
+        ...overridesFromFlags(flags),
+      }
     }
 
-    if (sub === "query") {
-      const input = args[2];
+    if (sub === 'query') {
+      const input = args[2]
       if (!input) {
-        console.error("Error: query is required");
-        process.exit(1);
+        console.error('Error: query is required')
+        process.exit(1)
       }
-      const flags = parseFlags(args.slice(3));
-      return { command: "logs", ...parseQueryMode(input, flags) };
+      const flags = parseFlags(args.slice(3))
+      return { command: 'logs', ...parseQueryMode(input, flags) }
     }
 
-    if (sub === "detail") {
-      const logId = args[2];
+    if (sub === 'detail') {
+      const logId = args[2]
       if (!logId) {
-        console.error("Error: log-id is required");
-        process.exit(1);
+        console.error('Error: log-id is required')
+        process.exit(1)
       }
-      return { command: "detail", logId };
+      return { command: 'detail', logId }
     }
   }
 
-  console.error("Error: unknown command. Run with --help for usage.");
-  process.exit(1);
+  console.error('Error: unknown command. Run with --help for usage.')
+  process.exit(1)
 }
 
 function overridesFromFlags(flags) {
-  const result = {};
-  if (flags.json) result.json = true;
-  if (flags.limit) result.maxLogs = Number(flags.limit);
-  if (flags.storage) result.storage = flags.storage;
-  result.truncate = flags.truncate != null ? flags.truncate : 100;
-  return result;
+  const result = {}
+  if (flags.json) result.json = true
+  if (flags.limit) result.maxLogs = Number(flags.limit)
+  if (flags.storage) result.storage = flags.storage
+  result.truncate = flags.truncate != null ? flags.truncate : 100
+  return result
 }
 
 // --- URL mode ---
 
 function parseDatadogUrl(raw) {
-  const url = new URL(raw);
-  const params = url.searchParams;
-  const query = params.get("query") || "*";
-  const fromTs = params.get("from_ts");
-  const toTs = params.get("to_ts");
-  const sort = params.get("stream_sort") === "asc" ? "timestamp" : "-timestamp";
-  const storage = params.get("storage");
+  const url = new URL(raw)
+  const params = url.searchParams
+  const query = params.get('query') || '*'
+  const fromTs = params.get('from_ts')
+  const toTs = params.get('to_ts')
+  const sort = params.get('stream_sort') === 'asc' ? 'timestamp' : '-timestamp'
+  const storage = params.get('storage')
 
   if (!fromTs || !toTs) {
-    console.error("Error: URL must contain from_ts and to_ts parameters");
-    process.exit(1);
+    console.error('Error: URL must contain from_ts and to_ts parameters')
+    process.exit(1)
   }
 
   return {
@@ -147,39 +152,39 @@ function parseDatadogUrl(raw) {
     to: new Date(Number(toTs)).toISOString(),
     sort,
     ...(storage ? { storage } : {}),
-  };
+  }
 }
 
 // --- Query mode ---
 
 function parseTime(input) {
-  if (!input) return undefined;
+  if (!input) return undefined
 
-  const relativeMatch = input.match(/^(\d+)(m|h|d)\s*ago$/);
+  const relativeMatch = input.match(/^(\d+)(m|h|d)\s*ago$/)
   if (relativeMatch) {
-    const amount = Number(relativeMatch[1]);
-    const unit = relativeMatch[2];
-    const ms = { m: 60_000, h: 3_600_000, d: 86_400_000 }[unit];
-    return new Date(Date.now() - amount * ms).toISOString();
+    const amount = Number(relativeMatch[1])
+    const unit = relativeMatch[2]
+    const ms = { m: 60_000, h: 3_600_000, d: 86_400_000 }[unit]
+    return new Date(Date.now() - amount * ms).toISOString()
   }
 
   if (/^\d{10,}$/.test(input)) {
-    const n = Number(input);
-    return new Date(n > 1e12 ? n : n * 1000).toISOString();
+    const n = Number(input)
+    return new Date(n > 1e12 ? n : n * 1000).toISOString()
   }
 
-  const d = new Date(input);
+  const d = new Date(input)
   if (isNaN(d.getTime())) {
-    console.error(`Error: could not parse time "${input}"`);
-    process.exit(1);
+    console.error(`Error: could not parse time "${input}"`)
+    process.exit(1)
   }
-  return d.toISOString();
+  return d.toISOString()
 }
 
 function parseQueryMode(query, flags) {
   if (!flags.from) {
-    console.error("Error: --from is required when using a query string");
-    process.exit(1);
+    console.error('Error: --from is required when using a query string')
+    process.exit(1)
   }
 
   return {
@@ -187,100 +192,119 @@ function parseQueryMode(query, flags) {
     query,
     from: parseTime(flags.from),
     to: parseTime(flags.to) || new Date().toISOString(),
-    sort: flags.sort === "asc" ? "timestamp" : "-timestamp",
+    sort: flags.sort === 'asc' ? 'timestamp' : '-timestamp',
     json: flags.json || false,
     maxLogs: flags.limit ? Number(flags.limit) : undefined,
     truncate: flags.truncate != null ? flags.truncate : 100,
     storage: flags.storage,
-  };
+  }
 }
 
 // --- Cache ---
 
 function cacheLog(log) {
-  const id = log.id;
-  if (!id) return;
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
-  fs.writeFileSync(path.join(CACHE_DIR, `${id}.json`), JSON.stringify(log, null, 2));
+  const id = log.id
+  if (!id) return
+  fs.mkdirSync(CACHE_DIR, { recursive: true })
+  fs.writeFileSync(
+    path.join(CACHE_DIR, `${id}.json`),
+    JSON.stringify(log, null, 2),
+  )
 }
 
 function showDetail(shortId) {
   if (!fs.existsSync(CACHE_DIR)) {
-    console.error(`Error: no cached logs found`);
-    console.error(`Hint: run a logs query first to populate the cache`);
-    process.exit(1);
+    console.error(`Error: no cached logs found`)
+    console.error(`Hint: run a logs query first to populate the cache`)
+    process.exit(1)
   }
 
   const matches = fs.readdirSync(CACHE_DIR).filter((f) => {
-    const fullId = f.replace(".json", "");
-    const hash = crypto.createHash("sha256").update(fullId).digest("hex");
-    return hash.startsWith(shortId);
-  });
+    const fullId = f.replace('.json', '')
+    const hash = crypto.createHash('sha256').update(fullId).digest('hex')
+    return hash.startsWith(shortId)
+  })
 
   if (matches.length === 0) {
-    console.error(`Error: no cached detail for "${shortId}"`);
-    console.error(`Hint: run a logs query first to populate the cache`);
-    process.exit(1);
+    console.error(`Error: no cached detail for "${shortId}"`)
+    console.error(`Hint: run a logs query first to populate the cache`)
+    process.exit(1)
   }
   if (matches.length > 1) {
-    console.error(`Error: ambiguous ID "${shortId}" matches ${matches.length} logs — add more characters`);
-    process.exit(1);
+    console.error(
+      `Error: ambiguous ID "${shortId}" matches ${matches.length} logs — add more characters`,
+    )
+    process.exit(1)
   }
-  console.log(fs.readFileSync(path.join(CACHE_DIR, matches[0]), "utf8"));
+  console.log(fs.readFileSync(path.join(CACHE_DIR, matches[0]), 'utf8'))
 }
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // --- Format + Fetch ---
 
 function formatLog(log, truncate) {
-  const attrs = log.attributes || {};
-  const id = log.id ? crypto.createHash("sha256").update(log.id).digest("hex").slice(0, 8) : "????????";
-  const timestamp = attrs.timestamp || "";
-  const status = (attrs.status || "").padEnd(7);
-  const service = (attrs.service || "").padEnd(20);
-  let message = (attrs.message || JSON.stringify(attrs.attributes || {})).replace(/\s*\n\s*/g, " ");
+  const attrs = log.attributes || {}
+  const id = log.id
+    ? crypto.createHash('sha256').update(log.id).digest('hex').slice(0, 8)
+    : '????????'
+  const timestamp = attrs.timestamp || ''
+  const status = (attrs.status || '').padEnd(7)
+  const service = (attrs.service || '').padEnd(20)
+  let message = (
+    attrs.message || JSON.stringify(attrs.attributes || {})
+  ).replace(/\s*\n\s*/g, ' ')
   if (truncate != null && message.length > truncate) {
-    message = message.slice(0, truncate) + "…";
+    message = message.slice(0, truncate) + '…'
   }
-  return `${id}  ${timestamp}  ${status}  ${service}  ${message}`;
+  return `${id}  ${timestamp}  ${status}  ${service}  ${message}`
 }
 
 async function fetchLogs(opts) {
-  const apiKey = process.env.DD_API_KEY;
-  const appKey = process.env.DD_APP_KEY;
+  const apiKey = process.env.DD_API_KEY
+  const appKey = process.env.DD_APP_KEY
 
   if (!apiKey || !appKey) {
-    console.error("Error: DD_API_KEY and DD_APP_KEY environment variables are required");
-    process.exit(1);
+    console.error(
+      'Error: DD_API_KEY and DD_APP_KEY environment variables are required',
+    )
+    process.exit(1)
   }
 
-  const { site, query, from, to, sort, json, maxLogs, truncate, storage } = opts;
+  const { site, query, from, to, sort, json, maxLogs, truncate, storage } = opts
 
   // TODO: get flex tier working to access logs older than 15 days
   // Check if time range is older than 15 days
-  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
-  const fromDate = new Date(from);
+  const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
+  const fromDate = new Date(from)
   if (fromDate < fifteenDaysAgo) {
-    console.error("Error: Cannot query logs older than 15 days");
-    console.error(`Requested: ${from} (${Math.floor((Date.now() - fromDate.getTime()) / (24 * 60 * 60 * 1000))} days ago)`);
-    console.error(`Oldest available: ${fifteenDaysAgo.toISOString()} (15 days ago)`);
-    process.exit(1);
+    console.error('Error: Cannot query logs older than 15 days')
+    console.error(
+      `Requested: ${from} (${Math.floor((Date.now() - fromDate.getTime()) / (24 * 60 * 60 * 1000))} days ago)`,
+    )
+    console.error(
+      `Oldest available: ${fifteenDaysAgo.toISOString()} (15 days ago)`,
+    )
+    process.exit(1)
   }
-  const endpoint = `https://${site}/api/v2/logs/events/search`;
-  let cursor = undefined;
-  let total = 0;
-  const allLogs = json ? [] : null;
+  const endpoint = `https://${site}/api/v2/logs/events/search`
+  let cursor = undefined
+  let total = 0
+  const allLogs = json ? [] : null
 
   if (!json) {
-    console.log(`${"HASH".padEnd(8)}  ${"TIMESTAMP".padEnd(24)}  ${"STATUS".padEnd(7)}  ${"SERVICE".padEnd(20)}  MESSAGE`);
-    console.log(`${"-".repeat(8)}  ${"-".repeat(24)}  ${"-".repeat(7)}  ${"-".repeat(20)}  ${"-".repeat(40)}`);
+    console.log(
+      `${'HASH'.padEnd(8)}  ${'TIMESTAMP'.padEnd(24)}  ${'STATUS'.padEnd(7)}  ${'SERVICE'.padEnd(20)}  MESSAGE`,
+    )
+    console.log(
+      `${'-'.repeat(8)}  ${'-'.repeat(24)}  ${'-'.repeat(7)}  ${'-'.repeat(20)}  ${'-'.repeat(40)}`,
+    )
   }
 
   while (true) {
-    const effectiveMax = Math.min(maxLogs ?? Infinity, MAX_LOGS);
-    const pageSize = Math.min(DEFAULT_PAGE_LIMIT, effectiveMax - total);
-    if (pageSize <= 0) break;
+    const effectiveMax = Math.min(maxLogs ?? Infinity, MAX_LOGS)
+    const pageSize = Math.min(DEFAULT_PAGE_LIMIT, effectiveMax - total)
+    if (pageSize <= 0) break
 
     const body = {
       filter: {
@@ -290,73 +314,73 @@ async function fetchLogs(opts) {
       },
       sort,
       page: { limit: pageSize, ...(cursor ? { cursor } : {}) },
-    };
+    }
 
-    let res;
+    let res
     while (true) {
       res = await fetch(endpoint, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "DD-API-KEY": apiKey,
-          "DD-APPLICATION-KEY": appKey,
+          'Content-Type': 'application/json',
+          'DD-API-KEY': apiKey,
+          'DD-APPLICATION-KEY': appKey,
         },
         body: JSON.stringify(body),
-      });
+      })
 
       if (res.status === 429) {
-        const resetIn = Number(res.headers.get("X-RateLimit-Reset") ?? 1);
-        const waitMs = (resetIn + 1) * 1000;
-        console.error(`[ddl] rate limited, retrying in ${resetIn + 1}s...`);
-        await sleep(waitMs);
-        continue;
+        const resetIn = Number(res.headers.get('X-RateLimit-Reset') ?? 1)
+        const waitMs = (resetIn + 1) * 1000
+        console.error(`[ddl] rate limited, retrying in ${resetIn + 1}s...`)
+        await sleep(waitMs)
+        continue
       }
 
       if (!res.ok) {
-        const text = await res.text();
-        console.error(`Error: Datadog API returned ${res.status}`);
-        console.error(text);
-        process.exit(1);
+        const text = await res.text()
+        console.error(`Error: Datadog API returned ${res.status}`)
+        console.error(text)
+        process.exit(1)
       }
 
-      break;
+      break
     }
 
-    const data = await res.json();
-    const logs = data.data || [];
+    const data = await res.json()
+    const logs = data.data || []
 
     for (const log of logs) {
-      cacheLog(log);
+      cacheLog(log)
     }
 
     if (json) {
-      allLogs.push(...logs);
+      allLogs.push(...logs)
     } else {
       for (const log of logs) {
-        console.log(formatLog(log, truncate));
+        console.log(formatLog(log, truncate))
       }
     }
 
-    total += logs.length;
-    cursor = data.meta?.page?.after;
+    total += logs.length
+    cursor = data.meta?.page?.after
 
-    if (!cursor || logs.length < pageSize) break;
-    await sleep(300);
+    if (!cursor || logs.length < pageSize) break
+    await sleep(300)
   }
 
   if (json) {
-    console.log(JSON.stringify(allLogs, null, 2));
+    console.log(JSON.stringify(allLogs, null, 2))
   }
 
-  console.error(`\n--- ${total} logs ---`);
+  console.error(`\n--- ${total} logs ---`)
 }
 
 // --- Entry point ---
 
-const opts = parseArgs(process.argv);
+const opts = parseArgs(process.argv)
 
-if (opts.command === "detail") {
-  showDetail(opts.logId);
+if (opts.command === 'detail') {
+  showDetail(opts.logId)
 } else {
-  fetchLogs(opts);
+  fetchLogs(opts)
 }
