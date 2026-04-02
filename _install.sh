@@ -197,3 +197,5 @@ install_neovim
 setup_tmux
 install_claude
 install_doppler
+
+source "$DIR/setup-github-ssh.sh"
