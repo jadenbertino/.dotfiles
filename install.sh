@@ -17,7 +17,7 @@ setup_tmux() {
     else
       # Build from source for latest version on Linux
       (
-        sudo apt update && sudo apt install -y libevent-dev ncurses-dev build-essential bison pkg-config && wget https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz && tar -zxf tmux-3.4.tar.gz && cd tmux-3.4 && ./configure && make && sudo make install
+        cd /tmp && sudo apt update && sudo apt install -y libevent-dev ncurses-dev build-essential bison pkg-config && wget https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz && tar -zxf tmux-3.4.tar.gz && cd tmux-3.4 && ./configure && make && sudo make install
       )
     fi
     echo "tmux installed successfully"
