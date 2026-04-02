@@ -12,17 +12,16 @@ if ! command -v jq &> /dev/null; then
 fi
 
 PROJECT="${1:-pg}"
-CONFIG_PREFIX="${2:-prd_}"
 SERVICE_FILE="$HOME/.pg_service.conf"
 PGPASS_FILE="$HOME/.pgpass"
 
-echo "[pg-service-sync] syncing database configs from doppler project '$PROJECT' (prefix: $CONFIG_PREFIX)..."
+echo "[pg-service-sync] syncing database configs from doppler project '$PROJECT'..."
 
-# Get all configs in the project with the specified prefix
-CONFIGS=$(doppler configs --project "$PROJECT" --json 2>/dev/null | jq -r '.[] | select(.name | startswith("'$CONFIG_PREFIX'")) | .name')
+# Get all configs in the project
+CONFIGS=$(doppler configs --project "$PROJECT" --json 2>/dev/null | jq -r '.[].name')
 
 if [ -z "$CONFIGS" ]; then
-  echo "[pg-service-sync] no configs found with prefix '$CONFIG_PREFIX'"
+  echo "[pg-service-sync] no configs found in project '$PROJECT'"
   exit 1
 fi
 
@@ -42,7 +41,7 @@ fi
 # Add marker and header
 cat >> "$PGPASS_TMP" << EOF
 $PGPASS_MARKER
-# Auto-synced from Doppler project '$PROJECT' (configs: $CONFIG_PREFIX*)
+# Auto-synced from Doppler project '$PROJECT'
 # Last synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 EOF
 
