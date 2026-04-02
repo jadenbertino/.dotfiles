@@ -197,3 +197,6 @@ install_doppler
 
 # this is fucking with codespaces, it results in 403 when i try to git pull neon repo
 # source "$DIR/setup-github-ssh.sh"
+# if you still get issues then run
+# gh auth login --with-token <<< "$GH_PAT"
+# gh auth setup-git
