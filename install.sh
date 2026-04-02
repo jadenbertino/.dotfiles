@@ -195,4 +195,5 @@ setup_tmux
 install_claude
 install_doppler
 
-source "$DIR/setup-github-ssh.sh"
+# this is fucking with codespaces, it results in 403 when i try to git pull neon repo
+# source "$DIR/setup-github-ssh.sh"
