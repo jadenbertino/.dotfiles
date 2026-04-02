@@ -128,3 +128,4 @@ _doppler_maybe_sync
 
 alias doppler-sync="~/.local/bin-dotfiles/doppler-sync && source \"$DOPPLER_ENV_FILE\""
 alias ds="doppler-sync" # shorthand alias
+[[ -s "/home/node/.gvm/scripts/gvm" ]] && source "/home/node/.gvm/scripts/gvm"

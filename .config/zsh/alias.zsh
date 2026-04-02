@@ -15,6 +15,7 @@ alias y='yarn'
 alias yw='yarn workspace'
 alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
+alias yt='yarn turbo'
 
 # toggle claude notifications
 alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
