@@ -22,7 +22,7 @@ setup_tmux() {
     fi
     echo "tmux installed successfully"
   fi
-  
+
 
   # Install TPM (tmux plugin manager)
   TPM_DIR="$HOME/.tmux/plugins/tpm"
@@ -76,14 +76,14 @@ install_neovim() {
             )
 
 
-            
+
             echo "Neovim installed successfully"
             ;;
         "macos")
             if is_command_available "nvim"; then
                 return 0
             fi
-        
+
             echo "Installing Neovim for macOS..."
             if ! command -v brew &> /dev/null; then
                 echo "Homebrew is not installed. Please install Homebrew first."
@@ -195,8 +195,4 @@ setup_tmux
 install_claude
 install_doppler
 
-# this is fucking with codespaces, it results in 403 when i try to git pull neon repo
-# source "$DIR/setup-github-ssh.sh"
-# if you still get issues then run
-# gh auth login --with-token <<< "$GH_PAT"
-# gh auth setup-git
+source "$DIR/setup-github-ssh.sh"
