@@ -43,10 +43,18 @@ setup_tmux() {
 }
 
 install_claude() {
-  if ! is_command_available "claude"; then
+  local claude_path
+  claude_path=$(command -v claude 2>/dev/null)
+
+  if [ -z "$claude_path" ]; then
     echo "Installing claude"
     curl -fsSL https://claude.ai/install.sh | bash
     echo "Installed claude"
+  elif echo "$claude_path" | grep -q "node_modules"; then
+    echo "Replacing npm-installed claude with official installer"
+    npm uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
+    curl -fsSL https://claude.ai/install.sh | bash
+    echo "Replaced claude"
   fi
 }
 
