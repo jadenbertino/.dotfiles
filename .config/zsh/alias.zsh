@@ -1,5 +1,8 @@
-alias ls='ls --color'
-alias la='ls -a'
+alias ls="eza"
+alias la="eza -lah --git"
+alias ll="eza -lh --git"
+alias l="eza -lh --git"
+alias lt="eza --tree"
 alias cl='clear'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'

@@ -15,6 +15,15 @@ if [ -x "$(command -v asdf)" ]; then
   fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 fi
 
+# eza completions
+if [ -x "$(command -v eza)" ]; then
+  if type brew &>/dev/null; then
+    fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
+  elif [[ -d "/usr/share/zsh/vendor-completions" ]]; then
+    fpath=(/usr/share/zsh/vendor-completions $fpath)
+  fi
+fi
+
 # Initialize completions (optimized with -C flag to skip security checks)
 # Must run before any tool that emits compdef calls (uv, asdf, etc.)
 autoload -Uz compinit && compinit -C

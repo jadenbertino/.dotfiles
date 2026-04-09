@@ -147,6 +147,33 @@ install_stow() {
   echo "stow installed successfully"
 }
 
+install_eza() {
+  if is_command_available "eza"; then
+    return 0
+  fi
+
+  echo "Installing eza..."
+
+  case "$OS" in
+    "macos")
+      brew install eza
+      ;;
+    "linux"|"wsl")
+      sudo mkdir -p /etc/apt/keyrings
+      wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+      sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+      sudo apt update && sudo apt install -y eza
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+
+  echo "eza installed successfully"
+}
+
 install_uv() {
   if is_command_available "uv"; then
     return 0
@@ -204,6 +231,7 @@ install_neovim
 
 setup_tmux
 install_claude
+install_eza
 install_doppler
 
 source "$DIR/setup-github-ssh.sh"
