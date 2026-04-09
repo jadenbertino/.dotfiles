@@ -41,6 +41,7 @@ fi
 # Add marker and header
 cat >> "$PGPASS_TMP" << EOF
 $PGPASS_MARKER
+# Format: hostname:port:database:username:password
 # Auto-synced from Doppler project '$PROJECT'
 # Last synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 EOF

@@ -1,4 +1,9 @@
 ## Tools
 
 You have access to:
-- Serena (MCP) for semantic code navigation, **find references**, go to definition, search symbols, and multi-file edits.
+
+- PostgreSQL via `psql service=<name>` — available services: `local`, `prod-read`
+
+## Shell
+
+- `ls` is aliased to `eza`
