@@ -1,4 +1,5 @@
-alias ls="eza"
+alias lz="eza --icons --grid --group-directories-first"
+alias lza="eza --tree --git-ignore --level=3 --no-permissions --no-user --no-time --all"
 alias la="eza -lah --git"
 alias ll="eza -lh --git"
 alias l="eza -lh --git"
@@ -58,8 +59,6 @@ zc() {
 }
 
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
-alias lz="eza"
-alias lza="eza --tree --git-ignore --level=3 --no-permissions --no-user --no-time --all"
 alias sb="supabase"
 alias d="docker"
 
@@ -70,3 +69,4 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 alias .......='cd ../../../../../..'
+
