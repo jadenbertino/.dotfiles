@@ -10,7 +10,7 @@ const USAGE = `Usage:
   ddl logs query <query> --from <time> [--to <time>] [options]
   ddl logs detail <log-id>
 
-Fetch logs from Datadog (max 15 days old).
+Fetch logs from Datadog. Flex storage is used automatically for queries older than 15 days.
 
 Options:
   --to <time>         End time (default: now)
@@ -22,7 +22,7 @@ Options:
   -h, --help          Show this help
 
 Time formats:
-  Relative:  "30m ago", "2h ago", "1d ago" (max 15d ago)
+  Relative:  "30m ago", "2h ago", "1d ago", "30d ago"
   Absolute:  "2026-03-28T05:00:00Z", epoch milliseconds
 
 Environment variables:
@@ -124,7 +124,6 @@ function overridesFromFlags(flags) {
   const result = {}
   if (flags.json) result.json = true
   if (flags.limit) result.maxLogs = Number(flags.limit)
-  if (flags.storage) result.storage = flags.storage
   result.truncate = flags.truncate != null ? flags.truncate : 100
   return result
 }
@@ -138,8 +137,6 @@ function parseDatadogUrl(raw) {
   const fromTs = params.get('from_ts')
   const toTs = params.get('to_ts')
   const sort = params.get('stream_sort') === 'asc' ? 'timestamp' : '-timestamp'
-  const storage = params.get('storage')
-
   if (!fromTs || !toTs) {
     console.error('Error: URL must contain from_ts and to_ts parameters')
     process.exit(1)
@@ -151,7 +148,6 @@ function parseDatadogUrl(raw) {
     from: new Date(Number(fromTs)).toISOString(),
     to: new Date(Number(toTs)).toISOString(),
     sort,
-    ...(storage ? { storage } : {}),
   }
 }
 
@@ -196,7 +192,6 @@ function parseQueryMode(query, flags) {
     json: flags.json || false,
     maxLogs: flags.limit ? Number(flags.limit) : undefined,
     truncate: flags.truncate != null ? flags.truncate : 100,
-    storage: flags.storage,
   }
 }
 
@@ -271,22 +266,10 @@ async function fetchLogs(opts) {
     process.exit(1)
   }
 
-  const { site, query, from, to, sort, json, maxLogs, truncate, storage } = opts
-
-  // TODO: get flex tier working to access logs older than 15 days
-  // Check if time range is older than 15 days
+  const { site, query, from, to, sort, json, maxLogs, truncate } = opts
   const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
-  const fromDate = new Date(from)
-  if (fromDate < fifteenDaysAgo) {
-    console.error('Error: Cannot query logs older than 15 days')
-    console.error(
-      `Requested: ${from} (${Math.floor((Date.now() - fromDate.getTime()) / (24 * 60 * 60 * 1000))} days ago)`,
-    )
-    console.error(
-      `Oldest available: ${fifteenDaysAgo.toISOString()} (15 days ago)`,
-    )
-    process.exit(1)
-  }
+  const storage = new Date(from) < fifteenDaysAgo ? 'flex' : undefined
+
   const endpoint = `https://${site}/api/v2/logs/events/search`
   let cursor = undefined
   let total = 0
@@ -311,6 +294,7 @@ async function fetchLogs(opts) {
         query,
         from,
         to,
+        ...(storage ? { storage_tier: storage } : {}),
       },
       sort,
       page: { limit: pageSize, ...(cursor ? { cursor } : {}) },
