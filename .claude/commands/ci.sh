@@ -56,7 +56,9 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
     REPRO_FAILED_COUNT=$(echo "$REPRO_FAILED" | jq 'length')
 
     if [ "$REPRO_FAILED_COUNT" -gt 0 ]; then
-      FAILED="$FAILED_NOW"
+      # Re-fetch all currently-failed jobs (more may have failed since last poll)
+      FAILED=$(gh run view "$RUN_ID" --json jobs \
+        --jq '[.jobs[] | select(.conclusion == "failure")]')
       break
     fi
 

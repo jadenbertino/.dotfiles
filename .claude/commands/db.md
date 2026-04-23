@@ -32,7 +32,12 @@ A player. Key columns: `id`, `email`.
 A checkout session. Key columns: `id`, `customerId` (FK → `Customer`), `environmentId` (FK → `Environment`).
 
 ### `Payment`
-An attempt to charge a customer. Key columns: `id`, `method` (payment method e.g. `alipay`, `card`). A payment does not mean success.
+An attempt to charge a customer. Key columns: `id`, `method` (payment method e.g. `alipay`, `card`), `playerUserAgent` (raw UA string). A payment does not mean success.
+
+**Detecting desktop vs mobile via `playerUserAgent`:**
+- Desktop: `ILIKE '%windows nt%' OR ILIKE '%macintosh%' OR ILIKE '%x11%'`
+- Mobile: `ILIKE '%android%' OR ILIKE '%iphone%' OR ILIKE '%mobile%'`
+- Note: `X11` can appear on Android (HeyTap/WebView UAs) — treat with caution. `playerUserAgent` also exists on `Checkout`.
 
 ### `Purchase`
 A read-only record created only after a payment succeeds. Key columns: `id`, `shortId`, `createdAt`, `status`, `totalAmount`, `currency`, `paymentId` (FK → `Payment`), `checkoutId` (FK → `Checkout`), `environmentId` (FK → `Environment`).
