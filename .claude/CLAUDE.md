@@ -9,6 +9,3 @@ You have access to:
 
 - `ls` is aliased to `eza`
 
-## Checks
-
-- When you need to check your work, read `/home/node/.claude/commands/check.md`. Prefer this over raw typecheck or lint commands.

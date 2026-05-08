@@ -15,7 +15,7 @@ Repeat until done (max 5 push cycles before stopping):
 
 1. For each job in the output, read its `LOG:` file to understand the errors.
 2. Classify each failing job by its `LOCAL:` flag and error type:
-   - **Lint / typecheck / format** failures (`LOCAL: yes`) → fix using `bash ~/.claude/commands/check.sh --branch`
+   - **Lint / typecheck / format** failures (`LOCAL: yes`) → fix using the appropriate lint/typecheck commands for the workspace
    - **Test** failures (`LOCAL: yes`) → fix using the job's local command (see table below)
    - **Any** failure with `LOCAL: no` → attempt fixes based on log content only; skip local verification for that job
 3. Fix all errors across all jobs in one pass before re-verifying anything.
@@ -24,9 +24,9 @@ Repeat until done (max 5 push cycles before stopping):
    yarn workspace storefront test > .tmp/test-out.txt 2>&1 || true
    # then Read or grep .tmp/test-out.txt for failures
    ```
-   - Lint/typecheck/format: `bash ~/.claude/commands/check.sh --branch` (same redirect pattern)
+   - Lint/typecheck/format: run the appropriate lint/typecheck commands for the workspace (same redirect pattern)
    - Tests: the job's local command
-5. Once all `LOCAL: yes` commands pass, run `bash ~/.claude/commands/check.sh --branch` as a final gate — fixes can introduce lint/type regressions.
+5. Once all `LOCAL: yes` commands pass, run lint/typecheck for all affected workspaces as a final gate — fixes can introduce lint/type regressions.
 6. Once everything passes:
    - Stage only changed source files
    - Commit with a message describing what was fixed (e.g. `fix: mock next/font in storefront vitest setup`)
@@ -43,7 +43,7 @@ Repeat until done (max 5 push cycles before stopping):
 | `Unit Tests (neon-js)` | `yarn workspace neon-js test` |
 | `Unit Tests (checkout)` | `yarn workspace checkout test` |
 | `Server Unit Tests` | `yarn workspace server test` |
-| `Cypress integration tests (checkout, ...)` | `cd apps/checkout && npx cypress run --spec 'cypress/integration/<failing-spec>.cy.ts'` |
+| `Cypress integration tests (checkout, ...)` | `cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/<failing-spec>.cy.ts'` |
 
 If a job doesn't match a pattern, derive the workspace from the job title.
 
@@ -52,7 +52,7 @@ If a job doesn't match a pattern, derive the workspace from the job title.
 The checkout Cypress integration tests run against the local Next.js dev server on port 3001 (already running in this environment). Read the failing log to identify which spec file failed, then run it directly:
 
 ```bash
-cd apps/checkout && npx cypress run --spec 'cypress/integration/wechat-pay-qr.cy.ts'
+cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/wechat-pay-qr.cy.ts'
 ```
 
 **Important:** The dev server at `http://localhost:8080` (backend) will return 404 for fixture checkout IDs that don't exist in the local DB, causing Next.js SSR to return `notFound: true` and the page to 404. If you hit this, insert a minimal checkout row into the local DB:
@@ -79,6 +79,4 @@ The backend returning a 500 (e.g. missing related data) is fine — SSR falls th
 
 ## Fix rules and safety
 
-Follow the fix rules and safety rules defined in `~/.claude/commands/check.md`.
-
-Additionally: if the same root cause appears across multiple jobs, fix it once — don't duplicate.
+If the same root cause appears across multiple jobs, fix it once — don't duplicate.
