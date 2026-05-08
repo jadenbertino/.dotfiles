@@ -16,7 +16,11 @@ BRANCH=$(git branch --show-current)
 REPO_DIR=$(git rev-parse --show-toplevel)
 
 # Find the latest PR CI run for the current HEAD commit on this branch
-HEAD_SHA=$(git rev-parse HEAD)
+# Use the upstream remote SHA so we match what GitHub Actions sees
+HEAD_SHA=$(git ls-remote origin "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
+if [ -z "$HEAD_SHA" ]; then
+  HEAD_SHA=$(git rev-parse HEAD)
+fi
 LATEST=$(gh run list --branch "$BRANCH" --workflow "PR CI" --limit 10 \
   --json databaseId,status,conclusion,headSha \
   --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]" 2>/dev/null)
