@@ -1,14 +1,3 @@
-# Usage
-
-1. Ensure you meet all the [prerequisites](docs/Prerequisites.md)
-2. Clone this repo into your home directory
-3. `cd` into the repo
-4. Refer to `.config/env/.env.example` to set up your `.env` file
-5. Run `bash scripts/stow.sh`
-6. Review and make changes to files in the repo
-7. Run `source ~/.zshrc` to load the config
-   - After you source the first time, you can just run `reload` to reload the config
-
 # Codespaces
 
 if using this in codespaces
