@@ -44,7 +44,7 @@ source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/ai.zsh
 source $ZSH_CONFIG_HOME/go.zsh
 source $ZSH_CONFIG_HOME/clipboard.sh
-source $ZSH_CONFIG_HOME/pg-service.zsh
+# pg-service sourced after doppler sync (see below)
 
 # Synced files
 source $HOME/.ssh/sync.zsh
@@ -125,6 +125,7 @@ _doppler_maybe_sync() {
   set -a; [[ -f "$DOPPLER_ENV_FILE" ]] && source "$DOPPLER_ENV_FILE"; set +a
 }
 _doppler_maybe_sync
+source $ZSH_CONFIG_HOME/pg-service.zsh
 
 alias doppler-sync="~/.local/bin-dotfiles/doppler-sync && source \"$DOPPLER_ENV_FILE\""
 alias ds="doppler-sync" # shorthand alias
