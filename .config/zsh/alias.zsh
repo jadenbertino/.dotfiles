@@ -20,7 +20,7 @@ alias yw='yarn workspace'
 alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
 alias yt='yarn turbo'
-alias yr='yarn install --immutable && yarn db:reset && yarn dev'
+alias yr='yarn install --immutable && yarn db:reset -f && yarn dev'
 
 # toggle claude notifications
 alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
