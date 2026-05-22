@@ -125,6 +125,7 @@ _doppler_maybe_sync() {
   set -a; [[ -f "$DOPPLER_ENV_FILE" ]] && source "$DOPPLER_ENV_FILE"; set +a
 }
 _doppler_maybe_sync
+export BASH_ENV="$DOPPLER_ENV_FILE"
 source $ZSH_CONFIG_HOME/pg-service.zsh
 
 alias doppler-sync="~/.local/bin-dotfiles/doppler-sync && source \"$DOPPLER_ENV_FILE\""
