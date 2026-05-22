@@ -12,6 +12,7 @@ typeset -A git_aliases=(
 
     ["st"]="stash"
     ["sa"]="stash apply"
+    ["sp"]="stash pop"
 
     # Commit
     ["cam"]="commit -a -m"
