@@ -1,0 +1,3 @@
+- Prefer small, frequent commits
+- Skip typecheck and lint. Allow the pre-commit hook to handle these checks.
+- You can view `yarn dev` logs at `/tmp/neon-dev.log`
