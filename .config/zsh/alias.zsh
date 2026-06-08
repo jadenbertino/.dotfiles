@@ -20,6 +20,7 @@ alias yw='yarn workspace'
 alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
 alias yt='yarn turbo'
+unalias yr 2>/dev/null
 yr() {
   setopt localoptions pipefail
 
@@ -80,4 +81,3 @@ alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 alias .......='cd ../../../../../..'
-
