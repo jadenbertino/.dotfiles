@@ -6,6 +6,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 source "$DIR/.config/zsh/utils.sh"
 detect_os
 
+echo "Welcome, Jaden"
+
 setup_tmux() {
 
   if ! is_command_available "tmux"; then
@@ -59,6 +61,16 @@ install_claude() {
     curl -fsSL https://claude.ai/install.sh | bash
     echo "Installed claude"
   fi
+}
+
+install_codex() {
+  if is_command_available "codex"; then
+    return 0
+  fi
+
+  echo "Installing codex"
+  npm install -g @openai/codex
+  echo "Installed codex"
 }
 
 install_neovim() {
@@ -227,10 +239,12 @@ install_doppler() {
 }
 
 install_homebrew
+install_stow
 install_neovim
 
 setup_tmux
 install_claude
+install_codex
 install_eza
 install_doppler
 

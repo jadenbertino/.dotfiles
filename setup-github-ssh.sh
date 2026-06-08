@@ -15,9 +15,7 @@ KEY_BODY="$(printf '%s\n' "$KEY_MATERIAL" | awk '{print $1 " " $2}')"
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 
-if [ -f "$KEY_FILE" ]; then
-  echo "GitHub SSH key already exists at $KEY_FILE, reusing it."
-else
+if [ ! -f "$KEY_FILE" ]; then
   echo "Generating GitHub SSH key..."
   ssh-keygen -t ed25519 -C "$DEFAULT_EMAIL" -f "$KEY_FILE" -N "" > /dev/null 2>&1
 fi
@@ -85,19 +83,21 @@ git config --global gpg.ssh.allowedSignersFile "$ALLOWED_SIGNERS_FILE"
 git config --global gpg.ssh.program "$(command -v ssh-keygen)"
 git config --global --unset-all gpg.program || true
 
+github_key_registration_failed=false
+
 ensure_github_key() {
   local key_type="$1"
   local title="$2"
   local api_path=""
 
   if ! command -v gh >/dev/null 2>&1; then
-    echo "GitHub CLI is not installed, skipping GitHub ${key_type} key registration."
-    return
+    github_key_registration_failed=true
+    return 1
   fi
 
   if ! gh auth status >/dev/null 2>&1; then
-    echo "GitHub CLI is not authenticated, skipping GitHub ${key_type} key registration."
-    return
+    github_key_registration_failed=true
+    return 1
   fi
 
   if [ "$key_type" = "authentication" ]; then
@@ -107,27 +107,29 @@ ensure_github_key() {
   fi
 
   if gh api "$api_path" --paginate --jq '.[].key' 2>/dev/null | grep -Fqx "$KEY_BODY"; then
-    echo "GitHub already has this ${key_type} key registered."
     return
   fi
 
   echo "Adding GitHub ${key_type} key..."
-  gh ssh-key add "$PUB_KEY_FILE" --title "$title" --type "$key_type"
+  if ! gh ssh-key add "$PUB_KEY_FILE" --title "$title" --type "$key_type"; then
+    github_key_registration_failed=true
+    return 1
+  fi
 }
 
-ensure_github_key authentication "codespace auth"
-ensure_github_key signing "codespace signing"
+ensure_github_key authentication "codespace auth" || true
+ensure_github_key signing "codespace signing" || true
 
-echo ""
 echo "Git SSH signing configured."
-echo ""
 echo "Public key:"
 cat "$PUB_KEY_FILE"
-echo ""
-echo "GitHub key registration was attempted automatically."
-echo "If GitHub CLI auth was unavailable, add this key manually as both:"
-echo "1. An SSH authentication key: https://github.com/settings/keys"
-echo "2. An SSH signing key: https://github.com/settings/ssh/new"
+
+if [ "$github_key_registration_failed" = true ]; then
+  echo "GitHub key registration was attempted automatically."
+  echo "If GitHub CLI auth was unavailable, add this key manually as both:"
+  echo "1. An SSH authentication key: https://github.com/settings/keys"
+  echo "2. An SSH signing key: https://github.com/settings/ssh/new"
+fi
 
 # Update dotfiles remote to SSH
 git -C "$DOTFILES_DIR" remote set-url origin "$SSH_TARGET"
