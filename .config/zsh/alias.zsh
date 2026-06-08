@@ -9,6 +9,12 @@ alias dr='doppler run --'
 alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'
 alias rmf='rm -rf'
 
+ch() {
+  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+    --remote-debugging-port=9222 \
+    --user-data-dir=/tmp/chrome-cdp
+}
+
 # IDE aliases
 alias b='bash'
 alias v='nvim'
