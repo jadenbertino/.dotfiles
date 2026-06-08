@@ -20,7 +20,17 @@ alias yw='yarn workspace'
 alias yd='yarn dev'
 alias yf='yarn workspaces foreach --all run'
 alias yt='yarn turbo'
-alias yr='yarn install --immutable && yarn openapi && yarn db:generate && yarn db:reset -f && yarn dev'
+yr() {
+  setopt localoptions pipefail
+
+  {
+    yarn install --immutable &&
+      yarn openapi &&
+      yarn db:generate &&
+      yarn db:reset -f &&
+      yarn dev
+  } 2>&1 | tee /tmp/neon-dev.log
+}
 
 # toggle claude notifications
 alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
