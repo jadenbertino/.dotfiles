@@ -159,6 +159,49 @@ install_stow() {
   echo "stow installed successfully"
 }
 
+stow_dotfiles() {
+  local stow_log
+  local conflicts
+  local response
+  stow_log="$(mktemp)"
+
+  if (cd "$DIR" && stow --target="$HOME" .) 2>"$stow_log"; then
+    rm -f "$stow_log"
+    return 0
+  fi
+
+  conflicts="$(sed -n 's/.*existing target is neither a link nor a directory: //p' "$stow_log")"
+
+  if [ -z "$conflicts" ]; then
+    cat "$stow_log" >&2
+    rm -f "$stow_log"
+    return 1
+  fi
+
+  echo "stow found existing files that conflict with dotfiles:"
+  printf '%s\n' "$conflicts" | sed 's/^/  /'
+  printf 'Overwrite these files and continue? [y/N] '
+  read -r response
+
+  case "$response" in
+    [yY]|[yY][eE][sS])
+      while IFS= read -r conflict; do
+        rm -rf "$HOME/$conflict"
+      done <<EOF
+$conflicts
+EOF
+      ;;
+    *)
+      echo "stow cancelled"
+      rm -f "$stow_log"
+      return 1
+      ;;
+  esac
+
+  rm -f "$stow_log"
+  (cd "$DIR" && stow --target="$HOME" .)
+}
+
 install_eza() {
   if is_command_available "eza"; then
     return 0
@@ -240,6 +283,7 @@ install_doppler() {
 
 install_homebrew
 install_stow
+stow_dotfiles
 install_neovim
 
 setup_tmux

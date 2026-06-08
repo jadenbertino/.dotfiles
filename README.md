@@ -3,11 +3,10 @@
 if using this in codespaces
 
 1. clone the repo into home dir: `cd && gh repo clone jadenbertino/.dotfiles`
-2. remove the default shell files: `cd $HOME && rm -rf .bashrc .profile .zshrc`
-3. run the installer: `cd ~/.dotfiles && ./install.sh`
-4. stow the dotfiles: `cd ~/.dotfiles && stow .`
-5. ???
-6. profit
+2. run the installer: `cd ~/.dotfiles && ./install.sh`
+3. approve overwriting conflicting default files if prompted
+4. ???
+5. profit
 
 # Additional Notes
 
