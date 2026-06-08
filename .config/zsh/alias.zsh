@@ -32,6 +32,7 @@ yr() {
 
   {
     yarn install --immutable &&
+      yarn docker:up &&
       yarn openapi &&
       yarn db:generate &&
       yarn db:reset -f &&
