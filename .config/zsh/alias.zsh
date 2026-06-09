@@ -63,9 +63,8 @@ edit() {
   disown # don't kill the process if shell exits
 }
 
-c() {
-  edit code "${1:-.}"
-}
+unfunction c 2>/dev/null
+alias c='codex'
 
 co() {
   edit code "${1:-.}"
