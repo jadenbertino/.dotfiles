@@ -1,0 +1,203 @@
+#!/usr/bin/env node
+
+// Fast, targeted TypeScript check for explicitly supplied files.
+//
+// This intentionally does not run a complete project type check. For each input
+// file, it finds the nearest tsconfig.json and creates a TypeScript program with
+// only the requested files plus ambient .d.ts files as roots. That makes it much
+// faster for changed-file checks, but it can miss errors that only appear when
+// the full project source set is included.
+
+import { createRequire } from "node:module";
+import { existsSync } from "node:fs";
+import path from "node:path";
+
+const supportedExtensions = new Set([
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".mts",
+  ".cjs",
+  ".cts",
+  ".ts",
+  ".tsx",
+]);
+
+const usage = "Usage: tsc-fast <file ...>";
+const scriptRequire = createRequire(import.meta.url);
+const loadedPnpFiles = new Set();
+
+const findUpFile = (startDir, fileName) => {
+  let currentDir = path.resolve(startDir);
+
+  while (true) {
+    const candidate = path.join(currentDir, fileName);
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      return null;
+    }
+    currentDir = parentDir;
+  }
+};
+
+const setupPnpIfPresent = (startDir) => {
+  const pnpFile = findUpFile(startDir, ".pnp.cjs");
+  if (!pnpFile || loadedPnpFiles.has(pnpFile)) {
+    return;
+  }
+
+  const pnpApi = scriptRequire(pnpFile);
+  if (typeof pnpApi.setup === "function") {
+    pnpApi.setup();
+  }
+  loadedPnpFiles.add(pnpFile);
+};
+
+const resolveTypescript = (configPath) => {
+  const configDir = path.dirname(configPath);
+  setupPnpIfPresent(configDir);
+
+  const fromFiles = [
+    path.join(configDir, "__tsc-fast__.js"),
+    path.join(process.cwd(), "__tsc-fast__.js"),
+  ];
+
+  for (const fromFile of fromFiles) {
+    try {
+      return createRequire(fromFile).resolve("typescript");
+    } catch {
+      // Try the next project-relative location before falling back to the script.
+    }
+  }
+
+  try {
+    return scriptRequire.resolve("typescript");
+  } catch {
+    throw new Error(
+      `Could not resolve the "typescript" package for ${configPath}. Install TypeScript in that project, then retry.`,
+    );
+  }
+};
+
+const loadTypescript = (configPath) => scriptRequire(resolveTypescript(configPath));
+
+const inputFiles = process.argv.slice(2);
+
+if (
+  inputFiles.length === 0 ||
+  inputFiles.includes("--help") ||
+  inputFiles.includes("-h")
+) {
+  console.error(usage);
+  process.exit(inputFiles.length === 0 ? 1 : 0);
+}
+
+const groups = new Map();
+let failed = false;
+
+// Validate each requested source file and group it by the nearest tsconfig.json.
+// Files sharing a config are checked together so compiler options, path aliases,
+// JSX settings, and local type roots match the project that owns those files.
+for (const inputFile of inputFiles.map((fileName) => path.resolve(fileName))) {
+  if (!existsSync(inputFile)) {
+    console.error(`File does not exist: ${inputFile}`);
+    failed = true;
+    continue;
+  }
+
+  if (!supportedExtensions.has(path.extname(inputFile))) {
+    console.error(`Unsupported file extension: ${inputFile}`);
+    failed = true;
+    continue;
+  }
+
+  const configPath = findUpFile(path.dirname(inputFile), "tsconfig.json");
+  if (!configPath) {
+    console.error(`No tsconfig.json found for: ${inputFile}`);
+    failed = true;
+    continue;
+  }
+
+  const files = groups.get(configPath) ?? [];
+  files.push(inputFile);
+  groups.set(configPath, files);
+}
+
+// Run one narrowed TypeScript program per tsconfig. Parsing the config preserves
+// project compiler options, but the root file list is replaced below to avoid
+// checking every implementation file in the project.
+for (const [configPath, files] of groups) {
+  let ts;
+  try {
+    ts = loadTypescript(configPath);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    failed = true;
+    continue;
+  }
+
+  const formatHost = {
+    getCanonicalFileName: (fileName) => fileName,
+    getCurrentDirectory: ts.sys.getCurrentDirectory,
+    getNewLine: () => ts.sys.newLine,
+  };
+
+  const configFile = ts.readConfigFile(configPath, ts.sys.readFile);
+  if (configFile.error) {
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext([configFile.error], formatHost),
+    );
+    failed = true;
+    continue;
+  }
+
+  const parsedConfig = ts.parseJsonConfigFileContent(
+    configFile.config,
+    ts.sys,
+    path.dirname(configPath),
+  );
+  if (parsedConfig.errors.length > 0) {
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(parsedConfig.errors, formatHost),
+    );
+    failed = true;
+    continue;
+  }
+
+  // Keep ambient declarations from the project so globals, generated types, and
+  // module declarations are visible even though most implementation files are
+  // intentionally excluded from this fast check.
+  const ambientFiles = parsedConfig.fileNames.filter((fileName) =>
+    fileName.endsWith(".d.ts"),
+  );
+  const rootNames = [...new Set([...files, ...ambientFiles])];
+
+  // Type-check the narrowed root set without emitting output or writing
+  // incremental build metadata. Imported dependencies may still be pulled into
+  // the program by TypeScript, but unrelated project files are not root-checked.
+  const program = ts.createProgram({
+    rootNames,
+    options: {
+      ...parsedConfig.options,
+      noEmit: true,
+      incremental: false,
+      tsBuildInfoFile: undefined,
+    },
+  });
+  const diagnostics = ts.getPreEmitDiagnostics(program);
+
+  // Any diagnostic from any config makes the command fail after all groups have
+  // had a chance to report their own errors.
+  if (diagnostics.length > 0) {
+    console.error(
+      ts.formatDiagnosticsWithColorAndContext(diagnostics, formatHost),
+    );
+    failed = true;
+  }
+}
+
+process.exit(failed ? 1 : 0);
