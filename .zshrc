@@ -64,6 +64,17 @@ source $HOME/.ssh/sync.zsh
 add_to_path "$HOME/.local/bin"
 add_to_path "$HOME/.local/bin-dotfiles" # bin items that are tracked in dotfiles repo (e.g. custom scripts)
 
+if [ -n "$CODESPACES" ] && command -v pm2 >/dev/null 2>&1 && command -v ob >/dev/null 2>&1; then
+  VAULT_PATH="/workspaces/neon/_obsidian"
+
+  if ! pm2 describe obsidian-sync >/dev/null 2>&1; then
+    pm2 start "$(command -v ob)" \
+      --name obsidian-sync \
+      --cwd "$VAULT_PATH" \
+      -- sync --path "$VAULT_PATH" --continuous >/dev/null 2>&1
+  fi
+fi
+
 # Packages
 verify_package zsh
 verify_package zoxide
