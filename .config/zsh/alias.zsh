@@ -35,7 +35,7 @@ yr() {
       yarn docker:up &&
       yarn openapi &&
       yarn db:generate &&
-      yarn db:reset -f "$@" &&
+      yarn db:reset -f --skipInviteFlow "$@" &&
       yarn dev
   } 2>&1 | tee /tmp/neon-dev.log
 }
