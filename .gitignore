@@ -25,6 +25,8 @@ node_modules
 !.claude/keybindings.json
 !.claude/commands
 !.claude/commands/**
+!.claude/skills
+!.claude/skills/**
 !.claude/settings.json
 
 .local/bin/claude
