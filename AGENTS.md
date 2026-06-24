@@ -7,6 +7,9 @@
 - Create default fixture constants with reasonable minimal values; individual tests spread the default and override only the fields relevant to what they're asserting
 - Prefer inline spreads over helper functions: `{ ...defaultFoo, override: value }` not `makeFoo({ override: value })`
 - Defaults should be the minimal/null case — tests that need complex values opt in explicitly
+- Add `satisfies` to default fixtures so TypeScript catches drift between the fixture shape and the actual type: `const defaultFoo = { ... } satisfies FooType`
+- Export input/output types from services when callers need to reference them (e.g. for `satisfies` in tests). Types that describe a service's public contract are fine to export; internal implementation types are not.
+- When an assertion contains a non-obvious value, add an inline comment explaining why that value is expected: `expect(result.discountAmount).toEqual(m.usd(4)); // 20% off $20`. If the same value appears in multiple assertions (or in both an input and an assertion), extract it as a named constant and put the comment there instead: `const maximumAmount = m.usd(5); // uncapped would be $20`.
 
 ## Tools
 
