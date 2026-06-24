@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # this file installs a bunch of programs
 
