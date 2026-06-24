@@ -6,6 +6,13 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 source "$DIR/.config/zsh/utils.sh"
 detect_os
 
+AUTO_YES=false
+while getopts "y" opt; do
+  case "$opt" in
+    y) AUTO_YES=true ;;
+  esac
+done
+
 echo "Welcome, Jaden"
 
 setup_tmux() {
@@ -180,8 +187,12 @@ stow_dotfiles() {
 
   echo "stow found existing files that conflict with dotfiles:"
   printf '%s\n' "$conflicts" | sed 's/^/  /'
-  printf 'Overwrite these files and continue? [y/N] '
-  read -r response
+  if [ "$AUTO_YES" = true ]; then
+    response="y"
+  else
+    printf 'Overwrite these files and continue? [y/N] '
+    read -r response
+  fi
 
   case "$response" in
     [yY]|[yY][eE][sS])
