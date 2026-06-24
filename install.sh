@@ -274,6 +274,33 @@ install_psql() {
   echo "psql installed successfully"
 }
 
+install_magic_wormhole() {
+  if is_command_available "wormhole"; then
+    return 0
+  fi
+
+  echo "Installing magic-wormhole..."
+
+  case "$OS" in
+    "macos")
+      brew install magic-wormhole
+      ;;
+    "linux"|"wsl")
+      if is_command_available "uv"; then
+        uv tool install magic-wormhole
+      else
+        sudo apt update && sudo apt install -y magic-wormhole
+      fi
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+
+  echo "magic-wormhole installed successfully"
+}
+
 install_doppler() {
   if is_command_available "doppler"; then
     return 0
@@ -326,6 +353,7 @@ install_claude
 install_codex
 install_eza
 install_psql
+install_magic_wormhole
 install_doppler
 
 source "$DIR/setup-github-ssh.sh"
