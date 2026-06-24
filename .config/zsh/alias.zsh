@@ -82,6 +82,17 @@ zc() {
   edit "."
 }
 
+zipf() {
+  local name="${1%/}"
+  local out="${name}.zip"
+  local i=2
+  while [[ -e "$out" ]]; do
+    out="${name}-${i}.zip"
+    (( i++ ))
+  done
+  zip -r "$out" "$name"
+}
+
 alias mnt="cd /mnt/c/Users/jaden" # cd to windows drive
 alias sb="supabase"
 alias d="docker"
