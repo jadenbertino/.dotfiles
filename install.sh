@@ -239,6 +239,30 @@ install_uv() {
   echo "uv installed successfully"
 }
 
+install_psql() {
+  if is_command_available "psql"; then
+    return 0
+  fi
+
+  echo "Installing psql..."
+
+  case "$OS" in
+    "macos")
+      brew install libpq
+      brew link --force libpq
+      ;;
+    "linux"|"wsl")
+      sudo apt update && sudo apt install -y postgresql-client
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+
+  echo "psql installed successfully"
+}
+
 install_doppler() {
   if is_command_available "doppler"; then
     return 0
@@ -290,6 +314,7 @@ setup_tmux
 install_claude
 install_codex
 install_eza
+install_psql
 install_doppler
 
 source "$DIR/setup-github-ssh.sh"
