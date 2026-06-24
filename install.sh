@@ -275,29 +275,8 @@ install_psql() {
 }
 
 install_magic_wormhole() {
-  if is_command_available "wormhole"; then
-    return 0
-  fi
-
-  echo "Installing magic-wormhole..."
-
-  case "$OS" in
-    "macos")
-      brew install magic-wormhole
-      ;;
-    "linux"|"wsl")
-      if is_command_available "uv"; then
-        uv tool install magic-wormhole
-      else
-        sudo apt update && sudo apt install -y magic-wormhole
-      fi
-      ;;
-    *)
-      echo "Unsupported OS: $OS"
-      return 1
-      ;;
-  esac
-
+  echo "Installing/upgrading magic-wormhole..."
+  pip install --user --upgrade magic-wormhole
   echo "magic-wormhole installed successfully"
 }
 
