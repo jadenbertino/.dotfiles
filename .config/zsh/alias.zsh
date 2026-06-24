@@ -30,14 +30,20 @@ unalias yr 2>/dev/null
 yr() {
   setopt localoptions pipefail
 
-  {
+  (
+    export FORCE_COLOR=1
     yarn install --immutable &&
       yarn docker:up &&
       yarn openapi &&
       yarn db:generate &&
       yarn db:reset -f "$@" &&
       yarn dev
-  } 2>&1 | tee /tmp/neon-dev.log
+  ) 2>&1 | tee /tmp/neon-dev.log
+}
+
+nd() {
+  setopt localoptions pipefail
+  FORCE_COLOR=1 yarn dev 2>&1 | tee /tmp/neon-dev.log
 }
 
 # toggle claude notifications
