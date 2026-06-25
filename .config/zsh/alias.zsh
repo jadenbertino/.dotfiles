@@ -50,7 +50,7 @@ nd() {
 alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
 
 # youtube downloader
-alias ytd="yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 0"
+alias ytd="yt-dlp -f bestaudio/best -x --audio-format mp3 --audio-quality 0"
 
 edit() {
   local EDITOR_CMD="$1"
