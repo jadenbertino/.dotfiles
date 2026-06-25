@@ -276,7 +276,7 @@ install_psql() {
 
 install_magic_wormhole() {
   echo "Installing/upgrading magic-wormhole..."
-  pip install --user --upgrade magic-wormhole
+  python3 -m pip install --user --upgrade magic-wormhole
   echo "magic-wormhole installed successfully"
 }
 
