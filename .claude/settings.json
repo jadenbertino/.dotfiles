@@ -24,8 +24,9 @@
     ]
   },
   "enabledPlugins": {},
-  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754007386922
   }
