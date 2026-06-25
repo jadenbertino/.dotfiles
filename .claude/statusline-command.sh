@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 input=$(cat)
+
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
+fast=$(echo "$input" | jq -r '.fast_mode // empty')
+effort=$(echo "$input" | jq -r '.effort.level // empty')
+
+parts=()
 
 if [ -n "$used" ]; then
-  cols=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
-  label=$(printf "ctx %.0f%%" "$used")
-
   used_int=$(printf "%.0f" "$used")
+  ctx=$(printf "%.0f%%" "$used")
   if [ "$used_int" -ge 80 ]; then
-    label=$'\033[31m'"${label}"$'\033[0m'
+    ctx=$'\033[31m'"${ctx}"$'\033[0m'
   fi
+  parts+=("$ctx")
+fi
 
-  printf "%*s" "$cols" "$label"
+[ -n "$effort" ] && parts+=("$effort")
+[ "$fast" = "true" ] && parts+=("⚡")
+
+if [ "${#parts[@]}" -gt 0 ]; then
+  output="${parts[0]}"
+  for part in "${parts[@]:1}"; do
+    output="${output} | ${part}"
+  done
+  printf "%s" "$output"
 fi
