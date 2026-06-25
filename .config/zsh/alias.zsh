@@ -23,7 +23,10 @@ alias nv='nvim'
 # yarn
 alias y='yarn'
 alias yw='yarn workspace'
-alias yd='yarn dev'
+yd() {
+  setopt localoptions pipefail
+  FORCE_COLOR=1 yarn dev 2>&1 | tee /tmp/neon-dev.log
+}
 alias yf='yarn workspaces foreach --all run'
 alias yt='yarn turbo'
 unalias yr 2>/dev/null
@@ -37,8 +40,8 @@ yr() {
       yarn openapi &&
       yarn db:generate &&
       yarn db:reset -f "$@" &&
-      yarn dev
-  ) 2>&1 | tee /tmp/neon-dev.log
+      yd "$@"
+  )
 }
 
 nd() {
