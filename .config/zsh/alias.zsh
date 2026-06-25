@@ -56,7 +56,7 @@ ytd() {
   yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 0 "$@" 2> >(tee "$tmpfile" >&2)
   local rc=$?
   if [[ $rc -ne 0 ]] && grep -q "Requested format is not available" "$tmpfile"; then
-    echo "[ytd] bestaudio not available, falling back to best"
+    echo "\033[31m[ytd] bestaudio not available, falling back to best\033[0m"
     yt-dlp -f best -x --audio-format mp3 --audio-quality 0 "$@"
     rc=$?
   fi
