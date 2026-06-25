@@ -11,10 +11,10 @@ parts=()
 if [ -n "$used" ]; then
   used_int=$(printf "%.0f" "$used")
   ctx=$(printf "%.0f%%" "$used")
-  [ -n "$model" ] && ctx="${ctx}  ${model}"
   if [ "$used_int" -ge 80 ]; then
     ctx=$'\033[31m'"${ctx}"$'\033[0m'
   fi
+  [ -n "$model" ] && ctx="${ctx}  ${model}"
   parts+=("$ctx")
 fi
 
