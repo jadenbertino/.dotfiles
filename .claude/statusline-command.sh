@@ -4,17 +4,20 @@ input=$(cat)
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 fast=$(echo "$input" | jq -r '.fast_mode // empty')
 effort=$(echo "$input" | jq -r '.effort.level // empty')
+model=$(echo "$input" | jq -r '.model.display_name // empty' | tr '[:upper:] ' '[:lower:]-')
 
 parts=()
 
 if [ -n "$used" ]; then
   used_int=$(printf "%.0f" "$used")
   ctx=$(printf "%.0f%%" "$used")
+  [ -n "$model" ] && ctx="${ctx}  ${model}"
   if [ "$used_int" -ge 80 ]; then
     ctx=$'\033[31m'"${ctx}"$'\033[0m'
   fi
   parts+=("$ctx")
 fi
+
 
 [ -n "$effort" ] && parts+=("$effort")
 [ "$fast" = "true" ] && parts+=("⚡")
