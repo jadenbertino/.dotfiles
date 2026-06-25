@@ -22,7 +22,7 @@ fi
 if [ "${#parts[@]}" -gt 0 ]; then
   output="${parts[0]}"
   for part in "${parts[@]:1}"; do
-    output="${output} | ${part}"
+    output="${output}  ${part}"
   done
   printf "%s" "$output"
 fi
