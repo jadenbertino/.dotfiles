@@ -71,3 +71,17 @@ node /home/node/.claude/skills/translate/scripts/merge-translations.js <workspac
 ```bash
 yarn csv-to-translations <workspace>
 ```
+
+**IMPORTANT:** Capture the full output and check stderr. This command fails with a CSV parse error if the main `__translations_tmp.csv` has malformed quotes — it does NOT always exit non-zero cleanly. If there is any error output, stop and fix the CSV before proceeding. Do not treat a truncated or partial success message as confirmation that the locale JSON files were written.
+
+### Step 5 — Verify (spawn a separate agent)
+
+Spawn a subagent with the following instructions:
+
+1. Run `git diff --name-only | grep 'translation\.json'` and confirm at least one file is modified. If none, stop and report failure — the write step silently failed.
+2. Read each modified translation file and adversarially review them: look for missing keys, untranslated values left in English when they shouldn't be, broken interpolation variables (`{{}}`), malformed JSON, and any obviously wrong or machine-garbled translations.
+3. Fix any issues found directly in the files.
+
+## Delegation
+
+**Always spawn a subagent to run this entire skill.** The translation workflow is self-contained and should not block the main context. Use `Agent({ description: "Translate missing storefront keys", prompt: "Run the translate skill for the storefront workspace..." })` and wait for it to complete before reporting done.
