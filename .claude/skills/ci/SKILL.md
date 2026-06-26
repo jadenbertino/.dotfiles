@@ -87,7 +87,12 @@ The backend returning a 500 (e.g. missing related data) is fine — SSR falls th
 
 ## Transient / infrastructure failures
 
-If a job fails due to a transient infrastructure issue (Docker Hub timeout, network error, runner OOM, flaky external service, etc.) rather than a code problem:
+If a job fails due to a transient issue rather than a code problem, push an empty commit. Common transient failures:
+
+- Infrastructure: Docker Hub timeout, network error, runner OOM
+- Cypress/E2E flakes: `cy.type()` on a disabled element, element detached from DOM, timeout waiting for element, assertion on a value that races with rendering — these are race conditions in the test harness, not bugs in the code. If the failing spec is unrelated to the changes on the branch, treat it as a flake.
+
+To retrigger:
 
 - **Push an empty commit** to trigger a fresh run of all jobs: `git commit --allow-empty -m "ci: retrigger" && git push`
 - **Never re-run individual jobs** (`gh run rerun --failed` is forbidden). Always trigger a full fresh run via an empty commit.
