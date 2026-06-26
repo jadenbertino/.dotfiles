@@ -7,7 +7,7 @@
 #
 # Exit codes:
 #   0 — STATUS: passing or no_runs
-#   1 — STATUS: failed, timeout, or no_reproducible_failures
+#   1 — STATUS: failed or timeout
 
 set -euo pipefail
 
@@ -26,8 +26,19 @@ LATEST=$(gh run list --branch "$BRANCH" --workflow "PR CI" --limit 10 \
   --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]" 2>/dev/null)
 
 if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
-  echo "STATUS: no_runs"
-  exit 0
+  # CI may not have started yet — retry for up to 2 minutes before giving up
+  NO_RUN_DEADLINE=$(($(date +%s) + 120))
+  while [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; do
+    if [ "$(date +%s)" -gt "$NO_RUN_DEADLINE" ]; then
+      echo "STATUS: no_runs"
+      exit 0
+    fi
+    echo "  waiting for CI run to start... ($(date '+%H:%M:%S'))" >&2
+    sleep 10
+    LATEST=$(gh run list --branch "$BRANCH" --workflow "PR CI" --limit 10 \
+      --json databaseId,status,conclusion,headSha \
+      --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]" 2>/dev/null)
+  done
 fi
 
 RUN_STATUS=$(echo "$LATEST" | jq -r '.status')
@@ -54,12 +65,9 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
     CONCLUSION=$(echo "$POLL" | jq -r '.conclusion')
     FAILED_NOW=$(echo "$POLL" | jq '.failed')
 
-    # Only break early if a reproducible job has failed — don't bail out just
-    # because Cypress/E2E jobs failed while unit tests are still running
-    REPRO_FAILED=$(echo "$FAILED_NOW" | jq '[.[] | select(.name | test("cypress|e2e|docker|gatekeeper"; "i") | not)]')
-    REPRO_FAILED_COUNT=$(echo "$REPRO_FAILED" | jq 'length')
+    FAILED_COUNT_NOW=$(echo "$FAILED_NOW" | jq 'length')
 
-    if [ "$REPRO_FAILED_COUNT" -gt 0 ]; then
+    if [ "$FAILED_COUNT_NOW" -gt 0 ]; then
       # Re-fetch all currently-failed jobs (more may have failed since last poll)
       FAILED=$(gh run view "$RUN_ID" --json jobs \
         --jq '[.jobs[] | select(.conclusion == "failure")]')
@@ -79,7 +87,7 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
     fi
 
     echo "  still running... ($(date '+%H:%M:%S'))" >&2
-    sleep 60
+    sleep 30
   done
 else
   # Run already completed
