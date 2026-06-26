@@ -13,10 +13,12 @@ Repeat until done (max 5 push cycles before stopping):
 2. Check the `STATUS:` line:
    - `passing` / `no_runs` → stop, CI is green
    - `timeout` → stop with error: "CI timed out after 15 minutes"
-   - `failed` → fix (see Fix steps below), then go back to step 1
+   - `failed` → **act immediately** on the failed job(s) listed — do not wait for other jobs to finish. Fix or handle each failure, then go back to step 1.
 3. After 5 push cycles with no green result, stop and report what's still failing.
 
 ## Fix steps (when STATUS is `failed`)
+
+Act on failures immediately — do not wait for the rest of the run to complete.
 
 1. For each job in the output, read its `LOG:` file to understand the errors.
 2. Classify each failing job by its `LOCAL:` flag and error type:
@@ -81,6 +83,14 @@ INSERT INTO "Checkout" (id, "createdAt", "updatedAt", "makerId", currency, statu
 ```
 
 The backend returning a 500 (e.g. missing related data) is fine — SSR falls through to an empty-props response and Cypress intercepts do the rest.
+
+## Transient / infrastructure failures
+
+If a job fails due to a transient infrastructure issue (Docker Hub timeout, network error, runner OOM, flaky external service, etc.) rather than a code problem:
+
+- **Push an empty commit** to trigger a fresh run of all jobs: `git commit --allow-empty -m "ci: retrigger" && git push`
+- **Never re-run individual jobs** (`gh run rerun --failed` is forbidden). Always trigger a full fresh run via an empty commit.
+- A fresh full run ensures all jobs start from a clean state on the same commit.
 
 ## Fix rules and safety
 
