@@ -1,10 +1,15 @@
+---
+name: ci
+description: Continuously fetch, fix, and push until CI is fully green on the current branch.
+---
+
 Continuously fetch, fix, and push until CI is fully green on the current branch.
 
 ## Outer loop
 
 Repeat until done (max 5 push cycles before stopping):
 
-1. Run `bash ~/.claude/commands/ci.sh` **in the background** (`run_in_background: true`) — it blocks and polls for up to 15 minutes. Running it in the background prevents context timeout and lets you be notified when it completes. You will receive a task notification with the output file path — read that file to get the `STATUS:` line and any failure details.
+1. Run `bash ~/.claude/skills/ci/ci.sh` **in the background** (`run_in_background: true`) — it blocks and polls for up to 15 minutes. Running it in the background prevents context timeout and lets you be notified when it completes. You will receive a task notification with the output file path — read that file to get the `STATUS:` line and any failure details.
 2. Check the `STATUS:` line:
    - `passing` / `no_runs` → stop, CI is green
    - `timeout` → stop with error: "CI timed out after 15 minutes"

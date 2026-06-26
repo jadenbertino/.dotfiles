@@ -108,6 +108,34 @@ is_local_verifiable() {
   echo "$1" | grep -qiE "cypress|e2e|docker|gatekeeper" && echo "no" || echo "yes"
 }
 
+# Derive the local reproduction command for a failing job.
+# Prefers evidence from the log (turbo ERROR lines); falls back to job-name patterns.
+local_cmd() {
+  local job_name="$1"
+  local log_file="$2"
+
+  # Extract failing task from turbo error: "ERROR  pkg#task: command ..."
+  local turbo_err
+  turbo_err=$(grep -oE 'ERROR  [^[:space:]]+#[^:]+' "$log_file" 2>/dev/null | head -1)
+  if [ -n "$turbo_err" ]; then
+    local pkg task
+    pkg=$(echo "$turbo_err" | sed 's/ERROR  //; s/#.*//')
+    task=$(echo "$turbo_err" | sed 's/.*#//')
+    echo "yarn workspace $pkg $task"
+    return
+  fi
+
+  # Fall back to job-name pattern matching
+  case "$job_name" in
+    *"Unit Tests (storefront)"*)  echo "yarn workspace storefront test" ;;
+    *"Unit Tests (console)"*)     echo "yarn workspace console test" ;;
+    *"Unit Tests (neon-dash)"*)   echo "yarn workspace neon-dash test" ;;
+    *"Unit Tests (neon-js)"*)     echo "yarn workspace neon-js test" ;;
+    *"Unit Tests (checkout)"*)    echo "yarn workspace checkout test" ;;
+    *"Server Unit Tests"*)        echo "yarn workspace server test" ;;
+  esac
+}
+
 FAILED_COUNT=$(echo "$FAILED" | jq 'length')
 
 # Slugify a job name: strip "web-ci / " prefix, lowercase, non-alphanumeric to dash
@@ -142,7 +170,6 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
   echo "JOB: $JOB_NAME"
   echo "LOCAL: $LOCAL"
   echo "LOG: $LOG_FILE"
-  echo ""
 
   RAW=$(mktemp)
   gh api "/repos/$REPO/actions/jobs/$JOB_ID/logs" 2>/dev/null > "$RAW" || true
@@ -162,6 +189,10 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
   rm -f "$RAW"
 
   [ -s "$LOG_FILE" ] || echo "(failed to fetch logs for $JOB_NAME)" > "$LOG_FILE"
+
+  CMD=$(local_cmd "$JOB_NAME" "$LOG_FILE")
+  [ -n "$CMD" ] && echo "CMD: $CMD"
+  echo ""
 done
 
 echo "Logs written to: $OUT_DIR"
