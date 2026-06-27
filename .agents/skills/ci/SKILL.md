@@ -1,6 +1,6 @@
 ---
 name: ci
-description: Continuously fetch, fix, and push until CI is fully green on the current branch.
+description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs.
 ---
 
 Continuously fetch, fix, and push until CI is fully green on the current branch.
@@ -36,7 +36,7 @@ Act on failures immediately — do not wait for the rest of the run to complete.
    - Tests: the job's local command
 5. Once all `LOCAL: yes` commands pass, run lint/typecheck for all affected workspaces as a final gate — fixes can introduce lint/type regressions.
 6. Once everything passes:
-   - Stage only changed source files
+   - Stage only intentional source changes — do not include unrelated user changes
    - Commit with a message describing what was fixed (e.g. `fix: mock next/font in storefront vitest setup`)
    - `git push`
 7. Return to the outer loop.
@@ -85,6 +85,14 @@ INSERT INTO "Checkout" (id, "createdAt", "updatedAt", "makerId", currency, statu
 
 The backend returning a 500 (e.g. missing related data) is fine — SSR falls through to an empty-props response and Cypress intercepts do the rest.
 
+## Failure log heuristics
+
+- **TypeScript / lint**: fix the source of the type or rule violation, not a build artifact.
+- **Tests**: identify whether the failure is assertion drift, missing setup, race/timing, fixture data, or real product behavior.
+- **Dependencies**: inspect workspace manifests and lockfiles before reinstalling.
+- **E2E**: inspect screenshots/videos/log snippets, then map the visible failure to the closest component, route, fixture, or API behavior.
+- **Flaky infrastructure**: do not make code changes unless there is a concrete repo-side cause in the log.
+
 ## Transient / infrastructure failures
 
 If a job fails due to a transient issue rather than a code problem, push an empty commit. Common transient failures:
@@ -100,4 +108,6 @@ To retrigger:
 
 ## Fix rules and safety
 
-If the same root cause appears across multiple jobs, fix it once — don't duplicate.
+- If the same root cause appears across multiple jobs, fix it once — don't duplicate.
+- Use repo-native tools (`yarn`, workspace scripts, `turbo run`, test filters) rather than inventing new commands.
+- Keep investigation anchored to the failing job output; avoid broad refactors.

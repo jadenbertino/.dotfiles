@@ -2,8 +2,8 @@
 #
 # Fetch GitHub Actions failures for the current branch.
 # Writes per-job logs to /tmp/neon-ci/{run-id}/ and prints a summary to stdout.
-# If CI is in progress, polls every 60s (up to 15m) and returns as soon as
-# at least one job has failed.
+# If CI is in progress, polls every 30s (up to 15m) and returns as soon as
+# at least one locally reproducible job has failed.
 #
 # Exit codes:
 #   0 — STATUS: passing or no_runs
@@ -45,14 +45,20 @@ RUN_STATUS=$(echo "$LATEST" | jq -r '.status')
 CONCLUSION=$(echo "$LATEST" | jq -r '.conclusion')
 RUN_ID=$(echo "$LATEST" | jq -r '.databaseId')
 
-# Poll if in progress — break as soon as >=1 job has failed or run completes
+# Poll if in progress — break early only on reproducible (non-cypress/e2e/docker) failures
 if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_STATUS" = "waiting" ] || [ "$RUN_STATUS" = "pending" ]; then
-  echo "CI is running on branch: $BRANCH — polling every 60s (timeout 15m)" >&2
+  echo "CI is running on branch: $BRANCH — polling every 30s (timeout 15m)" >&2
 
   DEADLINE=$(($(date +%s) + 900))
 
   while true; do
     if [ "$(date +%s)" -gt "$DEADLINE" ]; then
+      # At timeout, report any failures that exist rather than just giving up
+      FAILED=$(gh run view "$RUN_ID" --json jobs \
+        --jq '[.jobs[] | select(.conclusion == "failure")]')
+      if [ "$(echo "$FAILED" | jq 'length')" -gt 0 ]; then
+        break
+      fi
       echo "STATUS: timeout"
       echo "CI still running after 15 minutes"
       exit 1
@@ -65,9 +71,11 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
     CONCLUSION=$(echo "$POLL" | jq -r '.conclusion')
     FAILED_NOW=$(echo "$POLL" | jq '.failed')
 
-    FAILED_COUNT_NOW=$(echo "$FAILED_NOW" | jq 'length')
+    # Only break early for reproducible failures — don't interrupt for cypress/e2e/docker/gatekeeper
+    REPRO_FAILED=$(echo "$FAILED_NOW" | jq '[.[] | select(.name | test("cypress|e2e|docker|gatekeeper"; "i") | not)]')
+    REPRO_FAILED_COUNT=$(echo "$REPRO_FAILED" | jq 'length')
 
-    if [ "$FAILED_COUNT_NOW" -gt 0 ]; then
+    if [ "$REPRO_FAILED_COUNT" -gt 0 ]; then
       # Re-fetch all currently-failed jobs (more may have failed since last poll)
       FAILED=$(gh run view "$RUN_ID" --json jobs \
         --jq '[.jobs[] | select(.conclusion == "failure")]')
@@ -80,7 +88,6 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
         echo "All checks passed on branch: $BRANCH"
         exit 0
       else
-        # Run completed with failures — collect all failed jobs and break
         FAILED="$FAILED_NOW"
         break
       fi

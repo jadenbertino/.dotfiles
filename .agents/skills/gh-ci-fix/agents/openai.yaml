@@ -1,4 +1,0 @@
-interface:
-  display_name: "GitHub CI Fix"
-  short_description: "Find CI failures, fix locally, and push"
-  default_prompt: "Use $gh-ci-fix to inspect the current branch CI failures, reproduce them locally, fix the repo, and push the changes."
