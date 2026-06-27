@@ -33,5 +33,6 @@
   "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1754007386922
-  }
+  },
+  "tui": "fullscreen"
 }

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Run tsc-fast + targeted ESLint on the provided files.
+# Usage: check <file ...>
+
+set -euo pipefail
+
+ESLINT=/workspaces/neon/node_modules/eslint/bin/eslint.js
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: check <file ...>" >&2
+  exit 1
+fi
+
+tsc_failed=0
+eslint_failed=0
+
+tsc-fast "$@" || tsc_failed=$?
+node "$ESLINT" "$@" || eslint_failed=$?
+
+if [[ $tsc_failed -ne 0 || $eslint_failed -ne 0 ]]; then
+  exit 1
+fi
