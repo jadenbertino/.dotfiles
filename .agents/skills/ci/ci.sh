@@ -207,6 +207,26 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
 
   CMD=$(local_cmd "$JOB_NAME" "$LOG_FILE")
   [ -n "$CMD" ] && echo "CMD: $CMD"
+
+  # Emit a short inline snippet so LOCAL:no failures are immediately actionable.
+  # For Cypress: show the failing spec + test name + first error line.
+  # For everything else: show the first error/FAIL lines.
+  SNIPPET=""
+  if echo "$JOB_NAME" | grep -qi "cypress\|e2e"; then
+    SPEC=$(awk '/[0-9]+ failing/{found=1} !found && /Running:/{spec=$0} found{print spec; exit}' "$LOG_FILE" 2>/dev/null \
+      | grep -oP '(?<=Running:  )\S+' | head -1)
+    DESCRIBE=$(awk '/[0-9]+ failing/{f=1;next} f && /^  [0-9]+\)/{sub(/^[[:space:]]*[0-9]+\)[[:space:]]*/,""); print; exit}' "$LOG_FILE" 2>/dev/null)
+    TEST=$(awk '/[0-9]+ failing/{f=1;next} f && /^  [0-9]+\)/{getline; sub(/^[[:space:]]*/,""); sub(/:$/,""); print; exit}' "$LOG_FILE" 2>/dev/null)
+    ERR=$(grep -m1 "AssertionError" "$LOG_FILE" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-180)
+    [ -z "$ERR" ] && ERR=$(grep -m1 "Error:" "$LOG_FILE" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-180)
+    [ -n "$SPEC" ] && SNIPPET="spec: $SPEC"
+    [ -n "$DESCRIBE" ] && [ -n "$TEST" ] && SNIPPET="$SNIPPET\n  test: $DESCRIBE > $TEST"
+    [ -n "$ERR" ] && SNIPPET="$SNIPPET\n  error: $ERR"
+  else
+    SNIPPET=$(grep -m5 "error TS\|Error:\|FAIL\| × \| ✗ " "$LOG_FILE" 2>/dev/null \
+      | sed 's/^[[:space:]]*//' | head -5 | tr '\n' '|' | sed 's/|$//' | sed 's/|/\n  /g')
+  fi
+  [ -n "$SNIPPET" ] && printf "SNIPPET:\n  %s\n" "$SNIPPET"
   echo ""
 done
 
