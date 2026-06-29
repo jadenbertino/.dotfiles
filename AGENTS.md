@@ -15,6 +15,10 @@
 - when writing tests, read `neon/Testing Overview.md` first
 - `translate`: use if you are updating `translation.json` files
 
+## Datadog
+
+- When asked to investigate a Datadog URL, run `ddl -h` first, then use `ddl logs url "<url>"` to fetch the logs.
+
 ## neon
 
 - "arrakis" is the codename for `apps/neon-dash`
