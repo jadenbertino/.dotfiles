@@ -48,6 +48,7 @@ Fill in all the non-English translation cells in the CSV using the `en` column a
   - and escape any internal quotes by doubling them (`""`).
 - Write the final result as valid CSV directly to `__translations_missing.csv` using the Write tool.
 - Before writing, validate that every row has the same number of columns as the header. If they don't, fix them first.
+- **Comma trap — check your output before writing:** many translations naturally introduce commas that the English source didn't have (e.g. Polish, Russian, German subordinate clauses). Before calling Write, re-read every cell you translated and confirm that any value containing a comma is wrapped in `"..."`. A missing quote silently corrupts that row and every row after it. For example, `Kliknij link, aby aktywować` must be written as `"Kliknij link, aby aktywować"` — not bare.
 
 ### Translation Guidelines
 
