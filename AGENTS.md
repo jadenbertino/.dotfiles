@@ -1,7 +1,6 @@
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
 - to quickly check & typecheck a file, use `/home/node/.local/bin-dotfiles/check <filepaths>`. For a comprehensive check use `tsc` and `eslint`.
 - `ls` is aliased to `eza`
-- `graphify`: when exploring the code, use graphify skill first to point yourself in the right direction before searching, reading, or grepping files
 
 ## git
 
