@@ -10,9 +10,7 @@ alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && upda
 alias rmf='rm -rf'
 
 ch() {
-  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
-    --remote-debugging-port=9222 \
-    --user-data-dir=/tmp/chrome-cdp
+  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-cdp
 }
 
 # IDE aliases
