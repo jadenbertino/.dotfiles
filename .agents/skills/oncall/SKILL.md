@@ -25,7 +25,12 @@ CLI tool for fetching Datadog logs. Run `ddl -h` for usage.
 
 ## Investigation approach
 
-When you encounter something unfamiliar (an event type, error code, service behaviour), **look in the codebase first** before asking the user. Use grep/find/Read to trace the code path — most questions about "what does X do?" can be answered by reading the source. Only ask the user if you've genuinely exhausted the code and still can't determine the answer.
+Use all three tools together — they complement each other:
+- **ddl**: surface what happened and when (errors, warnings, request IDs, context)
+- **psql**: confirm state in the DB (what status did the record end up in, how many attempts, what HTTP codes)
+- **codebase**: explain *why* (trace the code path to understand what an error code means, whether a failure is fatal or handled, what a given event type does)
+
+When you encounter something unfamiliar (an event type, error code, service behaviour), **look in the codebase first** before asking the user. Use grep/find/Read to trace the code path — most questions about "what does X do?" can be answered by reading the source. Only ask the user if you've genuinely exhausted all three tools and still can't determine the answer.
 
 ## Tips
 
