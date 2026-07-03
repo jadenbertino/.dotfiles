@@ -26,5 +26,5 @@ CLI tool for fetching Datadog logs. Run `ddl -h` for usage.
 ## Tips
 
 - Datadog URLs with `live=true` use sliding time windows — if `ddl logs url` returns 0 results, the literal timestamps may be stale. Fall back to `ddl logs query` with `--from "15m ago"`.
-- `psql service=prod-read` requires Tailscale to be active.
+- `psql service=prod-read` requires Tailscale to be active. If the connection fails, ask the user to run `! sudo tailscale up --accept-routes`.
 - DB table names are PascalCase (e.g. `"MakerWebhookEvent"`, `"WebhookEventResult"`). Use `\dt` to list tables if unsure.
