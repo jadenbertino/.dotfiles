@@ -23,6 +23,10 @@ CLI tool for fetching Datadog logs. Run `ddl -h` for usage.
 
 **Source:** `/home/node/.local/bin-dotfiles/ddl` (read with `Read` tool if needed)
 
+## Investigation approach
+
+When you encounter something unfamiliar (an event type, error code, service behaviour), **look in the codebase first** before asking the user. Use grep/find/Read to trace the code path — most questions about "what does X do?" can be answered by reading the source. Only ask the user if you've genuinely exhausted the code and still can't determine the answer.
+
 ## Tips
 
 - Datadog URLs with `live=true` use sliding time windows — if `ddl logs url` returns 0 results, the literal timestamps may be stale. Fall back to `ddl logs query` with `--from "15m ago"`.
