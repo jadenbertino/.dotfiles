@@ -2,12 +2,12 @@
 export FNM_DIR="$HOME/.fnm"
 
 setup_fnm() {
-  if ! command -v fnm >/dev/null 2>&1; then
+  if [[ ! -x "$FNM_DIR/fnm" ]]; then
     echo "Installing fnm..."
     curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_DIR" --skip-shell
-    export PATH="$FNM_DIR:$PATH"
     echo "Installed fnm"
   fi
+  export PATH="$FNM_DIR:$PATH"
 
   if ! fnm list 2>/dev/null | grep -q .; then
     echo "No Node.js versions found. Installing latest LTS..."
