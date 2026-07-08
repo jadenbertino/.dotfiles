@@ -38,3 +38,10 @@ timed_source() {
   local elapsed=$(( (EPOCHREALTIME - start) * 1000 ))
   log_debug "$(printf '%-35s %5.1fms' "${file:t}" $elapsed)"
 }
+
+_ts() {
+  local label="$1"; shift
+  local start=$EPOCHREALTIME
+  "$@"
+  log_debug "$(printf '  %-33s %5.1fms' "$label" $(( (EPOCHREALTIME - start) * 1000 )))"
+}

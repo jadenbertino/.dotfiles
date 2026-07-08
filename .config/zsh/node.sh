@@ -16,13 +16,6 @@ setup_fnm() {
   fi
 }
 
-_ts() {
-  local label="$1"; shift
-  local start=$EPOCHREALTIME
-  "$@"
-  log_debug "$(printf '  %-33s %5.1fms' "$label" $(( (EPOCHREALTIME - start) * 1000 )))"
-}
-
 _ts "setup_fnm" setup_fnm
 _ts "fnm env"   eval "$(fnm env --use-on-cd --shell zsh)"
 

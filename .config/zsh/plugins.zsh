@@ -2,18 +2,18 @@
 ZINIT_HOME="${XDG_DATA_HOME}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone -q https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alias is necessary to prevent conflicts with zoxide
+_ts "zinit.zsh"      source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alias is necessary to prevent conflicts with zoxide
 # can confirm installation by running "zinit zstatus"
 
 # Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+_ts "powerlevel10k"  zinit ice depth=1; zinit light romkatv/powerlevel10k
+_ts "p10k.zsh"       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 
 # Load completions plugin
-zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
+_ts "zsh-completions" zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
 
 # Load completion configuration (must be done before fzf-tab and other widget-wrapping plugins)
-source "$(dirname "$0")/completions.zsh"
+_ts "completions.zsh" source "$(dirname "$0")/completions.zsh"
 
 # fzf (must be before fzf tab)
 # install from github because the package manager version is outdated
@@ -22,14 +22,14 @@ if [ ! -d ~/.fzf ]; then
   git clone -q --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install --key-bindings --completion --no-update-rc
 fi
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+_ts "fzf.zsh"        [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # github docs say to do it like below, but install script used the above method
 # eval "$(fzf --zsh)"
 
 # fzf-tab needs to be loaded after compinit, but before plugins which will wrap widgets, such as zsh-autosuggestions or fast-syntax-highlighting
-zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
-zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
+_ts "fzf-tab"              zinit light Aloxaf/fzf-tab # https://github.com/Aloxaf/fzf-tab | also cd tab completion
+_ts "zsh-syntax-highlight" zinit light zsh-users/zsh-syntax-highlighting # https://github.com/zsh-users/zsh-syntax-highlighting
+_ts "zsh-autosuggestions"  zinit light zsh-users/zsh-autosuggestions # https://github.com/zsh-users/zsh-autosuggestions
 
 # You can also load zsh plugins via URL
 # You can update all these with `zinit update --all`
