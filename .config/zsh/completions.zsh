@@ -11,14 +11,16 @@ if [ -x "$(command -v asdf)" ]; then
   source "$(dirname "$0")/utils.sh"
   add_to_path "${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
   mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
-  asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
+  _ts "asdf completion zsh" asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
   fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 fi
 
 # eza completions
 if [ -x "$(command -v eza)" ]; then
   if type brew &>/dev/null; then
-    fpath=("$(brew --prefix)/share/zsh/site-functions" $fpath)
+    local _brew_prefix
+    _ts "brew --prefix" _brew_prefix="$(brew --prefix)"
+    fpath=("$_brew_prefix/share/zsh/site-functions" $fpath)
   elif [[ -d "/usr/share/zsh/vendor-completions" ]]; then
     fpath=(/usr/share/zsh/vendor-completions $fpath)
   fi
@@ -26,14 +28,15 @@ fi
 
 # Initialize completions (optimized with -C flag to skip security checks)
 # Must run before any tool that emits compdef calls (uv, asdf, etc.)
-autoload -Uz compinit && compinit -C
-zinit cdreplay -q
+autoload -Uz compinit
+_ts "compinit" compinit -C
+_ts "zinit cdreplay" zinit cdreplay -q
 
 # Load tool completions (must be after compinit as they use compdef)
 if [ -x "$(command -v asdf)" ]; then
-  . <(asdf completion zsh)
+  _ts "asdf completion source" . <(asdf completion zsh)
 fi
 
 if [ -x "$(command -v uv)" ]; then
-  eval "$(uv generate-shell-completion zsh)"
+  _ts "uv completion" eval "$(uv generate-shell-completion zsh)"
 fi
