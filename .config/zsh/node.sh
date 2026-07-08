@@ -1,3 +1,4 @@
+# fnm instead of nvm: ~420ms → ~10ms startup
 export FNM_DIR="$HOME/.fnm"
 
 setup_fnm() {
