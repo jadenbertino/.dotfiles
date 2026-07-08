@@ -34,9 +34,10 @@ log_error() {
 timed_source() {
   local file="$1"
   local start=$EPOCHREALTIME
+  log_debug "$(printf '%-35s' "${file:t}")"
   builtin source "$file"
   local elapsed=$(( (EPOCHREALTIME - start) * 1000 ))
-  log_debug "$(printf '%-35s %5.1fms' "${file:t}" $elapsed)"
+  log_debug "$(printf '%-35s %5.1fms' "${file:t} (total)" $elapsed)"
 }
 
 _ts() {
