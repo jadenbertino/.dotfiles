@@ -26,6 +26,17 @@ if [ -x "$(command -v eza)" ]; then
   fi
 fi
 
+# uv completions — cached to fpath so they load lazily (not at startup)
+if [ -x "$(command -v uv)" ]; then
+  local _uv_comp_dir="${XDG_CACHE_HOME}/zsh/completions"
+  local _uv_comp="${_uv_comp_dir}/_uv"
+  if [[ ! -f "$_uv_comp" || "$(command -v uv)" -nt "$_uv_comp" ]]; then
+    mkdir -p "$_uv_comp_dir"
+    uv generate-shell-completion zsh >| "$_uv_comp"
+  fi
+  fpath=("$_uv_comp_dir" $fpath)
+fi
+
 # Initialize completions (optimized with -C flag to skip security checks)
 # Must run before any tool that emits compdef calls (uv, asdf, etc.)
 autoload -Uz compinit
@@ -35,14 +46,4 @@ _ts "zinit cdreplay" zinit cdreplay -q
 # Load tool completions (must be after compinit as they use compdef)
 if [ -x "$(command -v asdf)" ]; then
   _ts "asdf completion source" . <(asdf completion zsh)
-fi
-
-if [ -x "$(command -v uv)" ]; then
-  local _uv_comp="${XDG_CACHE_HOME}/zsh/uv-completion.zsh"
-  local _uv_bin="$(command -v uv)"
-  if [[ ! -f "$_uv_comp" || "$_uv_bin" -nt "$_uv_comp" ]]; then
-    mkdir -p "${_uv_comp:h}"
-    uv generate-shell-completion zsh >| "$_uv_comp"
-  fi
-  _ts "uv completion" source "$_uv_comp"
 fi
