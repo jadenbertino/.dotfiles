@@ -6,8 +6,8 @@ _ts "zinit.zsh"      source "${ZINIT_HOME}/zinit.zsh" && alias zi='zinit' # alia
 # can confirm installation by running "zinit zstatus"
 
 # Powerlevel10k
-_ts "powerlevel10k"  zinit ice depth=1; zinit light romkatv/powerlevel10k
-_ts "p10k.zsh"       [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 
 # Load completions plugin
 _ts "zsh-completions" zinit light zsh-users/zsh-completions # https://github.com/zsh-users/zsh-completions
