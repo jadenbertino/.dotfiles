@@ -38,5 +38,11 @@ if [ -x "$(command -v asdf)" ]; then
 fi
 
 if [ -x "$(command -v uv)" ]; then
-  _ts "uv completion" eval "$(uv generate-shell-completion zsh)"
+  local _uv_comp="${XDG_CACHE_HOME}/zsh/uv-completion.zsh"
+  local _uv_bin="$(command -v uv)"
+  if [[ ! -f "$_uv_comp" || "$_uv_bin" -nt "$_uv_comp" ]]; then
+    mkdir -p "${_uv_comp:h}"
+    uv generate-shell-completion zsh >| "$_uv_comp"
+  fi
+  _ts "uv completion" source "$_uv_comp"
 fi
