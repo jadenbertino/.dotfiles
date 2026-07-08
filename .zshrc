@@ -33,22 +33,22 @@ auto_update_dotfiles
 
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME --adopt .
-source $ZSH_CONFIG_HOME/utils.sh
-source $ZSH_CONFIG_HOME/plugins.zsh
-source $ZSH_CONFIG_HOME/alias.zsh
-source $ZSH_CONFIG_HOME/git-aliases-cached.zsh
-source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
-source $ZSH_CONFIG_HOME/node.sh # NVM
-source $ZSH_CONFIG_HOME/tmux.sh
-source $ZSH_CONFIG_HOME/keybinds.zsh
 source $ZSH_CONFIG_HOME/logs.zsh
-source $ZSH_CONFIG_HOME/ai.zsh
-source $ZSH_CONFIG_HOME/go.zsh
-source $ZSH_CONFIG_HOME/clipboard.sh
+timed_source $ZSH_CONFIG_HOME/utils.sh
+timed_source $ZSH_CONFIG_HOME/plugins.zsh
+timed_source $ZSH_CONFIG_HOME/alias.zsh
+timed_source $ZSH_CONFIG_HOME/git-aliases-cached.zsh
+source $ZSH_CONFIG_HOME/ssh-agent.sh > /dev/null # SSH Agent
+timed_source $ZSH_CONFIG_HOME/node.sh # NVM
+timed_source $ZSH_CONFIG_HOME/tmux.sh
+timed_source $ZSH_CONFIG_HOME/keybinds.zsh
+timed_source $ZSH_CONFIG_HOME/ai.zsh
+timed_source $ZSH_CONFIG_HOME/go.zsh
+timed_source $ZSH_CONFIG_HOME/clipboard.sh
 # pg-service sourced after doppler sync (see below)
 
 # Synced files
-source $HOME/.ssh/sync.zsh
+timed_source $HOME/.ssh/sync.zsh
 # source $XDG_CONFIG_HOME/Code/User/sync.sh
 
 # git config --global user.name "Jaden Bertino"
@@ -138,7 +138,7 @@ _doppler_maybe_sync() {
 }
 _doppler_maybe_sync
 export BASH_ENV="$DOPPLER_ENV_FILE"
-source $ZSH_CONFIG_HOME/pg-service.zsh
+timed_source $ZSH_CONFIG_HOME/pg-service.zsh
 
 alias doppler-sync="~/.local/bin-dotfiles/doppler-sync && source \"$DOPPLER_ENV_FILE\""
 alias ds="doppler-sync" # shorthand alias
