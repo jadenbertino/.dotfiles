@@ -2,6 +2,7 @@
 export FNM_DIR="$HOME/.fnm"
 
 setup_fnm() {
+  # check binary directly — FNM_DIR isn't in PATH yet so command -v fnm would always fail
   if [[ ! -x "$FNM_DIR/fnm" ]]; then
     echo "Installing fnm..."
     curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir "$FNM_DIR" --skip-shell
