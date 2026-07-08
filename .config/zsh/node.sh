@@ -6,8 +6,8 @@ export NVM_DIR="$HOME/.nvm"
 # Function to lazy load NVM - only runs once (on first call of whichever comes first: nvm, node, npm, or npx)
 load_nvm() {
     unset -f nvm node npm pnpm npx 2>/dev/null
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    [ -s "$NVM_DIR/nvm.sh" ]          && _ts "nvm.sh"          \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && _ts "bash_completion"  \. "$NVM_DIR/bash_completion"
 }
 
 # Lazy load npx, nvm, node, npm
@@ -94,5 +94,12 @@ setup_node() {
     fi
 }
 
-setup_node
-load_nvm # no more lazy loading
+_ts() {
+  local label="$1"; shift
+  local start=$EPOCHREALTIME
+  "$@"
+  log_debug "$(printf '  %-33s %5.1fms' "$label" $(( (EPOCHREALTIME - start) * 1000 )))"
+}
+
+_ts "setup_node" setup_node
+_ts "load_nvm"   load_nvm
