@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+// Persistent TypeScript LanguageService daemon.
+// Loads each tsconfig once and keeps it in memory for fast repeated checks.
+// Usage: node tsc-daemon-server <socket-path>
+
+import net from 'node:net';
+import { createRequire } from 'node:module';
+import { existsSync, readFileSync, statSync, unlinkSync } from 'node:fs';
+import path from 'node:path';
+
+const [,, socketPath] = process.argv;
+if (!socketPath) { process.stderr.write('Usage: tsc-daemon-server <socket-path>\n'); process.exit(1); }
+
+const scriptRequire = createRequire(import.meta.url);
+const loadedPnp = new Set();
+
+const findUp = (start, name) => {
+  let dir = path.resolve(start);
+  while (true) {
+    const p = path.join(dir, name);
+    if (existsSync(p)) return p;
+    const parent = path.dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+};
+
+const setupPnp = (dir) => {
+  const pnp = findUp(dir, '.pnp.cjs');
+  if (!pnp || loadedPnp.has(pnp)) return;
+  const api = scriptRequire(pnp);
+  if (typeof api.setup === 'function') api.setup();
+  loadedPnp.add(pnp);
+};
+
+const resolveTs = (configDir) => {
+  setupPnp(configDir);
+  for (const from of [path.join(configDir, '__tsc-fast__.js'), path.join(process.cwd(), '__tsc-fast__.js')]) {
+    try { return createRequire(from).resolve('typescript'); } catch {}
+  }
+  return scriptRequire.resolve('typescript');
+};
+
+// Shared document registry allows AST reuse across multiple LanguageServices.
+let registry;
+
+class TsService {
+  constructor(configPath) {
+    this.configPath = configPath;
+    this.configDir = path.dirname(configPath);
+    this.ts = scriptRequire(resolveTs(this.configDir));
+    registry ??= this.ts.createDocumentRegistry();
+    this.versions = new Map(); // absPath -> { mtime, version }
+    this.counter = 0;
+    this.fileSet = new Set();
+    this._init();
+  }
+
+  _init() {
+    const { ts, configPath, configDir } = this;
+    const raw = ts.readConfigFile(configPath, ts.sys.readFile);
+    if (raw.error) throw new Error(ts.flattenDiagnosticMessageText(raw.error.messageText, '\n'));
+    const parsed = ts.parseJsonConfigFileContent(raw.config, ts.sys, configDir);
+    this.options = { ...parsed.options, noEmit: true, incremental: false, tsBuildInfoFile: undefined };
+    for (const f of parsed.fileNames) this.fileSet.add(path.resolve(f));
+
+    const self = this;
+    this.service = ts.createLanguageService({
+      getCompilationSettings: () => self.options,
+      getScriptFileNames: () => [...self.fileSet],
+      getScriptVersion: (f) => String(self._version(f)),
+      getScriptSnapshot: (f) => {
+        if (!existsSync(f)) return undefined;
+        return ts.ScriptSnapshot.fromString(readFileSync(f, 'utf-8'));
+      },
+      getCurrentDirectory: () => configDir,
+      getDefaultLibFileName: (opts) => ts.getDefaultLibFileName(opts),
+      fileExists: (f) => ts.sys.fileExists(f),
+      readFile: (f, enc) => ts.sys.readFile(f, enc),
+      readDirectory: (...args) => ts.sys.readDirectory(...args),
+      directoryExists: (d) => ts.sys.directoryExists(d),
+      getDirectories: (d) => ts.sys.getDirectories(d),
+    }, registry);
+  }
+
+  // Skip stat for node_modules — treat them as immutable.
+  _version(absPath) {
+    if (absPath.includes('/node_modules/')) return 0;
+    try {
+      const mtime = statSync(absPath).mtimeMs;
+      const prev = this.versions.get(absPath);
+      if (!prev) { this.versions.set(absPath, { mtime, version: this.counter++ }); }
+      else if (prev.mtime !== mtime) { prev.mtime = mtime; prev.version = this.counter++; }
+      return this.versions.get(absPath).version;
+    } catch { return 0; }
+  }
+
+  check(absFiles) {
+    for (const f of absFiles) this.fileSet.add(f);
+    const diags = absFiles.flatMap(f => [
+      ...this.service.getSyntacticDiagnostics(f),
+      ...this.service.getSemanticDiagnostics(f),
+    ]);
+    const output = diags.length ? this.ts.formatDiagnosticsWithColorAndContext(diags, {
+      getCanonicalFileName: f => f,
+      getCurrentDirectory: this.ts.sys.getCurrentDirectory,
+      getNewLine: () => this.ts.sys.newLine,
+    }) : '';
+    return { output, hasErrors: diags.length > 0 };
+  }
+}
+
+const services = new Map();
+const getService = (configPath) => {
+  if (!services.has(configPath)) services.set(configPath, new TsService(configPath));
+  return services.get(configPath);
+};
+
+// Auto-exit after 30 min idle to avoid stale memory.
+const IDLE_MS = 30 * 60 * 1000;
+let idleTimer;
+const resetIdle = () => {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => { try { unlinkSync(socketPath); } catch {} process.exit(0); }, IDLE_MS);
+};
+
+try { unlinkSync(socketPath); } catch {}
+
+net.createServer((conn) => {
+  resetIdle();
+  let buf = '';
+  conn.on('data', (d) => {
+    buf += d;
+    const nl = buf.indexOf('\n');
+    if (nl === -1) return;
+    const line = buf.slice(0, nl);
+    buf = buf.slice(nl + 1);
+
+    let req;
+    try { req = JSON.parse(line); } catch { conn.end('{"ok":false,"error":"bad json"}\n'); return; }
+
+    if (req.type === 'ping') { conn.end('{"ok":true,"type":"pong"}\n'); return; }
+    if (req.type !== 'check') { conn.end('{"ok":false,"error":"unknown type"}\n'); return; }
+
+    try {
+      const groups = new Map();
+      for (const f of req.files) {
+        const cfg = findUp(path.dirname(f), 'tsconfig.json');
+        if (!cfg) continue;
+        if (!groups.has(cfg)) groups.set(cfg, []);
+        groups.get(cfg).push(f);
+      }
+
+      let output = '', hasErrors = false;
+      for (const [cfg, files] of groups) {
+        const r = getService(cfg).check(files);
+        output += r.output;
+        if (r.hasErrors) hasErrors = true;
+      }
+      conn.end(JSON.stringify({ ok: true, output, hasErrors }) + '\n');
+    } catch (e) {
+      conn.end(JSON.stringify({ ok: false, error: String(e) }) + '\n');
+    }
+  });
+}).listen(socketPath, () => {
+  process.stdout.write('ready\n');
+  resetIdle();
+});
+
+process.on('SIGTERM', () => { try { unlinkSync(socketPath); } catch {} process.exit(0); });

@@ -11,12 +11,32 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-tsc_failed=0
-eslint_failed=0
+eslint_out=$(mktemp)
+trap 'rm -f "$eslint_out"' EXIT
 
-tsc-fast "$@" || tsc_failed=$?
-node "$ESLINT" "$@" || eslint_failed=$?
+tsc-daemon "$@" &
+tsc_pid=$!
 
-if [[ $tsc_failed -ne 0 || $eslint_failed -ne 0 ]]; then
-  exit 1
-fi
+# ESLint is slow on the first run: projectService: true forces TypeScript to
+# load the full project type graph regardless of how few files are passed.
+# --cache makes subsequent runs near-instant for unchanged files.
+node "$ESLINT" --cache "$@" >"$eslint_out" 2>&1 &
+eslint_pid=$!
+
+# Poll until one process exits, then react. Unlike the FIFO approach, running
+# both tools directly (not in subshells) gives us their real PIDs so kill and
+# wait work correctly.
+tsc_done=false
+eslint_done=false
+
+while ! $tsc_done || ! $eslint_done; do
+  if ! $tsc_done && ! kill -0 "$tsc_pid" 2>/dev/null; then
+    tsc_done=true
+    wait "$tsc_pid" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
+  fi
+  if ! $eslint_done && ! kill -0 "$eslint_pid" 2>/dev/null; then
+    eslint_done=true
+    wait "$eslint_pid" || { kill "$tsc_pid" 2>/dev/null || true; cat "$eslint_out"; exit 1; }
+  fi
+  $tsc_done && $eslint_done || sleep 0.05
+done

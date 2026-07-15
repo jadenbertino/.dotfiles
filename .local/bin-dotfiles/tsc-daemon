@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+// Client for tsc-daemon-server.
+// Connects to (or starts) a persistent TypeScript daemon for fast file checks.
+// Usage: tsc-daemon <file ...>
+
+import net from 'node:net';
+import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const files = process.argv.slice(2);
+if (!files.length) { process.stderr.write('Usage: tsc-daemon <file ...>\n'); process.exit(1); }
+
+const SOCKET = `/tmp/tsc-daemon-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}.sock`;
+const SERVER = path.join(path.dirname(fileURLToPath(import.meta.url)), 'tsc-daemon-server');
+
+const send = (payload) => new Promise((resolve, reject) => {
+  const sock = net.createConnection(SOCKET);
+  let buf = '';
+  sock.on('connect', () => sock.write(JSON.stringify(payload) + '\n'));
+  sock.on('data', (d) => buf += d);
+  sock.on('end', () => { try { resolve(JSON.parse(buf)); } catch { reject(new Error('bad response')); } });
+  sock.on('error', reject);
+});
+
+const ping = async () => {
+  try { return (await send({ type: 'ping' })).type === 'pong'; } catch { return false; }
+};
+
+const startDaemon = () => new Promise((resolve, reject) => {
+  const proc = spawn(process.execPath, [SERVER, SOCKET], {
+    detached: true,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+  proc.unref();
+  let out = '';
+  proc.stdout.on('data', (d) => { out += d; if (out.includes('ready')) resolve(); });
+  proc.on('error', reject);
+  setTimeout(() => reject(new Error('daemon failed to start within 30s')), 30_000);
+});
+
+(async () => {
+  if (!await ping()) {
+    await startDaemon();
+    // Daemon signals readiness via stdout, but give the socket a moment to accept.
+    for (let i = 0; i < 20; i++) { if (await ping()) break; await new Promise(r => setTimeout(r, 100)); }
+  }
+
+  const res = await send({ type: 'check', files: files.map(f => path.resolve(f)) });
+  if (!res.ok) { process.stderr.write(`tsc-daemon error: ${res.error}\n`); process.exit(1); }
+  if (res.output) process.stderr.write(res.output);
+  process.exit(res.hasErrors ? 1 : 0);
+})().catch((e) => { process.stderr.write(`tsc-daemon: ${e.message}\n`); process.exit(1); });
