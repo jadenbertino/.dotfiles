@@ -5,7 +5,7 @@
 
 import net from 'node:net';
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync, statSync, unlinkSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, statSync, unlinkSync } from 'node:fs';
 import path from 'node:path';
 
 const [,, socketPath] = process.argv;
@@ -87,9 +87,16 @@ class TsService {
     }, registry);
   }
 
-  // Skip stat for node_modules — treat them as immutable.
+  // Third-party node_modules are immutable; workspace packages are symlinks whose
+  // real path is inside the repo, so we follow the link and stat the actual file.
   _version(absPath) {
-    if (absPath.includes('/node_modules/')) return 0;
+    if (absPath.includes('/node_modules/')) {
+      try {
+        const real = realpathSync(absPath);
+        if (real === absPath) return 0; // not a symlink — treat as immutable
+        absPath = real;                 // workspace package — fall through to mtime
+      } catch { return 0; }
+    }
     try {
       const mtime = statSync(absPath).mtimeMs;
       const prev = this.versions.get(absPath);
