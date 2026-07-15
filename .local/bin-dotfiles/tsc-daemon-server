@@ -74,7 +74,11 @@ class TsService {
         return ts.ScriptSnapshot.fromString(readFileSync(f, 'utf-8'));
       },
       getCurrentDirectory: () => configDir,
-      getDefaultLibFileName: (opts) => ts.getDefaultLibFileName(opts),
+      // getDefaultLibFilePath (not getDefaultLibFileName) returns the absolute path
+      // so TypeScript can resolve /// <reference lib="..." /> tags within lib files.
+      // Using just the filename causes lib-internal references to resolve relative to
+      // cwd, making Promise and other ES2015+ types invisible.
+      getDefaultLibFileName: (opts) => ts.getDefaultLibFilePath(opts),
       fileExists: (f) => ts.sys.fileExists(f),
       readFile: (f, enc) => ts.sys.readFile(f, enc),
       readDirectory: (...args) => ts.sys.readDirectory(...args),
@@ -96,17 +100,20 @@ class TsService {
   }
 
   check(absFiles) {
-    for (const f of absFiles) this.fileSet.add(f);
-    const diags = absFiles.flatMap(f => [
+    const existing = absFiles.filter(f => existsSync(f));
+    const missing = absFiles.filter(f => !existsSync(f));
+    for (const f of existing) this.fileSet.add(f);
+    const diags = existing.flatMap(f => [
       ...this.service.getSyntacticDiagnostics(f),
       ...this.service.getSemanticDiagnostics(f),
     ]);
-    const output = diags.length ? this.ts.formatDiagnosticsWithColorAndContext(diags, {
+    let output = missing.map(f => `error: file not found: ${f}\n`).join('');
+    if (diags.length) output += this.ts.formatDiagnosticsWithColorAndContext(diags, {
       getCanonicalFileName: f => f,
       getCurrentDirectory: this.ts.sys.getCurrentDirectory,
       getNewLine: () => this.ts.sys.newLine,
-    }) : '';
-    return { output, hasErrors: diags.length > 0 };
+    });
+    return { output, hasErrors: missing.length > 0 || diags.length > 0 };
   }
 }
 
