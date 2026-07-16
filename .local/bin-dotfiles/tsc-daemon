@@ -78,6 +78,21 @@ const ping = async () => {
   try { return (await send({ type: 'ping' })).type === 'pong'; } catch { return false; }
 };
 
+const formatStartupError = (message) => {
+  if (
+    message.includes('listen EPERM') &&
+    message.includes('/tmp/tsc-daemon-')
+  ) {
+    return [
+      message.trim(),
+      '',
+      'tsc-daemon: sandbox blocked Unix socket listen.',
+      'If you are running as an agent, rerun this command with elevated or unsandboxed permissions.',
+    ].join('\n');
+  }
+  return message;
+};
+
 const startDaemon = () => new Promise((resolve, reject) => {
   const proc = spawn(process.execPath, [SERVER, SOCKET], {
     detached: true,
@@ -103,7 +118,7 @@ const startDaemon = () => new Promise((resolve, reject) => {
   proc.on('exit', (code) => {
     if (settled) return;
     const details = [err.trim(), out.trim()].filter(Boolean).join('\n');
-    fail(details || `daemon exited before startup (code ${code ?? 'unknown'})`);
+    fail(formatStartupError(details || `daemon exited before startup (code ${code ?? 'unknown'})`));
   });
   setTimeout(() => fail('daemon failed to start within 30s'), 30_000);
 });
