@@ -7,9 +7,59 @@ import net from 'node:net';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
-const files = process.argv.slice(2);
+const SOURCE_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.mts',
+  '.cts',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+]);
+const SKIP_DIRS = new Set([
+  '.git',
+  'node_modules',
+  'dist',
+  'build',
+  '.next',
+  'coverage',
+]);
+
+const expandPaths = (inputs) => {
+  const out = [];
+
+  const visit = (target) => {
+    const abs = path.resolve(target);
+    let stat;
+    try {
+      stat = statSync(abs);
+    } catch {
+      out.push(abs);
+      return;
+    }
+
+    if (stat.isDirectory()) {
+      for (const entry of readdirSync(abs, { withFileTypes: true })) {
+        if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) continue;
+        visit(path.join(abs, entry.name));
+      }
+      return;
+    }
+
+    if (stat.isFile() && SOURCE_EXTENSIONS.has(path.extname(abs))) {
+      out.push(abs);
+    }
+  };
+
+  for (const input of inputs) visit(input);
+  return [...new Set(out)];
+};
+
+const files = expandPaths(process.argv.slice(2));
 if (!files.length) { process.stderr.write('Usage: tsc-daemon <file ...>\n'); process.exit(1); }
 
 const SOCKET = `/tmp/tsc-daemon-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}.sock`;
@@ -31,13 +81,31 @@ const ping = async () => {
 const startDaemon = () => new Promise((resolve, reject) => {
   const proc = spawn(process.execPath, [SERVER, SOCKET], {
     detached: true,
-    stdio: ['ignore', 'pipe', 'ignore'],
+    stdio: ['ignore', 'pipe', 'pipe'],
   });
   proc.unref();
   let out = '';
-  proc.stdout.on('data', (d) => { out += d; if (out.includes('ready')) resolve(); });
+  let err = '';
+  let settled = false;
+  const fail = (message) => {
+    if (settled) return;
+    settled = true;
+    reject(new Error(message));
+  };
+  const succeed = () => {
+    if (settled) return;
+    settled = true;
+    resolve();
+  };
+  proc.stdout.on('data', (d) => { out += d; if (out.includes('ready')) succeed(); });
+  proc.stderr.on('data', (d) => { err += d; });
   proc.on('error', reject);
-  setTimeout(() => reject(new Error('daemon failed to start within 30s')), 30_000);
+  proc.on('exit', (code) => {
+    if (settled) return;
+    const details = [err.trim(), out.trim()].filter(Boolean).join('\n');
+    fail(details || `daemon exited before startup (code ${code ?? 'unknown'})`);
+  });
+  setTimeout(() => fail('daemon failed to start within 30s'), 30_000);
 });
 
 (async () => {
@@ -47,7 +115,7 @@ const startDaemon = () => new Promise((resolve, reject) => {
     for (let i = 0; i < 20; i++) { if (await ping()) break; await new Promise(r => setTimeout(r, 100)); }
   }
 
-  const res = await send({ type: 'check', files: files.map(f => path.resolve(f)) });
+  const res = await send({ type: 'check', files });
   if (!res.ok) { process.stderr.write(`tsc-daemon error: ${res.error}\n`); process.exit(1); }
   if (res.output) process.stderr.write(res.output);
   process.exit(res.hasErrors ? 1 : 0);

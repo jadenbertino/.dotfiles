@@ -12,9 +12,63 @@ if [[ $# -eq 0 ]]; then
 fi
 
 eslint_out=$(mktemp)
-trap 'rm -f "$eslint_out"' EXIT
+tsc_out=$(mktemp)
+trap 'rm -f "$eslint_out" "$tsc_out"' EXIT
 
-tsc-daemon "$@" &
+find_tsconfig() {
+  local file dir
+  file=$(realpath "$1")
+  if [[ -d "$file" ]]; then
+    dir="$file"
+  else
+    dir=$(dirname "$file")
+  fi
+
+  while [[ "$dir" != "/" ]]; do
+    if [[ -f "$dir/tsconfig.json" ]]; then
+      printf '%s/tsconfig.json\n' "$dir"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+
+  return 1
+}
+
+fallback_tsc() {
+  local configs=()
+  local file config
+
+  for file in "$@"; do
+    if config=$(find_tsconfig "$file"); then
+      configs+=("$config")
+    fi
+  done
+
+  if [[ ${#configs[@]} -eq 0 ]]; then
+    printf 'check: could not find a tsconfig.json for the provided files\n' >&2
+    return 1
+  fi
+
+  mapfile -t configs < <(printf '%s\n' "${configs[@]}" | sort -u)
+
+  : >"$tsc_out"
+  for config in "${configs[@]}"; do
+    node /workspaces/neon/node_modules/typescript/bin/tsc \
+      -p "$config" \
+      --noEmit \
+      --pretty false >>"$tsc_out" 2>&1 || true
+  done
+
+  if [[ -s "$tsc_out" ]]; then
+    cat "$tsc_out"
+    return 1
+  fi
+
+  return 0
+}
+
+tsc-daemon "$@" >"$tsc_out" 2>&1 &
 tsc_pid=$!
 
 # ESLint is slow on the first run: projectService: true forces TypeScript to
@@ -32,7 +86,15 @@ eslint_done=false
 while ! $tsc_done || ! $eslint_done; do
   if ! $tsc_done && ! kill -0 "$tsc_pid" 2>/dev/null; then
     tsc_done=true
-    wait "$tsc_pid" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
+    if ! wait "$tsc_pid"; then
+      if grep -q 'daemon failed to start within 30s' "$tsc_out"; then
+        fallback_tsc "$@" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
+      else
+        kill "$eslint_pid" 2>/dev/null || true
+        cat "$tsc_out"
+        exit 1
+      fi
+    fi
   fi
   if ! $eslint_done && ! kill -0 "$eslint_pid" 2>/dev/null; then
     eslint_done=true
