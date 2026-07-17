@@ -17,7 +17,7 @@ REPO_DIR=$(git rev-parse --show-toplevel)
 
 # Find the latest PR CI run for the current HEAD commit on this branch
 # Use the upstream remote SHA so we match what GitHub Actions sees
-HEAD_SHA=$(git ls-remote origin "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
+HEAD_SHA=$(git ls-remote origin "refs/heads/$BRANCH" 2>/dev/null | cut -f1 || true)
 if [ -z "$HEAD_SHA" ]; then
   HEAD_SHA=$(git rev-parse HEAD)
 fi
@@ -47,9 +47,9 @@ RUN_ID=$(echo "$LATEST" | jq -r '.databaseId')
 
 # Poll if in progress — break early only on reproducible (non-cypress/e2e/docker) failures
 if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_STATUS" = "waiting" ] || [ "$RUN_STATUS" = "pending" ]; then
-  echo "CI is running on branch: $BRANCH — polling every 30s (timeout 15m)" >&2
+  echo "CI is running on branch: $BRANCH — polling every 30s (timeout 30m)" >&2
 
-  DEADLINE=$(($(date +%s) + 900))
+  DEADLINE=$(($(date +%s) + 1800))
 
   while true; do
     if [ "$(date +%s)" -gt "$DEADLINE" ]; then
@@ -60,7 +60,7 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
         break
       fi
       echo "STATUS: timeout"
-      echo "CI still running after 15 minutes"
+      echo "CI still running after 30 minutes"
       exit 1
     fi
 
@@ -118,8 +118,8 @@ echo ""
 
 # Denylist: jobs that cannot be verified locally (but we still attempt fixes)
 is_local_verifiable() {
-  # Checkout Cypress integration tests can be run locally against the dev server (port 3001)
-  echo "$1" | grep -qiE "cypress integration tests \(checkout" && echo "yes" && return
+  # Checkout and neon-js Cypress integration tests can be run locally
+  echo "$1" | grep -qiE "cypress integration tests \((checkout|neon-js)" && echo "yes" && return
   echo "$1" | grep -qiE "cypress|e2e|docker|gatekeeper" && echo "no" || echo "yes"
 }
 
