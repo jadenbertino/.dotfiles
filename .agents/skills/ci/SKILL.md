@@ -9,11 +9,11 @@ Continuously fetch, fix, and push until CI is fully green on the current branch.
 
 Repeat until done (max 5 push cycles before stopping):
 
-1. Run `bash ~/.claude/skills/ci/ci.sh` **in the background** (`run_in_background: true`) — it blocks and polls for up to 15 minutes. Running it in the background prevents context timeout and lets you be notified when it completes. You will receive a task notification with the output file path — read that file to get the `STATUS:` line and any failure details.
+1. Run `bash ~/.claude/skills/ci/ci.sh` **in the background** (`run_in_background: true`) — it blocks and polls for up to 30 minutes. Running it in the background prevents context timeout and lets you be notified when it completes. You will receive a task notification with the output file path — read that file to get the `STATUS:` line and any failure details.
 2. Check the `STATUS:` line:
    - `passing` → stop, CI is green
    - `no_runs` → CI never started after 2 minutes; stop and report
-   - `timeout` → stop with error: "CI timed out after 15 minutes"
+   - `timeout` → stop with error: "CI timed out after 30 minutes"
    - `failed` → **act immediately** on the failed job(s) listed — do not wait for other jobs to finish. Fix or handle each failure, then go back to step 1.
 3. After 5 push cycles with no green result, stop and report what's still failing.
 
