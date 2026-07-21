@@ -24,7 +24,7 @@ typeset -A git_aliases=(
     ["sync"]='!git fetch && git merge $(git rev-parse --abbrev-ref '"'"'@{upstream}'"'"')'
     ["recent"]="for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)'"
     ["p"]="pull"
-    ["s"]='!f() { git switch "$@" && { BRANCH=$(git branch --show-current); HISTORY_FILE=".git/branch-history"; if [ -n "$BRANCH" ]; then touch "$HISTORY_FILE"; grep -v "^${BRANCH}|" "$HISTORY_FILE" > "$HISTORY_FILE.tmp" 2>/dev/null || true; echo "${BRANCH}|$(date +%s)" | cat - "$HISTORY_FILE.tmp" > "$HISTORY_FILE"; rm -f "$HISTORY_FILE.tmp"; fi; }; }; f'
+    ["s"]='!f() { if [ $# -eq 0 ]; then set -- -; fi; git switch "$@" && { BRANCH=$(git branch --show-current); HISTORY_FILE=".git/branch-history"; if [ -n "$BRANCH" ]; then touch "$HISTORY_FILE"; grep -v "^${BRANCH}|" "$HISTORY_FILE" > "$HISTORY_FILE.tmp" 2>/dev/null || true; echo "${BRANCH}|$(date +%s)" | cat - "$HISTORY_FILE.tmp" > "$HISTORY_FILE"; rm -f "$HISTORY_FILE.tmp"; fi; }; }; f'
     ["sc"]='!f() { git switch -c "$@" && { BRANCH=$(git branch --show-current); HISTORY_FILE=".git/branch-history"; if [ -n "$BRANCH" ]; then touch "$HISTORY_FILE"; grep -v "^${BRANCH}|" "$HISTORY_FILE" > "$HISTORY_FILE.tmp" 2>/dev/null || true; echo "${BRANCH}|$(date +%s)" | cat - "$HISTORY_FILE.tmp" > "$HISTORY_FILE"; rm -f "$HISTORY_FILE.tmp"; fi; }; }; f'
     ["bd"]="branch --delete"
     ["cb"]="rev-parse --abbrev-ref HEAD"
