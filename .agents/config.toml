@@ -1,0 +1,9 @@
+approvals_reviewer = "user"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+[projects."/workspaces/neon"]
+trust_level = "trusted"
+
+[projects."/home/node/.dotfiles"]
+trust_level = "trusted"
