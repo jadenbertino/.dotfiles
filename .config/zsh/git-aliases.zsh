@@ -57,7 +57,7 @@ update_git_aliases() {
 alias g="git"
 alias gp="git pull"
 alias ga="git add ."
-alias gs="git switch"
+alias gs="git stack"
 alias gcm="git commit -m"
 alias gst="git add . && git stash"
 alias gsta="git stash apply"
