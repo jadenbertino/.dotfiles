@@ -27,7 +27,6 @@ yd() {
 }
 alias yf='yarn workspaces foreach --all run'
 alias yt='yarn turbo'
-alias yrt='yarn turbo run build --filter=@neon/database --filter=@neon/apis --force'
 unalias yr 2>/dev/null
 yr() {
   setopt localoptions pipefail

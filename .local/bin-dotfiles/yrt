@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+exec yarn turbo run build \
+  --filter=@neon/database \
+  --filter=@neon/apis \
+  --force \
+  "$@"
