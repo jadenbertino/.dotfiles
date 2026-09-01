@@ -49,6 +49,7 @@ For **files** specifically, the bar is higher than for functions. A file signals
 ## neon
 
 - "arrakis" is the codename for `apps/neon-dash`
+- `yrt` regenerates and rebuilds both Prisma database types and OpenAPI types
 - workspace name formats depend on folder:
   - `apps/foo` → `foo` (e.g. `storefront`, `server`)
   - `packages/foo` → `@neon/foo` (e.g. `@neon/database`, `@neon/apis`)
