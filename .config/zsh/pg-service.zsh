@@ -9,9 +9,9 @@ _pg_service_maybe_sync() {
     _stat_mtime() { stat -c %Y "$1"; }
   fi
 
-  # Sync if file is missing or older than 7 days
+  # Sync if file is missing or older than 1 day
   if [[ ! -f "$PG_SERVICE_FILE" ]] || \
-     [[ $(( $(date +%s) - $(_stat_mtime "$PG_SERVICE_FILE") )) -gt 604800 ]]; then
+     [[ $(( $(date +%s) - $(_stat_mtime "$PG_SERVICE_FILE") )) -gt 86400 ]]; then
     echo "[pg-service] config stale or missing, syncing from Doppler..."
     if ! ~/.local/bin-dotfiles/pg-service-sync; then
       echo "[pg-service] ⚠️  sync failed"
