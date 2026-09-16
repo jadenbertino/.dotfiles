@@ -38,11 +38,11 @@ Launch all five reviewers by default, in parallel up to the available agent limi
 
 | Reviewer prompt | Report |
 | --- | --- |
-| Data Model and API.md | 3a-data-model-and-api.md |
-| Bugs.md | 3b-bugs.md |
-| Tests.md | 3c-tests.md |
-| Consistency and Best Practices.md | 3d-consistency.md |
-| Code Design.md | 3e-code-design.md |
+| 3a-Data Model and API.md | 3a-data-model-and-api.md |
+| 3b-Bugs.md | 3b-bugs.md |
+| 3c-Tests.md | 3c-tests.md |
+| 3d-Consistency and Best Practices.md | 3d-consistency.md |
+| 3e-Code Design.md | 3e-code-design.md |
 
 Review is read-only except for assigned report files. Do not edit application code, guidance, or tests; run tests; commit; or publish GitHub comments during review. Reviewers may read necessary surrounding files and use read-only inspection tools. Follow applicable repository and skill instructions.
 
