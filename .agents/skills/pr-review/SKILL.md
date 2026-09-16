@@ -9,9 +9,9 @@ Require an explicit GitHub PR URL. If absent, ask for it; do not infer a PR from
 
 ## Guidance
 
-The human-maintained reviewer prompts live in Obsidian, under `/workspaces/neon/_obsidian/neon/PR Review/`. Read `Review Guide.md` and resolve its links. If that vault location is unavailable, locate the same documents or ask for their location rather than inventing replacements.
+The human-maintained reviewer prompts live in Obsidian, under `/workspaces/neon/_obsidian/neon/PR Review/`. Read `1-Review Guide.md` and resolve its links. If that vault location is unavailable, locate the same documents or ask for their location rather than inventing replacements.
 
-Each reviewer reads its own prompt and referenced guidance. The main agent reads all five prompts. Preserve the original `/workspaces/neon/_obsidian/PR Review.md`; it is source material awaiting manual consolidation, not a replacement for the reviewer prompts.
+Each reviewer reads its own prompt and referenced guidance. The main agent reads all five prompts. The original PR-review notes have been consolidated into these prompts and the linked coding guide.
 
 ## Phase 0: establish context and create reports
 
