@@ -5,4 +5,4 @@ description: Review an explicit GitHub PR URL with five specialist reviewers, wr
 
 # PR review
 
-Read and follow `/workspaces/neon/_obsidian/neon/PR Review/2a-main-agent-prompt.md` before starting. That Obsidian document is the source of truth for this skill’s workflow. If it is unavailable, ask the user for its location.
+Read and follow `/workspaces/neon/_obsidian/neon/PR Review Prompts/2a-main-agent-prompt.md` before starting. That Obsidian document is the source of truth for this skill’s workflow. If it is unavailable, ask the user for its location.
