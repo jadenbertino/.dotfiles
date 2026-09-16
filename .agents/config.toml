@@ -7,3 +7,7 @@ trust_level = "trusted"
 
 [projects."/home/node/.dotfiles"]
 trust_level = "trusted"
+
+[[skills.config]]
+path = "/workspaces/neon/.agents/skills/turborepo"
+enabled = false
