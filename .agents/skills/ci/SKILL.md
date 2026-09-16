@@ -5,6 +5,15 @@ description: Continuously fetch, fix, and push until CI is fully green on the cu
 
 Continuously fetch, fix, and push until CI is fully green on the current branch.
 
+## Separate checkout
+
+For Neon CI work, use `/workspaces/neon-2` so the primary `/workspaces/neon` checkout stays available for other work. If the user names another checkout, use that instead.
+
+1. If `/workspaces/neon-2` is already a clone of `neon-xyz/neon`, reuse it. Check its branch and working tree before switching branches; preserve any existing changes. Fetch the PR branch and switch to a local branch tracking `origin/<PR head branch>` when needed. Confirm the branch and HEAD match the PR before running the CI script or pushing.
+2. If the directory does not exist, clone `https://github.com/neon-xyz/neon` there, then check out the PR head branch as a tracking branch. If the path exists but is not that repo, stop and resolve the path conflict without deleting its contents.
+3. On a fresh clone, run `yarn install --immutable`, `yarn run husky`, and `yarn turbo build --filter=server...` before local server tests. Build other affected workspaces as needed. Redirect setup output to temp files and inspect it.
+4. Run the outer loop and all fixes, verification, commits, and pushes from the separate checkout. The existing Docker services use fixed names and ports; reuse them for local tests instead of starting a second Compose stack. Local tests in the two checkouts share the database, so avoid running them concurrently.
+
 ## Outer loop
 
 Repeat until done (max 5 push cycles before stopping):
