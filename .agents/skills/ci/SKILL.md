@@ -7,14 +7,17 @@ Continuously fetch, fix, and push until CI is fully green on the current branch.
 
 ## Separate checkout
 
-For Neon CI work, use `/workspaces/neon-2` so the primary `/workspaces/neon` checkout stays available for other work. If the user names another checkout, use that instead.
+Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease so the primary checkout stays available. Both CI and PR review use the same repository pool; acquire a lease instead of guessing whether a fixed checkout is busy. If Treehouse is unavailable or lacks the lease flags below, report the setup blocker. Honor an explicitly requested checkout while preserving existing work; do not treat an unmanaged checkout as protected by Treehouse.
 
-1. If `/workspaces/neon-2` is already a clone of `neon-xyz/neon`, reuse it. Check its branch and working tree before switching branches; preserve any existing changes. Fetch the PR branch and switch to a local branch tracking `origin/<PR head branch>` when needed. Confirm the branch and HEAD match the PR before running the CI script or pushing.
-2. If the directory does not exist, clone `https://github.com/neon-xyz/neon` there, then check out the PR head branch as a tracking branch. If the path exists but is not that repo, stop and resolve the path conflict without deleting its contents.
-3. On a fresh clone, run `yarn install --immutable`, `yarn run husky`, and `yarn turbo build --filter=server...` before local server tests. Build other affected workspaces as needed. Redirect setup output to temp files and inspect it.
-4. Run the outer loop and all fixes, verification, commits, and pushes from the separate checkout. The existing Docker services use fixed names and ports; reuse them for local tests instead of starting a second Compose stack. Local tests in the two checkouts share the database, so avoid running them concurrently.
+1. Record the target repository, branch, and initial SHA before leaving the original checkout. From that repository, run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json`. Save the returned path and `lease_id` outside the leased worktree. The durable lease remains held between tool calls even when no process is running there. Use `treehouse status --json` to inspect allocations; do not enter or release another task’s lease.
+2. Fetch the target branch from its actual remote, including forks, into the acquired worktree. Use the target branch name when it is free; if another worktree has it checked out, use a unique local branch tracking the target remote branch. Confirm HEAD matches the intended remote SHA before running the CI script; push explicitly to the original target remote and branch throughout the loop.
+3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when required by the checked-out lockfile. Run `yarn turbo build --filter=server...` before local server tests; build other affected workspaces as needed. Redirect setup output to temp files and inspect it. Reused worktrees retain caches, but those caches do not establish that dependencies or generated types are current.
+4. Run the outer loop and all fixes, verification, commits, and pushes from the leased path. Reuse existing Docker services with their fixed names and ports instead of starting a second Compose stack. Database-dependent tests across checkouts must not run concurrently. Any app server used for verification must serve this checkout and revision.
+5. Hold the lease for the whole CI task. When finished, ensure intentional changes are committed and pushed and needed logs are saved outside the worktree, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Return can terminate worktree processes and reset files; never use `--force` or `return --all` for routine cleanup. If work remains unsaved, cleanup fails, or the task pauses for user input, retain the lease and report its path, identity, and reason.
 
 ## Outer loop
+
+The bundled `ci.sh` infers the remote branch from the local branch name and queries `origin`. If the leased worktree uses a different local branch name or target remote, create a temporary copy outside the worktree and adapt its branch, remote, and GitHub repository lookups to the recorded target. Inspect that copy and use it throughout the loop; do not poll CI for the temporary local branch or change shared Git remote configuration.
 
 Repeat until done (max 5 push cycles before stopping):
 
@@ -47,7 +50,7 @@ Act on failures immediately — do not wait for the rest of the run to complete.
 6. Once everything passes:
    - Stage only intentional source changes — do not include unrelated user changes
    - Commit with a message describing what was fixed (e.g. `fix: mock next/font in storefront vitest setup`)
-   - `git push`
+   - Push explicitly to the recorded target remote and branch
 7. Return to the outer loop.
 
 ## Test job → local command
@@ -111,7 +114,7 @@ If a job fails due to a transient issue rather than a code problem, push an empt
 
 To retrigger:
 
-- **Push an empty commit** to trigger a fresh run of all jobs: `git commit --allow-empty -m "ci: retrigger" && git push`
+- **Push an empty commit** to trigger a fresh run of all jobs: `git commit --allow-empty -m "ci: retrigger"`, then push explicitly to the recorded target remote and branch
 - **Never re-run individual jobs** (`gh run rerun --failed` is forbidden). Always trigger a full fresh run via an empty commit.
 - A fresh full run ensures all jobs start from a clean state on the same commit.
 
