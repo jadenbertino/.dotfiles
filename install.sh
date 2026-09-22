@@ -80,6 +80,27 @@ install_codex() {
   echo "Installed codex"
 }
 
+install_treehouse() {
+  add_to_path "$HOME/.local/bin"
+  if is_command_available "treehouse"; then
+    return 0
+  fi
+
+  echo "Installing Treehouse..."
+  local treehouse_installer
+  treehouse_installer="$(mktemp)" || return 1
+  if ! curl -fsSL https://kunchenguid.github.io/treehouse/install.sh -o "$treehouse_installer"; then
+    rm -f "$treehouse_installer"
+    return 1
+  fi
+  if ! (mkdir -p "$HOME/.local/bin" && sh "$treehouse_installer"); then
+    rm -f "$treehouse_installer"
+    return 1
+  fi
+  rm -f "$treehouse_installer"
+  treehouse --version
+}
+
 install_neovim() {
     detect_os
 
@@ -330,6 +351,7 @@ install_neovim
 setup_tmux
 install_claude
 install_codex
+install_treehouse || exit 1
 install_eza
 install_psql
 install_magic_wormhole
