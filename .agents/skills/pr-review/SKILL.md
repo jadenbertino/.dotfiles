@@ -7,6 +7,8 @@ description: Review an explicit GitHub PR URL with four specialist reviewers, wr
 
 Read and follow `/workspaces/neon/_obsidian/neon/PR Review Prompts/2a-main-agent-prompt.md` before starting. That Obsidian document is the source of truth for this skill’s workflow. If it is unavailable, ask the user for its location.
 
+The Data Model and API reviewer also verifies documentation quality and explicitly reports its assessment, following the documentation checks in its angle prompt.
+
 Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease for the entire review and implementation; follow the source workflow’s acquisition, setup, and release instructions. Keep the lease while reviewers run or user decisions are pending.
 
 When amending a follow-up PR, its branch may already be checked out in the user's workspace. If Git refuses checkout for that reason, create a uniquely named local branch in the leased worktree from the verified PR head. Push the amendment with `git push origin HEAD:<pr-head-branch>` (using the resolved head repository remote for forks). Do not force checkout or move the branch in the other worktree.
