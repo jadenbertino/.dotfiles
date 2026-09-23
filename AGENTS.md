@@ -14,6 +14,8 @@
 
 - Skip typecheck and lint. Allow the pre-commit hook to handle these checks.
 
+**Comments:** Write comments in plain, conversational language that explains why we made the decision and who can act on it. Include only the details needed to understand that reasoning; skip implementation walkthroughs and tangential explanations.
+
 **Default to inline. Don't extract unless one of the following is true (ordered high to low priority):**
 
 1. **Reused in 2+ real places** — clearest, most objective signal. Not "might be reused" — actually is.
