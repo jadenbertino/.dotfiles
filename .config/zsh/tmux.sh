@@ -1,5 +1,6 @@
 # Aliases
 alias tm='tmux'
+alias t='tat'
 alias tml='tmux list-sessions'
 alias tma='~/.local/bin-dotfiles/tmux-sessionizer.sh'
 alias tmd='tmux detach'
@@ -33,3 +34,4 @@ zat() {
   z "$TARGET_PATH"
   tat
 }
+
