@@ -187,7 +187,10 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
   echo "LOG: $LOG_FILE"
 
   RAW=$(mktemp)
-  gh api "/repos/$REPO/actions/jobs/$JOB_ID/logs" 2>/dev/null > "$RAW" || true
+  # Job logs are full of ANSI codes, which gh refuses to print without this flag.
+  # Let stderr through so a future fetch failure says why instead of silently
+  # leaving us with an empty log.
+  gh api --allow-escape-sequences "/repos/$REPO/actions/jobs/$JOB_ID/logs" > "$RAW" || true
 
   clean_log < "$RAW" > "$LOG_FILE" || true
 
