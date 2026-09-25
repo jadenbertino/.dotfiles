@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Run tsc-fast + targeted ESLint on the provided files.
+# Format with Prettier, then run tsc-fast + targeted ESLint on the provided files.
 # Usage: check <file ...>
 
 set -euo pipefail
 
 ESLINT=/workspaces/neon/node_modules/eslint/bin/eslint.js
+PRETTIER=/workspaces/neon/node_modules/prettier/bin/prettier.cjs
 
 if [[ $# -eq 0 ]]; then
   echo "Usage: check <file ...>" >&2
@@ -13,7 +14,15 @@ fi
 
 eslint_out=$(mktemp)
 tsc_out=$(mktemp)
-trap 'rm -f "$eslint_out" "$tsc_out"' EXIT
+prettier_out=$(mktemp)
+trap 'rm -f "$eslint_out" "$tsc_out" "$prettier_out"' EXIT
+
+# Format before analysing, so ESLint and tsc see the final text and CI's format
+# job can't fail on something that was already fixable here. A prettier failure
+# means the file doesn't parse — tsc says that better, so report and carry on.
+if ! node "$PRETTIER" --ignore-unknown --write "$@" >"$prettier_out" 2>&1; then
+  cat "$prettier_out" >&2
+fi
 
 find_tsconfig() {
   local file dir
