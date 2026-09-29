@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Format with Prettier, then run tsc-fast + targeted ESLint on the provided files.
+# Format with Prettier, then run tsc-daemon + targeted ESLint on the provided files.
 # Usage: check <file ...>
 
 set -euo pipefail
 
 ESLINT=/workspaces/neon/node_modules/eslint/bin/eslint.js
 PRETTIER=/workspaces/neon/node_modules/prettier/bin/prettier.cjs
+TSC="${TSC_DAEMON_TYPESCRIPT:-$HOME/.local/share/typescript7}/node_modules/.bin/tsc"
 
 if [[ $# -eq 0 ]]; then
   echo "Usage: check <file ...>" >&2
@@ -61,9 +62,14 @@ fallback_tsc() {
 
   mapfile -t configs < <(printf '%s\n' "${configs[@]}" | sort -u)
 
+  if [[ ! -x "$TSC" ]]; then
+    printf 'check: TypeScript 7 not found at %s — run install.sh from your dotfiles\n' "$TSC" >&2
+    return 1
+  fi
+
   : >"$tsc_out"
   for config in "${configs[@]}"; do
-    node /workspaces/neon/node_modules/typescript/bin/tsc \
+    "$TSC" \
       -p "$config" \
       --noEmit \
       --pretty false >>"$tsc_out" 2>&1 || true

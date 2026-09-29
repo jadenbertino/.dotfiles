@@ -301,6 +301,30 @@ install_magic_wormhole() {
   echo "magic-wormhole installed successfully"
 }
 
+install_typescript7() {
+  local ts_home="$HOME/.local/share/typescript7"
+
+  if [ -x "$ts_home/node_modules/.bin/tsc" ]; then
+    return 0
+  fi
+
+  echo "Installing TypeScript 7 for the check script..."
+  mkdir -p "$ts_home"
+  cat > "$ts_home/package.json" <<'JSON'
+{
+  "name": "tsc-daemon-typescript",
+  "private": true,
+  "description": "Pinned TypeScript 7 for the `check` script, kept out of any project's node_modules.",
+  "dependencies": {
+    "typescript": "7.0.2"
+  }
+}
+JSON
+  (cd "$ts_home" && npm install --no-audit --no-fund) || return 1
+  echo "TypeScript 7 installed successfully"
+  "$ts_home/node_modules/.bin/tsc" --version
+}
+
 install_doppler() {
   if is_command_available "doppler"; then
     return 0
@@ -355,6 +379,7 @@ install_treehouse || exit 1
 install_eza
 install_psql
 install_magic_wormhole
+install_typescript7
 install_doppler
 
 source "$DIR/setup-github-ssh.sh"
