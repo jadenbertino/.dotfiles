@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Client for tsc-daemon-server.
+// Client for tsc-daemon-server-ts5 / tsc-daemon-server-ts7.
 // Connects to (or starts) a persistent TypeScript daemon for fast file checks.
-// Usage: tsc-daemon <file ...>
+// Usage: tsc-daemon [--ts <5|7>] <file ...>
 
 import net from 'node:net';
 import { createHash } from 'node:crypto';
@@ -59,11 +59,36 @@ const expandPaths = (inputs) => {
   return [...new Set(out)];
 };
 
-const files = expandPaths(process.argv.slice(2));
-if (!files.length) { process.stderr.write('Usage: tsc-daemon <file ...>\n'); process.exit(1); }
+const SUPPORTED_MAJORS = new Set(['5', '7']);
+const DEFAULT_MAJOR = '5';
 
-const SOCKET = `/tmp/tsc-daemon-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}.sock`;
-const SERVER = path.join(path.dirname(fileURLToPath(import.meta.url)), 'tsc-daemon-server');
+const parseArgs = (argv) => {
+  const inputs = [];
+  let major = DEFAULT_MAJOR;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--ts') major = String(argv[++i] ?? '').split('.')[0];
+    else if (arg.startsWith('--ts=')) major = arg.slice('--ts='.length).split('.')[0];
+    else inputs.push(arg);
+  }
+
+  return { major, inputs };
+};
+
+const usage = 'Usage: tsc-daemon [--ts <5|7>] <file ...>\n';
+const { major, inputs } = parseArgs(process.argv.slice(2));
+
+if (!SUPPORTED_MAJORS.has(major)) {
+  process.stderr.write(`tsc-daemon: unsupported TypeScript version '${major}'\n${usage}`);
+  process.exit(1);
+}
+
+const files = expandPaths(inputs);
+if (!files.length) { process.stderr.write(usage); process.exit(1); }
+
+const SOCKET = `/tmp/tsc-daemon-ts${major}-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}.sock`;
+const SERVER = path.join(path.dirname(fileURLToPath(import.meta.url)), `tsc-daemon-server-ts${major}`);
 
 const send = (payload) => new Promise((resolve, reject) => {
   const sock = net.createConnection(SOCKET);

@@ -1,15 +1,40 @@
 #!/usr/bin/env bash
 # Format with Prettier, then run tsc-daemon + targeted ESLint on the provided files.
-# Usage: check <file ...>
+# Usage: check [--ts <5|7>] <file ...>
 
 set -euo pipefail
 
 ESLINT=/workspaces/neon/node_modules/eslint/bin/eslint.js
 PRETTIER=/workspaces/neon/node_modules/prettier/bin/prettier.cjs
-TSC="${TSC_DAEMON_TYPESCRIPT:-$HOME/.local/share/typescript7}/node_modules/.bin/tsc"
+USAGE="Usage: check [--ts <5|7>] <file ...>"
 
-if [[ $# -eq 0 ]]; then
-  echo "Usage: check <file ...>" >&2
+ts_major=5
+files=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ts)
+      if [[ $# -lt 2 ]]; then printf 'check: --ts requires a value\n%s\n' "$USAGE" >&2; exit 1; fi
+      ts_major="${2%%.*}"; shift 2 ;;
+    --ts=*) ts_major="${1#--ts=}"; ts_major="${ts_major%%.*}"; shift ;;
+    *) files+=("$1"); shift ;;
+  esac
+done
+
+case "$ts_major" in
+  5)
+    TSC=(node /workspaces/neon/node_modules/typescript/bin/tsc)
+    TSC_HINT="run yarn install in the repo" ;;
+  7)
+    TSC=("${TSC_DAEMON_TYPESCRIPT:-$HOME/.local/share/typescript7}/node_modules/.bin/tsc")
+    TSC_HINT="run install.sh from your dotfiles" ;;
+  *)
+    printf 'check: unsupported TypeScript version %s\n%s\n' "$ts_major" "$USAGE" >&2
+    exit 1 ;;
+esac
+
+if [[ ${#files[@]} -eq 0 ]]; then
+  echo "$USAGE" >&2
   exit 1
 fi
 
@@ -21,7 +46,7 @@ trap 'rm -f "$eslint_out" "$tsc_out" "$prettier_out"' EXIT
 # Format before analysing, so ESLint and tsc see the final text and CI's format
 # job can't fail on something that was already fixable here. A prettier failure
 # means the file doesn't parse — tsc says that better, so report and carry on.
-if ! node "$PRETTIER" --ignore-unknown --write "$@" >"$prettier_out" 2>&1; then
+if ! node "$PRETTIER" --ignore-unknown --write "${files[@]}" >"$prettier_out" 2>&1; then
   cat "$prettier_out" >&2
 fi
 
@@ -62,14 +87,14 @@ fallback_tsc() {
 
   mapfile -t configs < <(printf '%s\n' "${configs[@]}" | sort -u)
 
-  if [[ ! -x "$TSC" ]]; then
-    printf 'check: TypeScript 7 not found at %s — run install.sh from your dotfiles\n' "$TSC" >&2
+  if [[ ! -f "${TSC[-1]}" ]]; then
+    printf 'check: TypeScript %s not found at %s — %s\n' "$ts_major" "${TSC[-1]}" "$TSC_HINT" >&2
     return 1
   fi
 
   : >"$tsc_out"
   for config in "${configs[@]}"; do
-    "$TSC" \
+    "${TSC[@]}" \
       -p "$config" \
       --noEmit \
       --pretty false >>"$tsc_out" 2>&1 || true
@@ -83,13 +108,13 @@ fallback_tsc() {
   return 0
 }
 
-tsc-daemon "$@" >"$tsc_out" 2>&1 &
+tsc-daemon --ts "$ts_major" "${files[@]}" >"$tsc_out" 2>&1 &
 tsc_pid=$!
 
 # ESLint is slow on the first run: projectService: true forces TypeScript to
 # load the full project type graph regardless of how few files are passed.
 # --cache makes subsequent runs near-instant for unchanged files.
-node "$ESLINT" --cache "$@" >"$eslint_out" 2>&1 &
+node "$ESLINT" --cache "${files[@]}" >"$eslint_out" 2>&1 &
 eslint_pid=$!
 
 # Poll until one process exits, then react. Unlike the FIFO approach, running
@@ -103,7 +128,7 @@ while ! $tsc_done || ! $eslint_done; do
     tsc_done=true
     if ! wait "$tsc_pid"; then
       if grep -q 'daemon failed to start within 30s' "$tsc_out"; then
-        fallback_tsc "$@" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
+        fallback_tsc "${files[@]}" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
       else
         kill "$eslint_pid" 2>/dev/null || true
         cat "$tsc_out"

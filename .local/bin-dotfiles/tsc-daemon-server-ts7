@@ -63,7 +63,8 @@ const check = (files) => {
   let output = missing.map((f) => `error: file not found: ${f}\n`).join('');
 
   if (present.length) {
-    const snapshot = getApi().updateSnapshot({ openFiles: present, fileChanges: { invalidateAll: true } });
+    const api = getApi();
+    const snapshot = api.updateSnapshot({ openFiles: present, fileChanges: { invalidateAll: true } });
     try {
       for (const file of present) {
         const project = snapshot.getDefaultProjectForFile(file);
@@ -74,6 +75,7 @@ const check = (files) => {
       }
     } finally {
       snapshot.dispose();
+      api.updateSnapshot({ closeFiles: present }).dispose();
     }
   }
 
