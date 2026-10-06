@@ -7,7 +7,7 @@
 ## Writing docs and notes
 
 - Prefer active voice: describe which actor or system performs each action, rather than saying that something "is handled," "is stored," or "is updated" without naming who or what does it.
-- Prefer conceptual explanations first: use precise domain terminology to describe the domain model, lifecycle, and data flow in plain English before referencing specific functions, files, or code symbols.
+- Start explanations super simple: the core idea in plain English and domain terms, before any functions, files or code symbols. Don't front-load detail; I'll ask questions to drill down.
 - Prefer minimal headers and nested bullet point lists.
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
 
