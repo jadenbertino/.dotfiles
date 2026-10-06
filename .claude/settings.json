@@ -28,6 +28,7 @@
     "command": "bash /home/node/.claude/statusline-command.sh"
   },
   "enabledPlugins": {},
+  "claudeMdExcludes": ["/workspaces/neon/CLAUDE.md"],
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "voiceEnabled": true,
