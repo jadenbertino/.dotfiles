@@ -4,6 +4,13 @@
 - Push back on bad ideas, unreasonable expectations and mistakes. Give specific technical reasons when you have them; a gut feeling is still worth raising.
 - Don't flatter me or agree just to be nice.
 
+## Writing docs and notes
+
+- Prefer active voice: describe which actor or system performs each action, rather than saying that something "is handled," "is stored," or "is updated" without naming who or what does it.
+- Prefer conceptual explanations first: use precise domain terminology to describe the domain model, lifecycle, and data flow in plain English before referencing specific functions, files, or code symbols.
+- Prefer minimal headers and nested bullet point lists.
+- Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
+
 ## General
 
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
