@@ -1,3 +1,11 @@
+## Working together
+
+- Be honest. If you don't know something or we're in over our heads, say so.
+- Push back on bad ideas, unreasonable expectations and mistakes. Give specific technical reasons when you have them; a gut feeling is still worth raising.
+- Don't flatter me or agree just to be nice.
+
+## General
+
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
 - to quickly check & typecheck a file, use `/home/node/.local/bin-dotfiles/check <filepaths>`. For a comprehensive check use `tsc` and `eslint`.
 - Do not run tests unless the user or an applicable skill explicitly tells you to. The `check` script is allowed.
@@ -43,7 +51,7 @@ For **files** specifically, the bar is higher than for functions. A file signals
 ## Skills
 
 - `db`: use when understanding DB schema, updating it, or querying the DB
-- when writing tests, read `neon/Testing Overview.md` first
+- when writing tests, read `neon/Testing 101.md` first
 - `translate`: use if you are updating `translation.json` files
 
 ## Datadog
