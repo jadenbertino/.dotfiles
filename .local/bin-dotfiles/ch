@@ -6,7 +6,7 @@ PROFILE="${CHROME_DEBUG_PROFILE:-$HOME/.chrome-debug}"
 CHROME="${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-  echo "usage: chrome-tunnel [codespace-name]  (default: most recently used running codespace)"
+  echo "usage: ch [codespace-name]  (default: most recently used running codespace)"
   echo "Starts Chrome with remote debugging on :$PORT and reverse-tunnels it into a codespace."
   exit 0
 fi
