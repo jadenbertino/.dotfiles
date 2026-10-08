@@ -75,6 +75,12 @@ For **files** specifically, the bar is higher than for functions. A file signals
 - You can read the dev server logs at `/tmp/neon-dev.log`
 - If I reference a `neon/**/*.md` file then assume this filepath is relative to `/workspaces/neon/_obsidian`
 
+## Browser
+
+- "use playwright" means drive my Mac's Chrome, which `ch` (`~/.local/bin-dotfiles/ch`) exposes inside the codespace via CDP at `http://localhost:9222`
+  - connect with `chromium.connectOverCDP("http://localhost:9222")` rather than launching a new browser
+  - if `curl -s localhost:9222/json/version` fails, ask me to run `ch` on my Mac
+
 ## References
 
 - "treehouse" refers to https://github.com/kunchenguid/treehouse
