@@ -1,0 +1,33 @@
+#!/bin/bash
+set -euo pipefail
+
+PORT="${CHROME_DEBUG_PORT:-9222}"
+PROFILE="${CHROME_DEBUG_PROFILE:-$HOME/.chrome-debug}"
+CHROME="${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "usage: chrome-tunnel [codespace-name]"
+  echo "Starts Chrome with remote debugging on :$PORT and reverse-tunnels it into a codespace."
+  exit 0
+fi
+
+if curl -s -m 1 "localhost:$PORT/json/version" >/dev/null; then
+  echo "Chrome debug port already up on :$PORT"
+else
+  echo "Starting Chrome (profile: $PROFILE)"
+  nohup "$CHROME" --remote-debugging-port="$PORT" --user-data-dir="$PROFILE" >/dev/null 2>&1 &
+  for _ in {1..50}; do
+    curl -s -m 1 "localhost:$PORT/json/version" >/dev/null && break
+    sleep 0.2
+  done
+  curl -s -m 1 "localhost:$PORT/json/version" >/dev/null || { echo "Chrome didn't open :$PORT" >&2; exit 1; }
+fi
+
+codespace_args=()
+[[ -n "${1:-}" ]] && codespace_args=(-c "$1")
+
+echo "Tunneling :$PORT into codespace (Ctrl-C to stop)"
+exec gh codespace ssh ${codespace_args[@]+"${codespace_args[@]}"} -- \
+  -R "$PORT:localhost:$PORT" -N \
+  -o ExitOnForwardFailure=yes \
+  -o ServerAliveInterval=30
