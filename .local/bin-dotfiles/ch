@@ -7,7 +7,7 @@ CHROME="${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chro
 
 if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   echo "usage: ch [codespace-name]  (default: most recently used running codespace)"
-  echo "Starts Chrome with remote debugging on :$PORT and reverse-tunnels it into a codespace."
+  echo "Starts Chrome with remote debugging on :$PORT and reverse-tunnels it into a codespace in the background."
   exit 0
 fi
 
@@ -27,8 +27,27 @@ codespace="${1:-$(gh codespace list --json name,state,lastUsedAt \
   --jq '[.[] | select(.state == "Available")] | sort_by(.lastUsedAt) | last | .name // empty')}"
 [[ -n "$codespace" ]] || { echo "No running codespace found" >&2; exit 1; }
 
-echo "Tunneling :$PORT into $codespace (Ctrl-C to stop)"
-exec gh codespace ssh -c "$codespace" -- \
+if pgrep -f "codespace ssh -c $codespace -- -R $PORT" >/dev/null; then
+  echo "Tunnel into $codespace already running"
+  exit 0
+fi
+
+log="/tmp/ch-$codespace.log"
+nohup gh codespace ssh -c "$codespace" -- \
   -R "$PORT:localhost:$PORT" -N \
   -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30
+  -o ServerAliveInterval=30 \
+  </dev/null >"$log" 2>&1 &
+pid=$!
+
+for _ in {1..5}; do
+  kill -0 "$pid" 2>/dev/null || { echo "Tunnel exited; see $log" >&2; exit 1; }
+  if gh codespace ssh -c "$codespace" -- curl -s -m 2 "localhost:$PORT/json/version" >/dev/null 2>&1; then
+    echo "Started: :$PORT tunneled into $codespace (pid $pid, log $log)"
+    exit 0
+  fi
+  sleep 1
+done
+
+echo "Tunnel still running but :$PORT isn't reachable in $codespace yet; see $log" >&2
+exit 1
