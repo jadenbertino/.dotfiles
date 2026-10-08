@@ -1,7 +1,7 @@
 [gpg]
 	format = ssh
 [user]
-	signingkey = /home/node/.ssh/github.pub
+	signingkey = ~/.ssh/github.pub
 [commit]
 	gpgsign = true
 [gpg "ssh"]

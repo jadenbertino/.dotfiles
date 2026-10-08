@@ -45,6 +45,7 @@ nd() {
 
 # toggle claude notifications
 alias cn='test -f ~/.claude-ntfy && rm -f ~/.claude-ntfy && echo "Claude notifications OFF" || (touch ~/.claude-ntfy && echo "Claude notifications ON")'
+alias ccu='curl -fsSL https://claude.ai/install.sh | bash'
 
 # youtube downloader
 alias ytd="yt-dlp -f bestaudio/best -x --audio-format mp3 --audio-quality 0"
