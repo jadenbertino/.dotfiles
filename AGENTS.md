@@ -80,6 +80,8 @@ For **files** specifically, the bar is higher than for functions. A file signals
 - "use playwright" means drive my Mac's Chrome, which `ch` (`~/.local/bin-dotfiles/ch`) exposes inside the codespace via CDP at `http://localhost:9222`
   - connect with `chromium.connectOverCDP("http://localhost:9222")` rather than launching a new browser
   - if `curl -s localhost:9222/json/version` fails, ask me to run `ch` on my Mac
+  - I want to watch, so avoid headless browsers: don't fall back to one without asking me first
+  - open pages in the existing context (`browser.contexts()[0].newPage()`) so they show up as tabs in my Chrome window
 
 ## References
 
