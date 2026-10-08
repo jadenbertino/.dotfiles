@@ -1,3 +1,5 @@
+# Keep the key paths below starting with ~ rather than an absolute path.
+# This file is shared by my Mac and my codespaces, and their home directories differ.
 [gpg]
 	format = ssh
 [user]
