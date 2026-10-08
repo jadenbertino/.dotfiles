@@ -27,8 +27,15 @@ codespace="${1:-$(gh codespace list --json name,state,lastUsedAt \
   --jq '[.[] | select(.state == "Available")] | sort_by(.lastUsedAt) | last | .name // empty')}"
 [[ -n "$codespace" ]] || { echo "No running codespace found" >&2; exit 1; }
 
-echo "Tunneling :$PORT into $codespace (Ctrl-C to stop)"
-exec gh codespace ssh -c "$codespace" -- \
+if pgrep -f "codespace ssh -c $codespace -- -R $PORT" >/dev/null; then
+  echo "Tunnel into $codespace already running"
+  exit 0
+fi
+
+log="/tmp/ch-$codespace.log"
+echo "Tunneling :$PORT into $codespace (Ctrl-C to stop, log: $log)"
+gh codespace ssh -c "$codespace" -- \
   -R "$PORT:localhost:$PORT" -N \
   -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30
+  -o ServerAliveInterval=30 \
+  2>&1 | tee "$log"
