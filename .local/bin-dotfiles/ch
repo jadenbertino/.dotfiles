@@ -33,11 +33,21 @@ if pgrep -f "codespace ssh -c $codespace -- -R $PORT" >/dev/null; then
 fi
 
 log="/tmp/ch-$codespace.log"
-nohup gh codespace ssh -c "$codespace" -- \
-  -R "$PORT:localhost:$PORT" -N \
-  -o ExitOnForwardFailure=yes \
-  -o ServerAliveInterval=30 \
-  </dev/null >"$log" 2>&1 &
+(
+  trap '' HUP
+  gh codespace ssh -c "$codespace" -- \
+    -R "$PORT:localhost:$PORT" -N \
+    -o ExitOnForwardFailure=yes \
+    -o ServerAliveInterval=30 || true
+  echo "Tunnel exited at $(date)"
+  state=$(gh codespace view -c "$codespace" --json state --jq .state 2>/dev/null || true)
+  if [[ "$state" == Shutdown || "$state" == ShuttingDown ]] &&
+    ! pgrep -f "codespace ssh -c .* -R $PORT" >/dev/null; then
+    pkill -TERM -f -- "--user-data-dir=$PROFILE" && echo "Codespace $state; closed Chrome"
+  else
+    echo "Codespace state '$state' or other tunnels still running; left Chrome open"
+  fi
+) </dev/null >"$log" 2>&1 &
 pid=$!
 
 for _ in {1..5}; do
