@@ -3,6 +3,8 @@
 [gpg]
 	format = ssh
 [user]
+	name = Jaden Bertino
+	email = jaden@neonpay.com
 	signingkey = ~/.ssh/github.pub
 [commit]
 	gpgsign = true
