@@ -8,6 +8,12 @@ alias cl='clear'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'
 alias rmf='rm -rf'
+cs() {
+  local name
+  name=$(gh codespace list --json name,lastUsedAt --jq 'sort_by(.lastUsedAt) | last | .name // empty')
+  [[ -n "$name" ]] || { echo "No codespaces found" >&2; return 1; }
+  gh codespace ssh -c "$name" "$@"
+}
 
 # IDE aliases
 alias b='bash'
