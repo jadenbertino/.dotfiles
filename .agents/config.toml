@@ -1,12 +1,29 @@
 approvals_reviewer = "user"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
 
 [projects."/workspaces/neon"]
 trust_level = "trusted"
 
 [projects."/home/node/.dotfiles"]
 trust_level = "trusted"
+
+[projects."/home/node"]
+trust_level = "trusted"
+
+[projects."/workspaces/neon-2"]
+trust_level = "trusted"
+
+[features]
+rmcp_client = true
+
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+
+[tui.model_availability_nux]
+gpt-6-astra = 4
 
 [[skills.config]]
 path = "/workspaces/neon/.agents/skills/turborepo"
