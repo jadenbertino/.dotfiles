@@ -5,7 +5,7 @@
 [commit]
 	gpgsign = true
 [gpg "ssh"]
-	allowedSignersFile = /home/node/.config/git/allowed_signers
+	allowedSignersFile = ~/.config/git/allowed_signers
 	program = /usr/bin/ssh-keygen
 [alias]
 	sc = "!f() { git switch -c \"$@\" && { BRANCH=$(git branch --show-current); HISTORY_FILE=\".git/branch-history\"; if [ -n \"$BRANCH\" ]; then touch \"$HISTORY_FILE\"; grep -v \"^${BRANCH}|\" \"$HISTORY_FILE\" > \"$HISTORY_FILE.tmp\" 2>/dev/null || true; echo \"${BRANCH}|$(date +%s)\" | cat - \"$HISTORY_FILE.tmp\" > \"$HISTORY_FILE\"; rm -f \"$HISTORY_FILE.tmp\"; fi; }; }; f"
