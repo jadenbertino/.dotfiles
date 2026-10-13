@@ -9,7 +9,7 @@ Read and follow `/workspaces/neon/_obsidian/neon/PR Review Prompts/2a-main-agent
 
 The Data Model and API reviewer also verifies documentation quality and explicitly reports its assessment, following the documentation checks in its angle prompt.
 
-Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease for the entire review and implementation; follow the source workflow’s acquisition, setup, and release instructions. Keep the lease while reviewers run or user decisions are pending.
+Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease for the entire review and implementation; follow the source workflow’s acquisition, setup, and release instructions. Before acquiring the lease, check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask the user how to proceed. Keep the lease while reviewers run or user decisions are pending.
 
 When amending a follow-up PR, its branch may already be checked out in the user's workspace. If Git refuses checkout for that reason, create a uniquely named local branch in the leased worktree from the verified PR head. Push the amendment with `git push origin HEAD:<pr-head-branch>` (using the resolved head repository remote for forks). Do not force checkout or move the branch in the other worktree.
 
