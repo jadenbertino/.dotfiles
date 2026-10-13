@@ -32,6 +32,6 @@ detect_os
 
 if [[ "$OS" == "wsl" ]]; then
   powershell.exe -Command "Import-Module BurntToast; New-BurntToastNotification -Text '$msg'"
-elif [[ "$OS" == "macos" ]]; then
+else
   curl -s -d "$msg" "https://ntfy.sh/$NTFY_TOPIC" || true
 fi
