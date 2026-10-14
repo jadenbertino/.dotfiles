@@ -76,7 +76,9 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 ## Documentation
 
-All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting.
+These docs are a cache of what the codebase does, so they can be out of date. When a doc and the code disagree, trust the code and tell me so I can update the doc.
+
+All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
 
 - Wallet work
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
