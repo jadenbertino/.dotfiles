@@ -65,16 +65,18 @@ Choose per topic and per the learner's apparent energy:
 
 ## Tools
 
+**Never use the `AskUserQuestion` tool.** Ask every question, quizzes included, as plain text in chat, end your message there, and wait for the learner to type a reply.
+
 ### Quizzes (graded)
 
-Pose gradable questions with `AskUserQuestion`: 2-4 options, `multiSelect: false`, no option marked "(Recommended)". The learner can also pick "Other" to answer freely.
+Write gradable questions as a lettered list of 2-4 options (a, b, c, d). The learner replies with a letter or in their own words.
 
 After they answer, your **next message starts with the grade**:
 - ✓ or ✗
 - the correct answer
 - a short explanation of why — and, if they missed, why their pick is tempting but wrong
 
-Batch independent questions (up to 4) in one `AskUserQuestion` call when probing, then grade them all together. Ask one at a time when each question depends on the last answer.
+Number independent questions and ask up to 4 in one message when probing, then grade them all together. Ask one at a time when each question depends on the last answer.
 
 **Building options so the answer doesn't leak:**
 1. **Every option is a bare claim — no justification anywhere.** The #1 giveaway is the correct option carrying its own reasoning while distractors are bare. All reasoning goes in your grading message.
@@ -86,7 +88,7 @@ If, reading the finished set cold, you can tell which is right without knowing t
 
 ### Open questions (not graded)
 
-Use `AskUserQuestion` for genuine no-right-answer forks: goals, preferences, what to cover next. Never grade these.
+Ask genuine no-right-answer forks (goals, preferences, what to cover next) as open questions in chat. Never grade these.
 
 ### Fact-checking subagents
 
@@ -112,6 +114,8 @@ It returns a PNG path. The terminal can't show images, so introduce the diagram 
 ## The process: probe → plan → teach
 
 Run all three phases in order, every time; scale each phase's *size* to the topic, never its *shape*.
+
+If `/learn` was invoked with no topic, your first message just asks what they want to learn, then stops.
 
 ### Phase 1 — Probe (never skip)
 
