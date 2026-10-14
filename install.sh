@@ -295,6 +295,32 @@ install_psql() {
   echo "psql installed successfully"
 }
 
+install_diagram_tools() {
+  if ! is_command_available "mmdc"; then
+    echo "Installing mermaid-cli..."
+    npm install -g --allow-scripts=puppeteer @mermaid-js/mermaid-cli
+  fi
+
+  if is_command_available "rsvg-convert"; then
+    return 0
+  fi
+
+  echo "Installing rsvg-convert..."
+
+  case "$OS" in
+    "macos")
+      brew install librsvg
+      ;;
+    "linux"|"wsl")
+      sudo apt update && sudo apt install -y librsvg2-bin
+      ;;
+    *)
+      echo "Unsupported OS: $OS"
+      return 1
+      ;;
+  esac
+}
+
 install_magic_wormhole() {
   echo "Installing/upgrading magic-wormhole..."
   python3 -m pip install --user --upgrade magic-wormhole
@@ -378,6 +404,7 @@ install_codex
 install_treehouse || exit 1
 install_eza
 install_psql
+install_diagram_tools
 install_magic_wormhole
 install_typescript7
 install_doppler
