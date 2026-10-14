@@ -58,7 +58,6 @@ For **files** specifically, the bar is higher than for functions. A file signals
 ## Skills
 
 - `db`: use when understanding DB schema, updating it, or querying the DB
-- when writing tests, read `neon/Testing 101.md` first
 - `translate`: use if you are updating `translation.json` files
 
 ## Datadog
@@ -74,6 +73,23 @@ For **files** specifically, the bar is higher than for functions. A file signals
   - `packages/foo` → `@neon/foo` (e.g. `@neon/database`, `@neon/apis`)
 - You can read the dev server logs at `/tmp/neon-dev.log`
 - If I reference a `neon/**/*.md` file then assume this filepath is relative to `/workspaces/neon/_obsidian`
+
+## Documentation
+
+All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting.
+
+- Wallet work
+  - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
+  - `neon wallet api - for llms.md` (vault root) — Wallet API reference: endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
+  - `neon/Wallet in checkout.md` — How checkout applies wallet funds, places and captures holds, and records `PurchaseAttempt`s, including which endpoints capture a hold.
+  - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.
+- Ticket work
+  - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
+  - `writing good code.md` (vault root) — Index of my coding conventions (types, naming, abstractions, error handling, transactions, repo/service layering). Read the docs it links that apply to the change.
+  - `neon/Neon's Public API's.md` — Standards for public API design: route and field naming, pagination, response shapes, `formatXForExternalUse`. Read when API behavior changes.
+  - `neon/Testing 101.md` — How I want tests written, which layer to use, and where the existing wallet test helpers live. Read before writing tests.
+- PR review
+  - `neon/PR Review Prompts/1-Overview.md` — Index of the `pr-review` workflow and its reviewer angles (data model/API, bugs, tests, code quality). `2a-main-agent-prompt.md` in that folder is the authoritative workflow.
 
 ## Browser
 
