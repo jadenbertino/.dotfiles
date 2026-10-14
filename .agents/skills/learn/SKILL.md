@@ -121,7 +121,7 @@ If `/learn` was invoked with no topic, your first message just asks what they wa
 
 You can't teach into the learner's zone of proximal development without knowing where its edges are, or aim the teaching without knowing what they're reaching for.
 
-**1a. Their goal — open questions.** "I want to understand the wallet system" can mean ten different things. Interrogate the vision until it's concrete. For a codebase, also ask what they'll *do* with it (review PRs? build a feature? debug on-call?) — that sets the depth.
+**1a. Their goal — open questions.** "I want to understand the wallet system" can mean ten different things. Interrogate the vision until it's concrete. Ask only about *what* they want to understand; don't ask what they'll do with it afterwards.
 
 **1b. Their current level — quizzes. This is mapping, not spot-checking.** Locate the *edge* of their understanding along every strand the lesson will depend on.
 
