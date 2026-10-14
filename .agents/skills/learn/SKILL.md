@@ -105,15 +105,50 @@ When one is worth it, you are the creative director: decide the exact idea, prun
 - BAD: "make a diagram about how refunds work"
 - GOOD: "graph TD: 'Wallet' at top; arrows down to 'WalletLot (paid)' and 'WalletLot (free)'; both down into 'refund'. No title. Show that a refund consumes lots, not the wallet balance directly."
 
-Tell it the output directory: `/workspaces/neon/_obsidian/neon/learn/viz/` if `/workspaces/neon/_obsidian` exists, otherwise `~/learn/viz/`.
+Tell it the output directory: `<learn dir>/viz/` (see "Progress files" below).
 
 It returns a PNG path. The terminal can't show images, so introduce the diagram in a sentence and give the path so the learner can open it. If it returns `RESULT: NONE`, simplify or drop the visual. Never hand-draw a diagram yourself.
+
+### Progress files
+
+Each topic gets one progress file so a lesson can be resumed in a later session. The **learn dir** is `/workspaces/neon/_obsidian/neon/learn/` if `/workspaces/neon/_obsidian` exists, otherwise `~/learn/`. Files are `<learn dir>/<short-kebab-topic>.md`:
+
+```markdown
+# <Topic>
+
+## Goal
+<what the learner wants to understand, in their words>
+
+## Where their knowledge ends
+- <strand>: knows <floor>; runs out at <ceiling>
+- Misconceptions: <any found, and whether fixed>
+
+## Map
+- [x] <root truth>
+  - [x] <derived node>
+  - [ ] <next node>  ← next
+- [ ] <goal>
+
+## Log
+- <YYYY-MM-DD>: <one line: what was covered, quiz misses worth revisiting>
+```
+
+- Create it right after the learner okays the plan (Phase 2).
+- Update it after every node's quiz-check in Phase 3: tick the node, move the `← next` marker, and note misses. Also update it whenever the plan changes.
+- Keep it short; it's a resume point and a study note, not a transcript.
+
+## Starting a session
+
+The opening message is always plain chat text (not `AskUserQuestion`), then stop and wait.
+
+- **`/learn` with no topic:** list `<learn dir>/*.md` by modification time (`ls -t`). If there are any, show the 3 most recent as a numbered list (topic plus its `← next` node), and ask whether to resume one of them or start a new topic. If there are none, just ask what they want to learn.
+- **`/learn <topic>`:** if a progress file clearly matches the topic, say so and ask whether to resume it or start fresh. Otherwise start the new topic.
+
+**Resuming:** read the progress file, give a 2-3 line recap (goal, what's done, what's next), then run a quick quiz on the last 1-2 completed nodes to check they stuck. Fix anything that didn't, then continue Phase 3 from the `← next` node. Don't re-run the full probe.
 
 ## The process: probe → plan → teach
 
 Run all three phases in order, every time; scale each phase's *size* to the topic, never its *shape*.
-
-If `/learn` was invoked with no topic, your first message just asks what they want to learn, as plain chat text (not `AskUserQuestion`), then stops.
 
 ### Phase 1 — Probe (never skip)
 
@@ -147,7 +182,7 @@ The highest-leverage step.
 
 **Stress-test the roots before presenting.** For each foundational node: is it genuinely unconditional *for this learner*, or a disguised theorem? If it derives from something simpler, push it down.
 
-**Then stop and wait for their go-ahead.** A wrong root is cheap to fix now and expensive mid-lesson.
+**Then stop and wait for their go-ahead.** A wrong root is cheap to fix now and expensive mid-lesson. Once they okay it, create the progress file.
 
 ### Phase 3 — Teach (the loop)
 
@@ -160,6 +195,7 @@ Build the graph one **node** at a time. Every node — foundational or derived �
    - For code: show the few lines that prove it, with `file:line`, rather than asserting it.
 3. **Connect.** Make the dependency edge explicit: how this node hangs off the ones already in place.
 4. **Quiz-check.** Confirm it landed with a quick quiz. If they miss, the node isn't solid — fix it before building on top.
+5. **Record.** Update the progress file.
 
 Don't front-load all foundations and stop checking. Any new unconditional truth mid-session goes through the full loop.
 
