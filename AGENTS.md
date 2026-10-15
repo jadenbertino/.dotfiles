@@ -60,6 +60,10 @@ For **files** specifically, the bar is higher than for functions. A file signals
 - `db`: use when understanding DB schema, updating it, or querying the DB
 - `translate`: use if you are updating `translation.json` files
 
+## Linear
+
+- When you create a Linear ticket, always set its status to Triage.
+
 ## Datadog
 
 - When asked to investigate a Datadog URL, run `ddl -h` first, then use `ddl logs url "<url>"` to fetch the logs.
