@@ -84,6 +84,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
   - `neon wallet api - for llms.md` (vault root) — Wallet API reference: endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
   - `neon/Wallet in checkout.md` — How checkout applies wallet funds, places and captures holds, and records `PurchaseAttempt`s, including which endpoints capture a hold.
+  - `neon/Wallet API - User Stories.md` — Wallet API user stories grouped by epic (onboarding, saved payment methods, balance, etc.), each with acceptance criteria and edge cases. Read when checking expected wallet behavior or writing AC/QA.
   - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.
 - Ticket work
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
