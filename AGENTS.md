@@ -63,7 +63,7 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 ## Linear
 
-- When you create a Linear ticket, always set its status to Triage.
+- When you create a Linear ticket, always set its status to Triage and leave its priority unset (No priority).
 
 ## Datadog
 
