@@ -26,6 +26,7 @@
 - Prefer small, frequent commits
 - If I reference a git diff then i assume i mean from `main`
 - Don't include yourself as a commit author.
+- Push with `git push --no-verify`.
 
 ## Code style
 
