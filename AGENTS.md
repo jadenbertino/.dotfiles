@@ -65,6 +65,7 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 - When you create a Linear ticket, always set its status to Triage and leave its priority unset (No priority).
 - Write acceptance criteria as Markdown checkboxes (`- [ ] ...`), not plain bullets.
+- When editing an existing ticket, patch only the part that changes; never replace the whole description. If a patch fails, re-read the ticket and retry the patch against its current text.
 
 ## Datadog
 
