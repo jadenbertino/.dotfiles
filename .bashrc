@@ -131,6 +131,8 @@ fi
 
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
+export YARN_ENABLE_GLOBAL_CACHE=true
+export YARN_NM_MODE=hardlinks-global
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
