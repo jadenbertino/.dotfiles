@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # Format with Prettier, then run tsc-daemon + targeted ESLint on the provided files.
-# Usage: check [--ts <5|7>] <file ...>
+# Usage: check [--ts <5|7>] [--restart] <file ...>
+# Prints one summary line per tool on success, so an empty output never means "passed".
 
 set -euo pipefail
 
 ESLINT=/workspaces/neon/node_modules/eslint/bin/eslint.js
 PRETTIER=/workspaces/neon/node_modules/prettier/bin/prettier.cjs
-USAGE="Usage: check [--ts <5|7>] <file ...>"
+USAGE="Usage: check [--ts <5|7>] [--restart] <file ...>
+  --restart  stop the TypeScript daemon first, so it reloads everything from disk"
 
 ts_major=5
+restart=false
 files=()
 
 while [[ $# -gt 0 ]]; do
@@ -17,6 +20,8 @@ while [[ $# -gt 0 ]]; do
       if [[ $# -lt 2 ]]; then printf 'check: --ts requires a value\n%s\n' "$USAGE" >&2; exit 1; fi
       ts_major="${2%%.*}"; shift 2 ;;
     --ts=*) ts_major="${1#--ts=}"; ts_major="${ts_major%%.*}"; shift ;;
+    --restart) restart=true; shift ;;
+    -h|--help) echo "$USAGE"; exit 0 ;;
     *) files+=("$1"); shift ;;
   esac
 done
@@ -33,7 +38,12 @@ case "$ts_major" in
     exit 1 ;;
 esac
 
+if $restart; then
+  tsc-daemon --ts "$ts_major" --stop
+fi
+
 if [[ ${#files[@]} -eq 0 ]]; then
+  $restart && exit 0
   echo "$USAGE" >&2
   exit 1
 fi
@@ -105,6 +115,7 @@ fallback_tsc() {
     return 1
   fi
 
+  printf 'tsc %s (fallback, full project): no errors\n' "$ts_major" >"$tsc_out"
   return 0
 }
 
@@ -126,14 +137,17 @@ eslint_done=false
 while ! $tsc_done || ! $eslint_done; do
   if ! $tsc_done && ! kill -0 "$tsc_pid" 2>/dev/null; then
     tsc_done=true
-    if ! wait "$tsc_pid"; then
-      if grep -q 'daemon failed to start within 30s' "$tsc_out"; then
-        fallback_tsc "${files[@]}" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
-      else
-        kill "$eslint_pid" 2>/dev/null || true
-        cat "$tsc_out"
-        exit 1
-      fi
+    tsc_status=0
+    wait "$tsc_pid" || tsc_status=$?
+    if [[ $tsc_status -eq 2 ]]; then
+      # Exit 2 means the daemon itself broke, not the code. Say so, then fall back.
+      cat "$tsc_out" >&2
+      printf 'check: tsc-daemon failed; falling back to a full tsc run\n' >&2
+      fallback_tsc "${files[@]}" || { kill "$eslint_pid" 2>/dev/null || true; exit 1; }
+    elif [[ $tsc_status -ne 0 ]]; then
+      kill "$eslint_pid" 2>/dev/null || true
+      cat "$tsc_out"
+      exit 1
     fi
   fi
   if ! $eslint_done && ! kill -0 "$eslint_pid" 2>/dev/null; then
@@ -142,3 +156,7 @@ while ! $tsc_done || ! $eslint_done; do
   fi
   $tsc_done && $eslint_done || sleep 0.05
 done
+
+cat "$tsc_out"
+printf 'eslint: %d file(s) checked, no problems\n' "${#files[@]}"
+

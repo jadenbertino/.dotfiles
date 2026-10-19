@@ -2,10 +2,12 @@
 // Client for tsc-daemon-server-ts5 / tsc-daemon-server-ts7.
 // Connects to (or starts) a persistent TypeScript daemon for fast file checks.
 // Usage: tsc-daemon [--ts <5|7>] <file ...>
+//        tsc-daemon [--ts <5|7>] --stop
+// Exit codes: 0 no errors, 1 type errors, 2 the daemon itself failed.
 
 import net from 'node:net';
 import { createHash } from 'node:crypto';
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
@@ -65,29 +67,42 @@ const DEFAULT_MAJOR = '5';
 const parseArgs = (argv) => {
   const inputs = [];
   let major = DEFAULT_MAJOR;
+  let stop = false;
+  let help = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--ts') major = String(argv[++i] ?? '').split('.')[0];
     else if (arg.startsWith('--ts=')) major = arg.slice('--ts='.length).split('.')[0];
+    else if (arg === '--stop') stop = true;
+    else if (arg === '-h' || arg === '--help') help = true;
     else inputs.push(arg);
   }
 
-  return { major, inputs };
+  return { major, inputs, stop, help };
 };
 
-const usage = 'Usage: tsc-daemon [--ts <5|7>] <file ...>\n';
-const { major, inputs } = parseArgs(process.argv.slice(2));
+const usage = 'Usage: tsc-daemon [--ts <5|7>] <file ...>\n       tsc-daemon [--ts <5|7>] --stop\n';
+const { major, inputs, stop, help } = parseArgs(process.argv.slice(2));
+
+if (help) { process.stdout.write(usage); process.exit(0); }
 
 if (!SUPPORTED_MAJORS.has(major)) {
   process.stderr.write(`tsc-daemon: unsupported TypeScript version '${major}'\n${usage}`);
-  process.exit(1);
+  process.exit(2);
 }
 
-const files = expandPaths(inputs);
-if (!files.length) { process.stderr.write(usage); process.exit(1); }
+// One daemon per checkout: keying on cwd started a second full copy of the project
+// whenever check ran from a subdirectory. Treehouse worktrees have their own root.
+const repoRoot = (() => {
+  try {
+    return execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch { return process.cwd(); }
+})();
 
-const SOCKET = `/tmp/tsc-daemon-ts${major}-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}.sock`;
+const files = expandPaths(inputs);
+
+const SOCKET = `/tmp/tsc-daemon-ts${major}-${createHash('sha256').update(repoRoot).digest('hex').slice(0, 12)}.sock`;
 const SERVER = path.join(path.dirname(fileURLToPath(import.meta.url)), `tsc-daemon-server-ts${major}`);
 
 const send = (payload) => new Promise((resolve, reject) => {
@@ -120,6 +135,7 @@ const formatStartupError = (message) => {
 
 const startDaemon = () => new Promise((resolve, reject) => {
   const proc = spawn(process.execPath, [SERVER, SOCKET], {
+    cwd: repoRoot,
     detached: true,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -148,15 +164,38 @@ const startDaemon = () => new Promise((resolve, reject) => {
   setTimeout(() => fail('daemon failed to start within 30s'), 30_000);
 });
 
-(async () => {
+const formatSummary = (res) => {
+  const since = res.startedAt ? new Date(res.startedAt).toLocaleTimeString() : 'unknown';
+  const result = res.hasErrors ? 'errors found' : 'no errors';
+  return `tsc ${res.tsVersion ?? major}: ${res.checked ?? files.length} file(s) checked, ${result} (daemon up since ${since})\n`;
+};
+
+if (stop) {
+  (async () => {
+    if (!await ping()) { process.stdout.write(`tsc-daemon: no TS ${major} daemon running for ${repoRoot}\n`); process.exit(0); }
+    await send({ type: 'shutdown' }).catch(() => {});
+    process.stdout.write(`tsc-daemon: stopped the TS ${major} daemon for ${repoRoot}\n`);
+    process.exit(0);
+  })();
+} else {
+  run();
+}
+
+function run() {
+  if (!files.length) { process.stderr.write(usage); process.exit(2); }
+  main().catch((e) => { process.stderr.write(`tsc-daemon: ${e.message}\n`); process.exit(2); });
+}
+
+async function main() {
   if (!await ping()) {
     await startDaemon();
     // Daemon signals readiness via stdout, but give the socket a moment to accept.
     for (let i = 0; i < 20; i++) { if (await ping()) break; await new Promise(r => setTimeout(r, 100)); }
   }
 
-  const res = await send({ type: 'check', files });
-  if (!res.ok) { process.stderr.write(`tsc-daemon error: ${res.error}\n`); process.exit(1); }
+  const res = await send({ type: 'check', files, color: Boolean(process.stderr.isTTY) });
+  if (!res.ok) { process.stderr.write(`tsc-daemon error: ${res.error}\n`); process.exit(2); }
   if (res.output) process.stderr.write(res.output);
+  process.stdout.write(formatSummary(res));
   process.exit(res.hasErrors ? 1 : 0);
-})().catch((e) => { process.stderr.write(`tsc-daemon: ${e.message}\n`); process.exit(1); });
+}
