@@ -17,10 +17,10 @@ Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a dura
 
 ## CI log
 
-Append to one shared log, `/workspaces/neon/_obsidian/neon/ci log.md` (create it if missing). It lives under `/workspaces` so it survives codespace stops and rebuilds, unlike `/tmp`, `~` or the worktree's `.tmp/neon-ci/` job logs that `treehouse return` wipes.
+Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md`. It lives outside the leased worktree because `treehouse return` wipes the `.tmp/neon-ci/` job logs.
 
-- At the start of a run, append a `## <YYYY-MM-DD HH:MM> <branch>` section with the repo, initial SHA, lease path and `lease_id`.
-- After every push cycle, append under that section:
+- At the start, write the repo, branch, initial SHA, lease path and `lease_id`.
+- After every push cycle, append:
   - cycle number, run URL, `STATUS:` result
   - each failed job: name, classification (`fix`, `flake`, `infra`), one-line root cause
   - what you did: commit SHA and message, or "empty commit retrigger"
@@ -29,9 +29,9 @@ Append to one shared log, `/workspaces/neon/_obsidian/neon/ci log.md` (create it
   - FLAKE: `<test file path>` > `<describe > it test name>` (<job name>): <one-line error>
   ```
   - Take the file path and full test name from the job log, not just the job name. If the log doesn't name the test, write `unknown` and quote the closest identifying log line as the error.
-  - Before calling something a flake, grep the log for `FLAKE:` lines with the same test file. Note prior occurrences in the entry and your final report; suggest `fix-ci-flake` for a test that has flaked 3+ times.
+  - Before calling something a flake, grep `~/.local/state/ci/*.md` for `FLAKE:` lines with the same test file. Note prior occurrences in the log and your final report; suggest `fix-ci-flake` for a test that has flaked 3+ times.
 - When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and whether the lease was returned.
-- Write entries as you go, not at the end, so a paused or abandoned run still leaves a trail.
+- Write entries as you go, not at the end, so a paused or abandoned run still leaves a trail. Include the log path in your final report.
 
 ## Outer loop
 
