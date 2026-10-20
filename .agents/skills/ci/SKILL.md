@@ -13,24 +13,25 @@ Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a dura
 2. Fetch the target branch from its actual remote, including forks, into the acquired worktree. Use the target branch name when it is free; if another worktree has it checked out, use a unique local branch tracking the target remote branch. Confirm HEAD matches the intended remote SHA before running the CI script; push explicitly to the original target remote and branch throughout the loop.
 3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when required by the checked-out lockfile. Run `yarn turbo build --filter=server...` before local server tests; build other affected workspaces as needed. Redirect setup output to temp files and inspect it. Reused worktrees retain caches, but those caches do not establish that dependencies or generated types are current.
 4. Run the outer loop and all fixes, verification, commits, and pushes from the leased path. Reuse existing Docker services with their fixed names and ports instead of starting a second Compose stack. Database-dependent tests across checkouts must not run concurrently. Any app server used for verification must serve this checkout and revision.
-5. Hold the lease for the whole CI task. When finished, ensure intentional changes are committed and pushed, the run log has a final outcome entry, and needed logs are saved outside the worktree, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Return can terminate worktree processes and reset files; never use `--force` or `return --all` for routine cleanup. If work remains unsaved, cleanup fails, or the task pauses for user input, retain the lease and report its path, identity, and reason.
+5. Hold the lease for the whole CI task. When finished, ensure intentional changes are committed and pushed, the CI log has a final outcome entry, and needed logs are saved outside the worktree, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Return can terminate worktree processes and reset files; never use `--force` or `return --all` for routine cleanup. If work remains unsaved, cleanup fails, or the task pauses for user input, retain the lease and report its path, identity, and reason.
 
-## Run log
+## CI log
 
-Keep a durable record outside the leased worktree, since `treehouse return` wipes `.tmp/neon-ci/` job logs.
+Append to one shared log, `/workspaces/neon/_obsidian/neon/ci log.md` (create it if missing). It lives under `/workspaces` so it survives codespace stops and rebuilds, unlike `/tmp`, `~` or the worktree's `.tmp/neon-ci/` job logs that `treehouse return` wipes.
 
-- **Run log**: at the start, create `~/.local/state/ci/runs/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md` with the repo, branch, initial SHA, lease path and `lease_id`. Append an entry for every push cycle:
-  - cycle number, run ID and URL, `STATUS:` result
-  - each failed job: name, classification (`fix`, `flake`, `infra`), one-line root cause, and the failing test or spec
+- At the start of a run, append a `## <YYYY-MM-DD HH:MM> <branch>` section with the repo, initial SHA, lease path and `lease_id`.
+- After every push cycle, append under that section:
+  - cycle number, run URL, `STATUS:` result
+  - each failed job: name, classification (`fix`, `flake`, `infra`), one-line root cause
   - what you did: commit SHA and message, or "empty commit retrigger"
-  - final outcome when the loop ends (green, stopped after 5 cycles, timeout, paused for user), plus whether the lease was returned
-- **Flake log**: every time you classify a failure as a flake, append one line to `~/.local/state/ci/flakes.md` (create it with a header row if missing). This file accumulates across all runs and branches so recurring flakes stand out:
+- For each flake, add a line in this exact shape so flakes are greppable across runs:
   ```
-  | date | branch | run URL | job | test file | test name | error (one line) |
+  - FLAKE: `<test file path>` > `<describe > it test name>` (<job name>): <one-line error>
   ```
-  - Record the exact spec/test file path and the full `describe > it` test name from the job log, not just the job name. If the log doesn't name the test, write `unknown` and quote the closest identifying log line in the error column.
-  - Before calling something a flake, grep `flakes.md` for the same test file. Mention prior occurrences in the run log and in your final report; a test that has flaked 3+ times is worth suggesting `fix-ci-flake` for.
-- Write log entries as you go, not at the end, so a paused or abandoned run still leaves a trail. Include the run log path in your final report.
+  - Take the file path and full test name from the job log, not just the job name. If the log doesn't name the test, write `unknown` and quote the closest identifying log line as the error.
+  - Before calling something a flake, grep the log for `FLAKE:` lines with the same test file. Note prior occurrences in the entry and your final report; suggest `fix-ci-flake` for a test that has flaked 3+ times.
+- When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and whether the lease was returned.
+- Write entries as you go, not at the end, so a paused or abandoned run still leaves a trail.
 
 ## Outer loop
 
@@ -44,7 +45,7 @@ Repeat until done (max 5 push cycles before stopping):
    - `no_runs` → CI never started after 2 minutes; stop and report
    - `timeout` → stop with error: "CI timed out after 30 minutes"
    - `failed` → **act immediately** on the failed job(s) listed — do not wait for other jobs to finish. Fix or handle each failure, then go back to step 1.
-3. After each cycle, append the cycle entry to the run log before starting the next one.
+3. After each cycle, append the cycle entry to the CI log before starting the next one.
 4. After 5 push cycles with no green result, stop and report what's still failing.
 
 ## Fix steps (when STATUS is `failed`)
@@ -125,7 +126,7 @@ The backend returning a 500 (e.g. missing related data) is fine — SSR falls th
 
 ## Transient / infrastructure failures
 
-If a job fails due to a transient issue rather than a code problem, log it in the flake log (see **Run log**), then push an empty commit. Common transient failures:
+If a job fails due to a transient issue rather than a code problem, add a `FLAKE:` line to the CI log (see **CI log**), then push an empty commit. Common transient failures:
 
 - Infrastructure: Docker Hub timeout, network error, runner OOM
 - Cypress/E2E flakes: `cy.type()` on a disabled element, element detached from DOM, timeout waiting for element, assertion on a value that races with rendering — these are race conditions in the test harness, not bugs in the code. If the failing spec is unrelated to the changes on the branch, treat it as a flake.
