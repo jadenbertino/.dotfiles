@@ -26,11 +26,11 @@
 - Prefer small, frequent commits
 - If I reference a git diff then i assume i mean from `main`
 - Don't include yourself as a commit author.
-- Push with `git push --no-verify`.
+- Commit with `git commit --no-verify`.
 
 ## Code style
 
-- Skip typecheck and lint. Allow the pre-commit hook to handle these checks.
+- Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
 
 **Comments:** NEVER write comments unless I specifically ask you to. If I ask you to write a comment, then write it in plain, conversational language that explains why we made the decision and who can act on it. Include only the details needed to understand that reasoning; skip implementation walkthroughs and tangential explanations.
 
