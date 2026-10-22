@@ -112,6 +112,18 @@ def size(pr):
     return f"\033[32m+{pr['additions']}\033[0m \033[31m-{pr['deletions']}\033[0m"
 
 
+def heading(name, prs):
+    lines = sum(pr["additions"] + pr["deletions"] for pr in prs)
+    count = f"{len(prs)} PR" if len(prs) == 1 else f"{len(prs)} PRs"
+    return f"\033[1m{name}\033[0m ({lines:,} lines from {count})"
+
+
+def by_lines(groups):
+    return sorted(
+        groups, key=lambda g: (-sum(pr["additions"] + pr["deletions"] for pr in groups[g]), g.lower())
+    )
+
+
 def print_requests(prs, reviewers, now):
     by_reviewer = defaultdict(list)
     for pr in prs:
@@ -124,9 +136,10 @@ def print_requests(prs, reviewers, now):
         print("No pending review requests match.")
         return
 
-    for name in sorted(by_reviewer, key=lambda r: (-len(by_reviewer[r]), r.lower())):
+    prs_by_reviewer = {name: [pr for _, pr in requests] for name, requests in by_reviewer.items()}
+    for name in by_lines(prs_by_reviewer):
         requests = sorted(by_reviewer[name], key=lambda r: r[0] or "")
-        print(f"\033[1m{name}\033[0m ({len(requests)})")
+        print(heading(name, prs_by_reviewer[name]))
         for when, pr in requests:
             waited = age(when, now) if when else "?"
             author = (pr.get("author") or {}).get("login", "ghost")
@@ -186,9 +199,9 @@ def main():
         print("No open PRs match.")
         return
 
-    for login in sorted(by_author, key=lambda a: (-len(by_author[a]), a.lower())):
+    for login in by_lines(by_author):
         author_prs = sorted(by_author[login], key=lambda p: p["createdAt"])
-        print(f"\033[1m{login}\033[0m ({len(author_prs)})")
+        print(heading(login, author_prs))
         for pr in author_prs:
             draft = " \033[2m[draft]\033[0m" if pr["isDraft"] else ""
             print(f"  #{pr['number']} {short_title(pr, 70)}{draft}")
