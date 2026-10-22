@@ -90,7 +90,7 @@ def age(iso, now):
     return f"{int(seconds // 86400)}d"
 
 
-def pending_reviews(pr, now):
+def pending_reviews(pr):
     requested_at = {}
     for event in pr["timelineItems"]["nodes"]:
         name = reviewer_name(event.get("requestedReviewer"))
@@ -99,11 +99,40 @@ def pending_reviews(pr, now):
     pending = []
     for request in pr["reviewRequests"]["nodes"]:
         name = reviewer_name(request["requestedReviewer"])
-        if not name:
-            continue
-        when = requested_at.get(name)
-        pending.append(f"{name} ({age(when, now)})" if when else name)
+        if name:
+            pending.append((name, requested_at.get(name)))
     return pending
+
+
+def short_title(pr, limit):
+    return pr["title"] if len(pr["title"]) <= limit else pr["title"][: limit - 1] + "…"
+
+
+def size(pr):
+    return f"\033[32m+{pr['additions']}\033[0m \033[31m-{pr['deletions']}\033[0m"
+
+
+def print_requests(prs, reviewers, now):
+    by_reviewer = defaultdict(list)
+    for pr in prs:
+        for name, when in pending_reviews(pr):
+            if reviewers and name not in reviewers:
+                continue
+            by_reviewer[name].append((when, pr))
+
+    if not by_reviewer:
+        print("No pending review requests match.")
+        return
+
+    for name in sorted(by_reviewer, key=lambda r: (-len(by_reviewer[r]), r.lower())):
+        requests = sorted(by_reviewer[name], key=lambda r: r[0] or "")
+        print(f"\033[1m{name}\033[0m ({len(requests)})")
+        for when, pr in requests:
+            waited = age(when, now) if when else "?"
+            author = (pr.get("author") or {}).get("login", "ghost")
+            print(f"  {waited:>4}  #{pr['number']} {short_title(pr, 60)}")
+            print(f"        {size(pr)}  by {author}")
+        print()
 
 
 def main():
@@ -113,6 +142,14 @@ def main():
     parser.add_argument("--team", help="only PRs requesting review from this team slug, e.g. api-review")
     parser.add_argument("--drafts", action="store_true", help="include draft PRs")
     parser.add_argument("--bots", action="store_true", help="include bot authors like dependabot")
+    parser.add_argument(
+        "-r", "--requests", action="store_true",
+        help="list pending review requests grouped by reviewer instead of PRs grouped by author",
+    )
+    parser.add_argument(
+        "--reviewer", action="append",
+        help="with --requests, only these reviewers (repeatable; teams as @slug, me for yourself)",
+    )
     args = parser.parse_args()
 
     extra = []
@@ -133,6 +170,18 @@ def main():
             continue
         by_author[login].append(pr)
 
+    if args.requests:
+        reviewers = None
+        if args.reviewer:
+            me = None
+            if "me" in args.reviewer:
+                me = subprocess.run(
+                    ["gh", "api", "user", "-q", ".login"], capture_output=True, text=True
+                ).stdout.strip()
+            reviewers = {me if r == "me" else r for r in args.reviewer}
+        print_requests([pr for prs in by_author.values() for pr in prs], reviewers, now)
+        return
+
     if not by_author:
         print("No open PRs match.")
         return
@@ -141,13 +190,13 @@ def main():
         author_prs = sorted(by_author[login], key=lambda p: p["createdAt"])
         print(f"\033[1m{login}\033[0m ({len(author_prs)})")
         for pr in author_prs:
-            title = pr["title"] if len(pr["title"]) <= 70 else pr["title"][:69] + "…"
             draft = " \033[2m[draft]\033[0m" if pr["isDraft"] else ""
-            size = f"\033[32m+{pr['additions']}\033[0m \033[31m-{pr['deletions']}\033[0m"
-            print(f"  #{pr['number']} {title}{draft}")
-            reviewers = ", ".join(pending_reviews(pr, now)) or "-"
+            print(f"  #{pr['number']} {short_title(pr, 70)}{draft}")
+            reviewers = ", ".join(
+                f"{name} ({age(when, now)})" if when else name for name, when in pending_reviews(pr)
+            ) or "-"
             print(
-                f"      {size}  {DECISIONS.get(pr['reviewDecision'], pr['reviewDecision'])}"
+                f"      {size(pr)}  {DECISIONS.get(pr['reviewDecision'], pr['reviewDecision'])}"
                 f"  opened {age(pr['createdAt'], now)} ago  waiting on: {reviewers}"
             )
         print()
