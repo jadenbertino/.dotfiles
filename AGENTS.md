@@ -118,7 +118,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
       await cdp.send("Target.createTarget", { url, background: true });
       const page = await pageP;
       ```
-    - screenshots, clicks and `goto` all work in a background tab and don't bring Chrome forward
+    - screenshots, clicks and `goto` all work in a background tab
     - tell me the tab's title when you open it, so I can switch to it if I want to watch
 
 ## References
