@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import subprocess
+import sys
+from collections import defaultdict
+from datetime import datetime, timezone
+
+QUERY = """
+query($q: String!, $after: String) {
+  search(query: $q, type: ISSUE, first: 50, after: $after) {
+    pageInfo { hasNextPage endCursor }
+    nodes {
+      ... on PullRequest {
+        number
+        title
+        url
+        isDraft
+        additions
+        deletions
+        createdAt
+        reviewDecision
+        author { login }
+        reviewRequests(first: 20) {
+          nodes {
+            requestedReviewer {
+              ... on User { login }
+              ... on Team { slug }
+            }
+          }
+        }
+        timelineItems(last: 50, itemTypes: [REVIEW_REQUESTED_EVENT]) {
+          nodes {
+            ... on ReviewRequestedEvent {
+              createdAt
+              requestedReviewer {
+                ... on User { login }
+                ... on Team { slug }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+DECISIONS = {
+    "APPROVED": "\033[32mapproved\033[0m",
+    "CHANGES_REQUESTED": "\033[31mchanges\033[0m",
+    "REVIEW_REQUIRED": "\033[33mneeds review\033[0m",
+    None: "\033[2mno review\033[0m",
+}
+
+
+def reviewer_name(reviewer):
+    if not reviewer:
+        return None
+    if "login" in reviewer:
+        return reviewer["login"]
+    if "slug" in reviewer:
+        return "@" + reviewer["slug"]
+    return None
+
+
+def fetch(repo, extra):
+    q = f"repo:{repo} is:pr is:open {extra}".strip()
+    prs, after = [], None
+    while True:
+        args = ["gh", "api", "graphql", "-f", f"query={QUERY}", "-f", f"q={q}"]
+        if after:
+            args += ["-f", f"after={after}"]
+        result = subprocess.run(args, capture_output=True, text=True)
+        if result.returncode != 0:
+            sys.exit(result.stderr.strip())
+        search = json.loads(result.stdout)["data"]["search"]
+        prs += [n for n in search["nodes"] if n]
+        if not search["pageInfo"]["hasNextPage"]:
+            return prs
+        after = search["pageInfo"]["endCursor"]
+
+
+def age(iso, now):
+    seconds = (now - datetime.fromisoformat(iso.replace("Z", "+00:00"))).total_seconds()
+    if seconds < 3600:
+        return f"{int(seconds // 60)}m"
+    if seconds < 86400:
+        return f"{int(seconds // 3600)}h"
+    return f"{int(seconds // 86400)}d"
+
+
+def pending_reviews(pr, now):
+    requested_at = {}
+    for event in pr["timelineItems"]["nodes"]:
+        name = reviewer_name(event.get("requestedReviewer"))
+        if name:
+            requested_at[name] = event["createdAt"]
+    pending = []
+    for request in pr["reviewRequests"]["nodes"]:
+        name = reviewer_name(request["requestedReviewer"])
+        if not name:
+            continue
+        when = requested_at.get(name)
+        pending.append(f"{name} ({age(when, now)})" if when else name)
+    return pending
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Open PRs grouped by author")
+    parser.add_argument("--repo", default="neon-xyz/neon")
+    parser.add_argument("--author", action="append", help="only these authors (repeatable)")
+    parser.add_argument("--team", help="only PRs requesting review from this team slug, e.g. api-review")
+    parser.add_argument("--drafts", action="store_true", help="include draft PRs")
+    parser.add_argument("--bots", action="store_true", help="include bot authors like dependabot")
+    args = parser.parse_args()
+
+    extra = []
+    if not args.drafts:
+        extra.append("draft:false")
+    if args.team:
+        org = args.repo.split("/")[0]
+        extra.append(f"team-review-requested:{org}/{args.team}")
+    prs = fetch(args.repo, " ".join(extra))
+
+    now = datetime.now(timezone.utc)
+    by_author = defaultdict(list)
+    for pr in prs:
+        login = (pr.get("author") or {}).get("login", "ghost")
+        if args.author and login not in args.author:
+            continue
+        if not args.bots and (login.endswith("[bot]") or login in ("dependabot", "renovate")):
+            continue
+        by_author[login].append(pr)
+
+    if not by_author:
+        print("No open PRs match.")
+        return
+
+    for login in sorted(by_author, key=lambda a: (-len(by_author[a]), a.lower())):
+        author_prs = sorted(by_author[login], key=lambda p: p["createdAt"])
+        print(f"\033[1m{login}\033[0m ({len(author_prs)})")
+        for pr in author_prs:
+            title = pr["title"] if len(pr["title"]) <= 70 else pr["title"][:69] + "…"
+            draft = " \033[2m[draft]\033[0m" if pr["isDraft"] else ""
+            size = f"\033[32m+{pr['additions']}\033[0m \033[31m-{pr['deletions']}\033[0m"
+            print(f"  #{pr['number']} {title}{draft}")
+            reviewers = ", ".join(pending_reviews(pr, now)) or "-"
+            print(
+                f"      {size}  {DECISIONS.get(pr['reviewDecision'], pr['reviewDecision'])}"
+                f"  opened {age(pr['createdAt'], now)} ago  waiting on: {reviewers}"
+            )
+        print()
+
+
+if __name__ == "__main__":
+    main()
