@@ -1,9 +1,9 @@
 ---
-name: playwright
+name: ch
 description: Drive the user's Mac Chrome from the codespace over CDP, opening tabs in the background so Chrome never steals focus. Use when the user says "use playwright" or asks you to open, click through, or screenshot something in their browser.
 ---
 
-# playwright
+# ch
 
 - `ch` (`~/.local/bin-dotfiles/ch`) runs on my Mac and tunnels my Chrome's debug port into the codespace at `http://localhost:9222`
   - if `curl -s localhost:9222/json/version` fails, ask me to run `ch` on my Mac

@@ -105,7 +105,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
 
 ## Browser
 
-- "use playwright" means drive my Mac's Chrome: use the `playwright` skill
+- "use playwright" means drive my Mac's Chrome: use the `ch` skill
 
 ## References
 
