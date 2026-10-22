@@ -110,7 +110,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
   - if `curl -s localhost:9222/json/version` fails, ask me to run `ch` on my Mac
   - I want to watch, so avoid headless browsers: don't fall back to one without asking me first
   - open tabs in the background so Chrome doesn't steal focus from whatever app I'm in
-    - `newPage()`, `/json/new` and `page.bringToFront()` all bring Chrome to the front, so don't use them
+    - `newPage()`, `/json/new`, `Target.activateTarget` and `page.bringToFront()` all bring Chrome to the front, so don't use them
     - instead, create the tab over CDP and let Playwright pick it up as a normal page:
       ```js
       const cdp = await browser.newBrowserCDPSession();
