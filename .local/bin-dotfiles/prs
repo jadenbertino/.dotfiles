@@ -136,19 +136,19 @@ def print_requests(prs, reviewers, now):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Open PRs grouped by author")
+    parser = argparse.ArgumentParser(description="Pending review requests grouped by reviewer, or open PRs grouped by author")
     parser.add_argument("--repo", default="neon-xyz/neon")
     parser.add_argument("--author", action="append", help="only these authors (repeatable)")
     parser.add_argument("--team", help="only PRs requesting review from this team slug, e.g. api-review")
     parser.add_argument("--drafts", action="store_true", help="include draft PRs")
     parser.add_argument("--bots", action="store_true", help="include bot authors like dependabot")
     parser.add_argument(
-        "-r", "--requests", action="store_true",
-        help="list pending review requests grouped by reviewer instead of PRs grouped by author",
+        "-p", "--prs", action="store_true",
+        help="list open PRs grouped by author instead of review requests grouped by reviewer",
     )
     parser.add_argument(
         "--reviewer", action="append",
-        help="with --requests, only these reviewers (repeatable; teams as @slug, me for yourself)",
+        help="only these reviewers (repeatable; teams as @slug, me for yourself)",
     )
     args = parser.parse_args()
 
@@ -170,7 +170,7 @@ def main():
             continue
         by_author[login].append(pr)
 
-    if args.requests:
+    if not args.prs:
         reviewers = None
         if args.reviewer:
             me = None
