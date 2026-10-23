@@ -88,6 +88,11 @@ These docs are a cache of what the codebase does, so they can be out of date. Wh
 
 All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
 
+- Backlinks: there's no Obsidian index here, so find the notes that link to a note by grepping for its wikilink, by path and by bare name: `grep -rl --include=*.md -e "\[\[topics/neon architecture" -e "\[\[neon architecture" .` (run from the vault root). This catches `|alias`, `#heading` and `![[embeds]]`, but not markdown-style `[text](path.md)` links.
+  - Topic notes (`topics/*.md`) have no content of their own: they embed `topics/_.base`, which Obsidian renders as a table of backlinks. Read their backlinks, not the note.
+
+- Architecture
+  - `topics/neon architecture.md` — No page content; check its backlinks for the architecture notes (payments, checkout amounts, refunds, webhooks, ledger, tax, async jobs, etc.).
 - Wallet work
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
   - `neon wallet api - for llms.md` (vault root) — Wallet API reference: endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
