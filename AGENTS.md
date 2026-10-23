@@ -41,7 +41,7 @@
 3. **Needs independent tests** — the logic is non-trivial enough to verify in isolation, separate from whatever consumes it.
 4. **Crosses a clear system boundary** — generic primitive vs. domain-specific usage (e.g. `QrCode.tsx` vs `ShareQrCode.tsx`); the extracted thing has a different *kind* of responsibility, not just a different task. Usually a special case of 2+3 combined, but the clearest justification for a new *file* rather than just a new function.
 
-The cost of extraction is always indirection — the reader has to leave the current context. The benefit has to outweigh that. One signal alone rarely justifies it.
+The cost of extraction is always indirection — the reader has to leave the current context. The benefit has to outweigh that. #1 or #2 on its own is enough: a single caller doesn't make a helper wrong when it makes the code easier to read and reason about.
 
 For **files** specifically, the bar is higher than for functions. A file signals "standalone unit of the system." A file used in one place with no tests is lying.
 
