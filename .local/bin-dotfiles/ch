@@ -15,8 +15,9 @@ fi
 if curl -s -m 1 "localhost:$PORT/json/version" >/dev/null; then
   echo "Chrome debug port already up on :$PORT"
 else
-  echo "Starting Chrome (profile: $PROFILE)"
-  nohup "$CHROME" --remote-debugging-port="$PORT" --user-data-dir="$PROFILE" >/dev/null 2>&1 &
+  profile_dir="$(plutil -extract profile.last_used raw -o - "$PROFILE/Local State" 2>/dev/null || echo Default)"
+  echo "Starting Chrome (profile: $PROFILE, $profile_dir)"
+  nohup "$CHROME" --remote-debugging-port="$PORT" --user-data-dir="$PROFILE" --profile-directory="$profile_dir" >/dev/null 2>&1 &
   for _ in {1..50}; do
     curl -s -m 1 "localhost:$PORT/json/version" >/dev/null && break
     sleep 0.2
