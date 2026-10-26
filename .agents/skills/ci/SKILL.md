@@ -15,11 +15,13 @@ Run in the current checkout by default. Only use a separate [Treehouse](https://
 1. Record the repository, branch, remote and current SHA. Fetch, and confirm the local branch matches its remote (fast-forward if it's behind; stop and ask if it has diverged).
 2. Leave the user's uncommitted changes alone. Don't stash, reset or commit them. Stage only the files you changed for a fix. If a fix needs a file that has uncommitted user changes, stop and ask.
 3. Run all fixes, verification, commits and pushes from this checkout, pushing explicitly to the recorded remote and branch.
-4. The user keeps working in this checkout while you run, and may switch branches. Before every edit, commit and push, check that `git branch --show-current` is still the recorded branch and that `HEAD` is your last known SHA (or a descendant of it, if the user committed). If the branch has changed, don't edit, switch back or push. Stop, log it, and report that the checkout moved.
+4. The user keeps working in this checkout while you run, and may switch branches. Before every edit, commit and push, check that `git branch --show-current` is still the recorded branch and that `HEAD` is your last known SHA (or a descendant of it, if the user committed).
+	- If the branch has changed, don't switch it back, and don't edit, commit or push here. Move to a Treehouse lease (see **Separate checkout (on request)**), check out the recorded branch at its remote SHA, and carry on there for the rest of the run. Log the move and the lease path.
+	- If you had uncommitted edits in progress when it moved, they went with the user's checkout. Save them with `git diff -- <your files>` to a patch outside the repo, apply it in the lease, and leave the user's checkout alone. Don't revert anything there. Report the files so the user can clean them up.
 
 ### Separate checkout (on request)
 
-When the user asks for a separate checkout:
+When the user asks for a separate checkout, or the current checkout moves to another branch mid-run (step 4):
 
 1. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask. Run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json` and save the path and `lease_id` outside the worktree. Don't enter or release another task's lease (`treehouse status --json` shows allocations).
 2. Fetch the target branch into the worktree. If another worktree already has that branch checked out, use a unique local branch that tracks the remote branch. Confirm HEAD matches the remote SHA.
