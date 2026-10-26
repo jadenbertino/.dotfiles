@@ -5,21 +5,28 @@ description: Continuously fetch, fix, and push until CI is fully green on the cu
 
 Continuously fetch, fix, and push until CI is fully green on the current branch.
 
-## Separate checkout
+## Checkout
 
-Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease so the primary checkout stays available. Both CI and PR review use the same repository pool; acquire a lease instead of guessing whether a fixed checkout is busy. If Treehouse is unavailable or lacks the lease flags below, report the setup blocker. Honor an explicitly requested checkout while preserving existing work; do not treat an unmanaged checkout as protected by Treehouse.
+Run in the current checkout by default. Only use a separate [Treehouse](https://github.com/kunchenguid/treehouse) worktree when the user asks for one (see **Separate checkout (on request)** below).
 
-1. Record the target repository, branch, and initial SHA before leaving the original checkout. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask the user how to proceed before acquiring a lease. From that repository, run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json`. Save the returned path and `lease_id` outside the leased worktree. The durable lease remains held between tool calls even when no process is running there. Use `treehouse status --json` to inspect allocations; do not enter or release another task’s lease.
-2. Fetch the target branch from its actual remote, including forks, into the acquired worktree. Use the target branch name when it is free; if another worktree has it checked out, use a unique local branch tracking the target remote branch. Confirm HEAD matches the intended remote SHA before running the CI script; push explicitly to the original target remote and branch throughout the loop.
-3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when required by the checked-out lockfile. Run `yarn turbo build --filter=server...` before local server tests; build other affected workspaces as needed. Redirect setup output to temp files and inspect it. Reused worktrees retain caches, but those caches do not establish that dependencies or generated types are current.
-4. Run the outer loop and all fixes, verification, commits, and pushes from the leased path. Reuse existing Docker services with their fixed names and ports instead of starting a second Compose stack. Database-dependent tests across checkouts must not run concurrently. Any app server used for verification must serve this checkout and revision.
-5. Hold the lease for the whole CI task. When finished, ensure intentional changes are committed and pushed, the CI log has a final outcome entry, and needed logs are saved outside the worktree, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Return can terminate worktree processes and reset files; never use `--force` or `return --all` for routine cleanup. If work remains unsaved, cleanup fails, or the task pauses for user input, retain the lease and report its path, identity, and reason.
+1. Record the repository, branch, remote and current SHA. Fetch, and confirm the local branch matches its remote (fast-forward if it's behind; stop and ask if it has diverged).
+2. Leave the user's uncommitted changes alone. Don't stash, reset or commit them. Stage only the files you changed for a fix. If a fix needs a file that has uncommitted user changes, stop and ask.
+3. Run all fixes, verification, commits and pushes from this checkout, pushing explicitly to the recorded remote and branch.
+
+### Separate checkout (on request)
+
+When the user asks for a separate checkout:
+
+1. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask. Run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json` and save the path and `lease_id` outside the worktree. Don't enter or release another task's lease (`treehouse status --json` shows allocations).
+2. Fetch the target branch into the worktree. If another worktree already has that branch checked out, use a unique local branch that tracks the remote branch. Confirm HEAD matches the remote SHA.
+3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when the lockfile requires it. Run `yarn turbo build --filter=server...` before local server tests. Reuse the existing Docker services; don't run database tests concurrently across checkouts.
+4. When finished, make sure everything intentional is pushed and the CI log has its outcome, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Never use `--force` or `return --all`. If work is unsaved or the run pauses for user input, keep the lease and report its path and reason.
 
 ## CI log
 
-Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md`. It lives outside the leased worktree because `treehouse return` wipes the `.tmp/neon-ci/` job logs.
+Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md`. It lives outside the repo so it survives cleanup (`treehouse return` wipes `.tmp/neon-ci/` job logs in a leased worktree).
 
-- At the start, write the repo, branch, initial SHA, lease path and `lease_id`.
+- At the start, write the repo, branch and initial SHA, plus the lease path and `lease_id` if you used a separate checkout.
 - After every push cycle, append:
   - cycle number, run URL, `STATUS:` result
   - each failed job: name, classification (`fix`, `flake`, `infra`), one-line root cause
@@ -30,12 +37,12 @@ Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-
   ```
   - Take the file path and full test name from the job log, not just the job name. If the log doesn't name the test, write `unknown` and quote the closest identifying log line as the error.
   - Before calling something a flake, grep `~/.local/state/ci/*.md` for `FLAKE:` lines with the same test file. Note prior occurrences in the log and your final report; suggest `fix-ci-flake` for a test that has flaked 3+ times.
-- When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and whether the lease was returned.
+- When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and, for a separate checkout, whether the lease was returned.
 - Write entries as you go, not at the end, so a paused or abandoned run still leaves a trail. Include the log path in your final report.
 
 ## Outer loop
 
-The bundled `ci.sh` infers the remote branch from the local branch name and queries `origin`. If the leased worktree uses a different local branch name or target remote, create a temporary copy outside the worktree and adapt its branch, remote, and GitHub repository lookups to the recorded target. Inspect that copy and use it throughout the loop; do not poll CI for the temporary local branch or change shared Git remote configuration.
+The bundled `ci.sh` infers the remote branch from the local branch name and queries `origin`. If the checkout uses a different local branch name or target remote, create a temporary copy outside the repo and adapt its branch, remote, and GitHub repository lookups to the recorded target. Inspect that copy and use it throughout the loop; do not poll CI for the temporary local branch or change shared Git remote configuration.
 
 Repeat until done (max 5 push cycles before stopping):
 
