@@ -15,6 +15,7 @@ Run in the current checkout by default. Only use a separate [Treehouse](https://
 1. Record the repository, branch, remote and current SHA. Fetch, and confirm the local branch matches its remote (fast-forward if it's behind; stop and ask if it has diverged).
 2. Leave the user's uncommitted changes alone. Don't stash, reset or commit them. Stage only the files you changed for a fix. If a fix needs a file that has uncommitted user changes, stop and ask.
 3. Run all fixes, verification, commits and pushes from this checkout, pushing explicitly to the recorded remote and branch.
+4. The user keeps working in this checkout while you run, and may switch branches. Before every edit, commit and push, check that `git branch --show-current` is still the recorded branch and that `HEAD` is your last known SHA (or a descendant of it, if the user committed). If the branch has changed, don't edit, switch back or push. Stop, log it, and report that the checkout moved.
 
 ### Separate checkout (on request)
 
