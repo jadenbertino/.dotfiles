@@ -10,7 +10,7 @@ This skill runs in a background subagent, so the main conversation stays free. Y
 
 ## Checkout
 
-Run in the current checkout by default. Only use a separate [Treehouse](https://github.com/kunchenguid/treehouse) worktree when the user asks for one (see **Separate checkout (on request)** below).
+Run in the current checkout by default. Only use a separate [Treehouse](https://github.com/kunchenguid/treehouse) worktree when the user asks for one, or when the checkout moves to another branch mid-run (see **Separate checkout (on request)** below).
 
 1. Record the repository, branch, remote and current SHA. Fetch, and confirm the local branch matches its remote (fast-forward if it's behind; stop and ask if it has diverged).
 2. Leave the user's uncommitted changes alone. Don't stash, reset or commit them. Stage only the files you changed for a fix. If a fix needs a file that has uncommitted user changes, stop and ask.
