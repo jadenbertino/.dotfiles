@@ -1,9 +1,12 @@
 ---
 name: ci
 description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs.
+context: fork
 ---
 
 Continuously fetch, fix, and push until CI is fully green on the current branch.
+
+This skill runs in a background subagent, so the main conversation stays free. You can't ask the user questions directly: wherever these steps say to stop and ask, stop, write the reason to the CI log, and end with a report that says what decision is needed. Your final message is the report the main agent relays, so include the outcome, each cycle's failures and fixes (commit SHAs), any flakes, and the CI log path.
 
 ## Checkout
 
