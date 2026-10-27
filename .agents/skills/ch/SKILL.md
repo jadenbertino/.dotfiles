@@ -24,3 +24,6 @@ description: For code or shell agents only, drive the user's Mac Chrome from the
     ```
   - `goto`, clicks, `fill` and screenshots all work in a background tab without bringing Chrome forward
   - tell me the tab's title when you open it, so I can switch to it if I want to watch
+- save screenshots and recordings under the workspace's `tmp/ch/` (e.g. `/workspaces/neon/tmp/ch/`), not the scratchpad, so I can open them; `tmp/` is gitignored
+  - to record, start `Page.startScreencast` on the page's CDP session, write each `Page.screencastFrame` to disk (ack every frame), then stitch the frames into an mp4 with ffmpeg using each frame's `metadata.timestamp` for its duration
+  - ffmpeg isn't installed; `npm i ffmpeg-static` in the scratchpad provides a binary
