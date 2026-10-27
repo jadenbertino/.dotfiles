@@ -16,6 +16,7 @@
 
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
 - to quickly check & typecheck a file, use `/home/node/.local/bin-dotfiles/check <filepaths>`. For a comprehensive check use `tsc` and `eslint`.
+- Run `check` once per turn: on every file you changed, right before you say you're done. Don't re-run it after each file or feature change; speed matters more than catching a mistake a few steps earlier.
 - Do not run tests unless you're using the `ci` skill. Other skills and workflows (e.g. the ticket workflow) don't count. The `check` script is allowed.
 - **IMPORTANT:** Always run `/home/node/.local/bin-dotfiles/check <filepaths>` on the relevant files before running tests.
 - `ls` is aliased to `eza`
