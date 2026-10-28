@@ -1,6 +1,6 @@
 ---
 name: ci
-description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs.
+description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs. While a /ci run is active on a branch, it owns that PR's checks: don't run `gh pr checks`, read job logs or fix CI from the main conversation; ask the running agent for its status instead.
 context: fork
 ---
 
