@@ -32,6 +32,7 @@ fi
 # Auto-update dotfiles once per day
 source $ZSH_CONFIG_HOME/auto-update.zsh
 auto_update_dotfiles
+auto_update_tailscale
 
 # Load config files
 stow -d $HOME/.dotfiles -t $HOME --adopt .
