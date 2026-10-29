@@ -96,11 +96,10 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
   - `topics/neon architecture.md` — No page content; check its backlinks for the architecture notes (payments, checkout amounts, refunds, webhooks, ledger, tax, async jobs, etc.).
 - Wallet work
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
-  - `neon wallet api - for llms.md` (vault root) — Wallet API reference: endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
-  - `neon/Wallet in checkout.md` — How checkout applies wallet funds, places and captures holds, and records `PurchaseAttempt`s, including which endpoints capture a hold.
-  - `neon/Wallet API - User Stories.md` — Wallet API user stories grouped by epic (onboarding, saved payment methods, balance, etc.), each with acceptance criteria and edge cases. Read when checking expected wallet behavior or writing AC/QA.
+  - `neon wallet api - for llms.md` (vault root) — **very important: read before any Wallet API work** (calling it, changing it, testing it). Endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
   - https://docs.neonpay.com/docs/neon-wallet-in-development — Public Neon Wallet docs we give makers: core wallet APIs, wallet webhook events and which webhooks each action sends, wallet in Neon Checkout, and wallet reports. Only read this when I mention "public docs"; usually skip it.
   - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.
+  - For more wallet context, check the backlinks to `topics/neon wallet.md`.
 - Ticket work
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
 - Code changes
