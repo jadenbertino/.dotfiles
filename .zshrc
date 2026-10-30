@@ -64,6 +64,7 @@ timed_source $HOME/.ssh/sync.zsh
   add_to_path "$GCLOUD_CLI_DIR/bin"
 )
 [ -x "$(command -v brew)" ] && eval "$(brew shellenv)" # Make homebrew apps available in path
+[[ -d "$HOME/.docker/bin" ]] && add_to_path "$HOME/.docker/bin"
 add_to_path "$HOME/.local/bin"
 add_to_path "$HOME/.local/bin-dotfiles" # bin items that are tracked in dotfiles repo (e.g. custom scripts)
 
