@@ -62,6 +62,7 @@ Repeat until done (max 5 push cycles before stopping):
    - `passing` → stop, CI is green
    - `no_runs` → CI never started after 2 minutes; stop and report
    - `timeout` → stop with error: "CI timed out after 30 minutes"
+   - `error` → a `gh` or `git` call failed (usually auth or network); the `ERROR:` line names the command. Run the script once more; if it errors again, stop and report the `ERROR:` line and the stderr above it
    - `failed` → **act immediately** on the failed job(s) listed — do not wait for other jobs to finish. Fix or handle each failure, then go back to step 1.
 3. After each cycle, append the cycle entry to the CI log before starting the next one.
 4. After 5 push cycles with no green result, stop and report what's still failing.
@@ -101,12 +102,13 @@ Act on failures immediately — do not wait for the rest of the run to complete.
 | `Unit Tests (checkout)` | `yarn workspace checkout test` |
 | `Server Unit Tests` | `yarn workspace server test` |
 | `Cypress integration tests (checkout, ...)` | `cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/<failing-spec>.cy.ts'` |
+| `Cypress integration tests (neon-js, ...)` | `cd apps/neon-js && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/<failing-spec>.cy.ts'` |
 
 If a job doesn't match a pattern, derive the workspace from the job title.
 
 ### Running Cypress integration tests locally
 
-The checkout Cypress integration tests run against the local Next.js dev server on port 3001 (already running in this environment). Read the failing log to identify which spec file failed, then run it directly:
+The checkout Cypress integration tests run against the local Next.js dev server on port 3001, and the neon-js ones against the neon-js dev server on port 3010 (both already running in this environment). Read the failing log to identify which spec file failed, then run it directly:
 
 ```bash
 cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/wechat-pay-qr.cy.ts'

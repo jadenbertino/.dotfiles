@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
 #
 # Fetch GitHub Actions failures for the current branch.
-# Writes per-job logs to /tmp/neon-ci/{run-id}/ and prints a summary to stdout.
+# Writes per-job logs to <repo>/.tmp/neon-ci/{run-id}/ and prints a summary to stdout.
 # If CI is in progress, polls every 30s (up to 30m) and returns as soon as
 # any job has failed.
 #
 # Exit codes:
 #   0 — STATUS: passing or no_runs
 #   1 — STATUS: failed or timeout
+#   2 — STATUS: error (a gh or git call failed, e.g. auth or network)
 
 set -euo pipefail
+
+STATUS_SENT=""
+on_error() {
+  [ -z "$STATUS_SENT" ] && echo "STATUS: error"
+  echo "ERROR: line $1: $2"
+  exit 2
+}
+trap 'on_error $LINENO "$BASH_COMMAND"' ERR
+
+ESC=$'\033'
 
 REPO=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
 BRANCH=$(git branch --show-current)
@@ -23,7 +34,7 @@ if [ -z "$HEAD_SHA" ]; then
 fi
 LATEST=$(gh run list --branch "$BRANCH" --workflow "PR CI" --limit 10 \
   --json databaseId,status,conclusion,headSha \
-  --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]" 2>/dev/null)
+  --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]")
 
 if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
   # CI may not have started yet — retry for up to 2 minutes before giving up
@@ -37,7 +48,7 @@ if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
     sleep 10
     LATEST=$(gh run list --branch "$BRANCH" --workflow "PR CI" --limit 10 \
       --json databaseId,status,conclusion,headSha \
-      --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]" 2>/dev/null)
+      --jq "[.[] | select(.headSha == \"$HEAD_SHA\")] | .[0]")
   done
 fi
 
@@ -109,6 +120,7 @@ OUT_DIR="$REPO_DIR/.tmp/neon-ci/$RUN_ID"
 mkdir -p "$OUT_DIR"
 
 echo "STATUS: failed"
+STATUS_SENT=1
 echo "RUN_ID: $RUN_ID"
 echo "OUT_DIR: $OUT_DIR"
 echo ""
@@ -155,14 +167,14 @@ slugify() {
   echo "$1" \
     | sed 's/^[^/]*\/[[:space:]]*//' \
     | tr '[:upper:]' '[:lower:]' \
-    | sed 's/[^a-z0-9]/-/g; s/-\+/-/g; s/^-//; s/-$//'
+    | sed 's/[^a-z0-9]/-/g; s/--*/-/g; s/^-//; s/-$//'
 }
 
 # Strip timestamps and ANSI codes, then slice from the actual command invocation
 clean_log() {
   sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}T[0-9:.Z-]*[[:space:]]*//' \
-  | sed 's/\x1b\[[0-9;]*[mKGHFJdlsurTABCDRSu]//g' \
-  | sed 's/\x1b[()][AB012]//g' \
+  | sed "s/$ESC\[[0-9;]*[mKGHFJdlsurTABCDRSu]//g" \
+  | sed "s/$ESC[()][AB012]//g" \
   | awk '/^##\[group\]Run (yarn turbo|yarn workspace|turbo |npx)/{found=1} /^Post job cleanup\./{found=0} found{print}' \
   | sed '/^##\[group\]/d; /^##\[endgroup\]/d; /^##\[error\]/d' \
   | grep -v '^[[:space:]]*$' \
@@ -195,8 +207,8 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
     # Section filter found nothing (e.g. Cypress jobs use a different invocation)
     # Fall back to full log with just timestamp/ANSI stripping
     sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}T[0-9:.Z-]*[[:space:]]*//' "$RAW" \
-      | sed 's/\x1b\[[0-9;]*[mKGHFJdlsurTABCDRSu]//g' \
-      | sed 's/\x1b[()][AB012]//g' \
+      | sed "s/$ESC\[[0-9;]*[mKGHFJdlsurTABCDRSu]//g" \
+      | sed "s/$ESC[()][AB012]//g" \
       | grep -v '^[[:space:]]*$' \
       > "$LOG_FILE" || true
   fi
@@ -214,7 +226,7 @@ for i in $(seq 0 $((FAILED_COUNT - 1))); do
   SNIPPET=""
   if echo "$JOB_NAME" | grep -qi "cypress\|e2e"; then
     SPEC=$(awk '/[0-9]+ failing/{found=1} !found && /Running:/{spec=$0} found{print spec; exit}' "$LOG_FILE" 2>/dev/null \
-      | grep -oP '(?<=Running:  )\S+' | head -1 || true)
+      | sed -n 's/.*Running:[[:space:]]*\([^[:space:]]*\).*/\1/p' | head -1 || true)
     DESCRIBE=$(awk '/[0-9]+ failing/{f=1;next} f && /^  [0-9]+\)/{sub(/^[[:space:]]*[0-9]+\)[[:space:]]*/,""); print; exit}' "$LOG_FILE" 2>/dev/null || true)
     TEST=$(awk '/[0-9]+ failing/{f=1;next} f && /^  [0-9]+\)/{getline; sub(/^[[:space:]]*/,""); sub(/:$/,""); print; exit}' "$LOG_FILE" 2>/dev/null || true)
     ERR=$(grep -m1 "AssertionError" "$LOG_FILE" 2>/dev/null | sed 's/^[[:space:]]*//' | cut -c1-180 || true)
