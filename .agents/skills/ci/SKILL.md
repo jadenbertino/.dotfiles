@@ -23,10 +23,14 @@ Run in the current checkout by default. Only use a separate [Treehouse](https://
 
 When the user asks for a separate checkout, or the current checkout moves to another branch mid-run (step 4):
 
-1. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask. Run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json` and save the path and `lease_id` outside the worktree. Don't enter or release another task's lease (`treehouse status --json` shows allocations).
+1. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask. Run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json` and save the path and `lease_id` outside the worktree. Don't enter another task's lease (`treehouse status --json` shows allocations); release it only to reclaim an idle one, below.
+	- **Reclaim idle leases first**, so the pool hands out an existing worktree instead of building a new one. A lease is idle when it has no `processes` and nothing in it has changed recently. Its last activity is the newest of: the git index mtime (`git rev-parse --git-path index`), the last commit time, and the mtime of each file in `git status --porcelain`.
+		- **Clean** (no uncommitted files, nothing unpushed versus its upstream): reclaim it after 30 minutes idle with `treehouse return "<path>" --if-lease-id "<its lease_id>"`.
+		- **Dirty** (uncommitted files or unpushed commits): reclaim it after 24 hours idle. First save its work to `~/.local/state/ci/reclaimed/<lease-holder>-<YYYY-MM-DD-HHMM>/`: `git diff HEAD --binary > changes.patch`, a list of untracked files, and `git bundle create unpushed.bundle @{u}..HEAD` (or `HEAD` if it has no upstream). Then run `treehouse return "<path>" --if-lease-id "<its lease_id>" --force`. This is the only allowed use of `--force`.
+		- Always pass `--if-lease-id`, so a lease that changed hands since you checked isn't returned. List what you reclaimed, and where its backup is, in the CI log and your final report.
 2. Fetch the target branch into the worktree. If another worktree already has that branch checked out, use a unique local branch that tracks the remote branch. Confirm HEAD matches the remote SHA.
 3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when the lockfile requires it. Run `yarn turbo build --filter=server...` before local server tests. Reuse the existing Docker services; don't run database tests concurrently across checkouts.
-4. When finished, make sure everything intentional is pushed and the CI log has its outcome, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Never use `--force` or `return --all`. If work is unsaved or the run pauses for user input, keep the lease and report its path and reason.
+4. When finished, make sure everything intentional is pushed and the CI log has its outcome, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Never use `return --all`, or `--force` outside reclaiming a dirty idle lease (step 1). If work is unsaved or the run pauses for user input, keep the lease and report its path and reason.
 
 ## CI log
 
