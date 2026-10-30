@@ -15,6 +15,23 @@ cs() {
   gh codespace ssh -c "$name" "$@"
 }
 
+dc() {
+  local container
+  container=$(docker ps --filter "label=devcontainer.local_folder=$HOME/projects/neon" --format '{{.ID}}') || return
+  container=${container%%$'\n'*}
+
+  [[ -n "$container" ]] || {
+    echo "No running Neon dev container found" >&2
+    return 1
+  }
+
+  if (( $# )); then
+    docker exec -it -u node -w /workspaces/neon "$container" "$@"
+  else
+    docker exec -it -u node -w /workspaces/neon "$container" bash
+  fi
+}
+
 # IDE aliases
 alias b='bash'
 alias v='nvim'
