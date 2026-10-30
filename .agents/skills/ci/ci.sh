@@ -2,8 +2,8 @@
 #
 # Fetch GitHub Actions failures for the current branch.
 # Writes per-job logs to /tmp/neon-ci/{run-id}/ and prints a summary to stdout.
-# If CI is in progress, polls every 30s (up to 15m) and returns as soon as
-# at least one locally reproducible job has failed.
+# If CI is in progress, polls every 30s (up to 30m) and returns as soon as
+# any job has failed.
 #
 # Exit codes:
 #   0 — STATUS: passing or no_runs
@@ -45,7 +45,7 @@ RUN_STATUS=$(echo "$LATEST" | jq -r '.status')
 CONCLUSION=$(echo "$LATEST" | jq -r '.conclusion')
 RUN_ID=$(echo "$LATEST" | jq -r '.databaseId')
 
-# Poll if in progress — break early only on reproducible (non-cypress/e2e/docker) failures
+# Poll if in progress — break early on the first failed job
 if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_STATUS" = "waiting" ] || [ "$RUN_STATUS" = "pending" ]; then
   echo "CI is running on branch: $BRANCH — polling every 30s (timeout 30m)" >&2
 
@@ -71,11 +71,8 @@ if [ "$RUN_STATUS" = "in_progress" ] || [ "$RUN_STATUS" = "queued" ] || [ "$RUN_
     CONCLUSION=$(echo "$POLL" | jq -r '.conclusion')
     FAILED_NOW=$(echo "$POLL" | jq '.failed')
 
-    # Only break early for reproducible failures — don't interrupt for cypress/e2e/docker/gatekeeper
-    REPRO_FAILED=$(echo "$FAILED_NOW" | jq '[.[] | select(.name | test("cypress|e2e|docker|gatekeeper"; "i") | not)]')
-    REPRO_FAILED_COUNT=$(echo "$REPRO_FAILED" | jq 'length')
-
-    if [ "$REPRO_FAILED_COUNT" -gt 0 ]; then
+    # Break as soon as any job fails, including Cypress/E2E, so the caller can act immediately
+    if [ "$(echo "$FAILED_NOW" | jq 'length')" -gt 0 ]; then
       # Re-fetch all currently-failed jobs (more may have failed since last poll)
       FAILED=$(gh run view "$RUN_ID" --json jobs \
         --jq '[.jobs[] | select(.conclusion == "failure")]')
