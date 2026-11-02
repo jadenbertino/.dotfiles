@@ -8,9 +8,24 @@ alias cl='clear'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'
 alias rmf='rm -rf'
+_cs_name_for_display_name() {
+  local query=$1 all matches
+  all=$(gh codespace list --json name,displayName --jq '.[] | "\(.displayName)\t\(.name)"') || return
+  matches=$(awk -F'\t' -v q="${query:l}" 'tolower($1) == q' <<< "$all")
+  [[ -n "$matches" ]] || matches=$(awk -F'\t' -v q="${query:l}" 'index(tolower($1), q)' <<< "$all")
+  [[ -n "$matches" ]] || { echo "No codespace with display name matching '$query'" >&2; return 1; }
+  [[ "$matches" != *$'\n'* ]] || { echo "Multiple codespaces match '$query':" >&2; echo "$matches" >&2; return 1; }
+  echo "${matches#*$'\t'}"
+}
+
 cs() {
   local name
-  name=$(gh codespace list --json name,lastUsedAt --jq 'sort_by(.lastUsedAt) | last | .name // empty')
+  if [[ -n "$1" && "$1" != -* ]]; then
+    name=$(_cs_name_for_display_name "$1") || return
+    shift
+  else
+    name=$(gh codespace list --json name,lastUsedAt --jq 'sort_by(.lastUsedAt) | last | .name // empty')
+  fi
   [[ -n "$name" ]] || { echo "No codespaces found" >&2; return 1; }
   gh codespace ssh -c "$name" "$@"
 }
