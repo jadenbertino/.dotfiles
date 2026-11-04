@@ -11,6 +11,7 @@
 - Start explanations super simple: the core idea in plain English and domain terms, before any functions, files or code symbols. Don't front-load detail; I'll ask questions to drill down.
 - Prefer minimal headers and nested bullet point lists.
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
+- When referring to a database model or field, use its exact name and casing in backticks, e.g. "the `Purchase`'s total" or "`PurchaseAttempt.pspAmount`", not "the purchase total".
 
 ## General
 
