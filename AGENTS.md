@@ -12,6 +12,7 @@
 - Prefer minimal headers and nested bullet point lists.
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
 - When referring to a database model or field, use its exact name and casing in backticks, e.g. "the `Purchase`'s total" or "`PurchaseAttempt.pspAmount`", not "the purchase total".
+- Prefer terms from our data model (models and fields) over concepts that only exist in code (e.g. "funding", "the PSP share"). If a derived value comes up repeatedly, define it once in data-model terms (e.g. "PSP share: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it") and then reference it by that name. Be explicit about which terms map to a stored field and which are derived or vague.
 
 ## General
 
