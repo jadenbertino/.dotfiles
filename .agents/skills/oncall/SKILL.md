@@ -15,7 +15,7 @@ Every investigation gets an Obsidian doc, including ones that end up as a Bug or
 2. Copy `/workspaces/neon/_obsidian/neon/post mortems/_template.md` to `/workspaces/neon/_obsidian/neon/post mortems/YYYY-MM-DD - <short title>.md` and tell the user the path.
 3. Fill the doc as you investigate, not at the end. Findings go in the doc; keep chat to short progress updates.
    - Mark the priority as suggested, with the evidence for it. The user confirms it.
-   - Generate the response checklist from that priority's rules on the Notion page. Never tick a checklist box or fill a "(human)" field yourself.
+   - Work the oncall checklist: tick "agent" items once done, delete branches that don't apply, and fill in the per-priority comms items from the Notion page. Never tick a "jaden" item or fill a "(jaden)" field.
    - Every timeline event and impact number needs a Datadog link, query, or SQL behind it.
 4. Trim the doc to fit the outcome:
    - **Bug:** keep Triage, Summary, Root Cause, Follow-ups (with the Linear ticket) and Investigation notes.
