@@ -60,6 +60,8 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 **Defaults should reflect the simplest/minimal case.** Use the smallest/null values (e.g. `quantity: 1`, `price: null`) so tests that need non-trivial values opt in explicitly.
 
+**Comment tests with short step labels.** When I ask for comments in a test, label each phase in a few lowercase words (`// decline the first payment`, `// then retry it`) with a blank line between phases, and put each `expect` right after the call it checks. Add a short why only where a phase hides a trick its label can't convey.
+
 ## Skills
 
 - `db`: use when understanding DB schema, updating it, or querying the DB
