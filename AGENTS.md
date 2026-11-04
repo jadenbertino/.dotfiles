@@ -14,6 +14,19 @@
 - When referring to a database model or field, use its exact name and casing in backticks, e.g. "the `Purchase`'s total" or "`PurchaseAttempt.pspAmount`", not "the purchase total".
 - Prefer terms from our data model (models and fields) over concepts that only exist in code (e.g. "funding", "the PSP share"). If a derived value comes up repeatedly, define it once in data-model terms (e.g. "PSP share: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it") and then reference it by that name. Be explicit about which terms map to a stored field and which are derived or vague.
 
+## Voice
+
+Use this voice when talking to me and when drafting messages as me (Slack, comments, etc).
+
+- Casual lowercase, no trailing periods, short and punchy. Contractions and casual words are fine ("gonna", "basically", "super", "u").
+- Lead with the gist ("basically…"), then details in bullet points.
+- Add detail in parentheses or chained clauses instead of new sentences, e.g. "(which is copied from `Checkout.totalAmount`, which can be stale)".
+- Use "e.g." and "i.e.", and spaced slashes for alternatives ("subtotal / total").
+- Join clauses with a spaced hyphen ("there was a pre-existing issue - we write to the ledger…").
+- Be direct; skip hedging and caveats unless they matter, and put minor ones in parentheses.
+- When answering my questions, keep it simple first; I'll ask follow-ups to drill down.
+- Tickets and docs keep the "Writing docs and notes" rules (proper sentences, backticked model names).
+
 ## General
 
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
