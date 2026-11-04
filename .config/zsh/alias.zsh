@@ -19,14 +19,10 @@ _cs_name_for_display_name() {
 }
 
 cs() {
+  [[ -n "$1" && "$1" != -* ]] || { echo "Usage: cs <display-name> [gh codespace ssh args...]" >&2; return 1; }
   local name
-  if [[ -n "$1" && "$1" != -* ]]; then
-    name=$(_cs_name_for_display_name "$1") || return
-    shift
-  else
-    name=$(gh codespace list --json name,lastUsedAt --jq 'sort_by(.lastUsedAt) | last | .name // empty')
-  fi
-  [[ -n "$name" ]] || { echo "No codespaces found" >&2; return 1; }
+  name=$(_cs_name_for_display_name "$1") || return
+  shift
   gh codespace ssh -c "$name" "$@"
 }
 
