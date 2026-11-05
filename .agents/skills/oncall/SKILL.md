@@ -23,6 +23,15 @@ CLI tool for fetching Datadog logs. Run `ddl -h` for usage.
 
 **Source:** `/home/node/.local/bin-dotfiles/ddl` (read with `Read` tool if needed)
 
+### What Datadog captures
+
+- **Traces** cover the full request path: client → Vercel's edge network → the Next.js server → Neon's server → external dependencies. Use them to find where a request got slow or where it errored.
+- **Request logs** include every header and the request body, with redaction:
+  - Headers: Datadog shows only allowlisted headers in full and redacts the rest.
+  - Body: the logger redacts individual fields from a blocklist, not whole routes. For fields that are only sometimes sensitive (e.g. `number`), it redacts only values that match a pattern, so a card number is hidden but a phone number or counter isn't.
+- **Frontend errors** have source-mapped stack traces, so they point at our source code rather than minified bundles, and the trace for a given bug stays the same across new deploys.
+- **Next.js server logs** go through the same logger as the server, so their attributes are formatted the same way and you can search on them.
+
 ## Investigation approach
 
 Use all three tools together — they complement each other:

@@ -44,3 +44,30 @@ auto_update_dotfiles() {
         }
     fi
 }
+auto_update_tailscale() {
+    command -v tailscale > /dev/null || return 0
+    sudo -n true 2> /dev/null || return 0
+
+    local cache_file="$XDG_CACHE_HOME/tailscale_last_update"
+    local log_file="$XDG_CACHE_HOME/tailscale_update.log"
+    local current_time=$(date +%s)
+    local last_update=$(cat "$cache_file" 2> /dev/null || echo "0")
+
+    if (( current_time - last_update < INTERVAL_HOURS * 3600 )); then
+        return 0
+    fi
+    echo "$current_time" > "$cache_file"
+
+    (
+        echo "--- $(date -u +%FT%TZ)"
+        sudo -n tailscale update --yes
+        local client=$(tailscale version | head -1)
+        local daemon=$(tailscale version --daemon | sed -n 's/^Daemon: \([^-]*\).*/\1/p')
+        if [[ "$client" != "$daemon" ]]; then
+            echo "Restarting tailscaled $daemon -> $client"
+            sudo -n pkill -x tailscaled
+            sleep 1
+            sudo -n /usr/local/sbin/tailscaled-devcontainer-start
+        fi
+    ) >> "$log_file" 2>&1 &!
+}
