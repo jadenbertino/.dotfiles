@@ -13,7 +13,7 @@
 - Prefer minimal headers and nested bullet point lists.
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
 - When referring to a database model or field, use its exact name and casing in backticks, e.g. "the `Purchase`'s total" or "`PurchaseAttempt.pspAmount`", not "the purchase total".
-- Prefer terms from our data model (models and fields) over concepts that only exist in code (e.g. "funding", "the PSP share"). Avoid aliases: don't give a new name to something that already has one (a model, a field, or a sum like `PurchaseAttempt.walletAmount + pspAmount`); write the real names out. Only name a value that is truly derived and comes up repeatedly, define it once in data-model terms (e.g. "booked PSP amount: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it"), and say that it's derived.
+- Use canonical data model terms (exact model and field names) as much as possible, over concepts that only exist in code (e.g. "funding", "the PSP share") or informal names. Avoid aliases: don't give a new name to something that already has one (a model, a field, or a sum like `PurchaseAttempt.walletAmount + pspAmount`); write the real names out. Only name a value that is truly derived and comes up repeatedly, define it once in data-model terms (e.g. "booked PSP amount: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it"), and say that it's derived.
 - Whenever you reference an API endpoint, in docs or in chat, start with its HTTP method: `GET /wallet/player`, not `/wallet/player`.
 
 ## Voice
