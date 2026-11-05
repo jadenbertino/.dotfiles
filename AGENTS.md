@@ -40,7 +40,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 
 ## git
 
-- Always commit after making changes to any files in my `~/.dotfiles` repo
+- Always commit after making changes to any files in my `~/.dotfiles` repo, then push right away (`git push`, no need to ask)
 - Prefer small, frequent commits
 - If I reference a git diff then i assume i mean from `main`
 - Don't include yourself as a commit author.
