@@ -1,25 +1,43 @@
 ---
 name: ci
-description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs.
+description: Continuously fetch, fix, and push until CI is fully green on the current branch. Use when asked to investigate CI failures, make CI pass, fix a broken PR, or inspect GitHub Actions logs. While a /ci run is active on a branch, it owns that PR's checks: don't run `gh pr checks`, read job logs or fix CI from the main conversation; ask the running agent for its status instead.
+context: fork
 ---
 
 Continuously fetch, fix, and push until CI is fully green on the current branch.
 
-## Separate checkout
+This skill runs in a background subagent, so the main conversation stays free. You can't ask the user questions directly: wherever these steps say to stop and ask, stop, write the reason to the CI log, and end with a report that says what decision is needed. Your final message is the report the main agent relays, so include the outcome, each cycle's failures and fixes (commit SHAs), any flakes, and the CI log path.
 
-Use a [Treehouse](https://github.com/kunchenguid/treehouse) worktree with a durable lease so the primary checkout stays available. Both CI and PR review use the same repository pool; acquire a lease instead of guessing whether a fixed checkout is busy. If Treehouse is unavailable or lacks the lease flags below, report the setup blocker. Honor an explicitly requested checkout while preserving existing work; do not treat an unmanaged checkout as protected by Treehouse.
+## Checkout
 
-1. Record the target repository, branch, and initial SHA before leaving the original checkout. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask the user how to proceed before acquiring a lease. From that repository, run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json`. Save the returned path and `lease_id` outside the leased worktree. The durable lease remains held between tool calls even when no process is running there. Use `treehouse status --json` to inspect allocations; do not enter or release another task’s lease.
-2. Fetch the target branch from its actual remote, including forks, into the acquired worktree. Use the target branch name when it is free; if another worktree has it checked out, use a unique local branch tracking the target remote branch. Confirm HEAD matches the intended remote SHA before running the CI script; push explicitly to the original target remote and branch throughout the loop.
-3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when required by the checked-out lockfile. Run `yarn turbo build --filter=server...` before local server tests; build other affected workspaces as needed. Redirect setup output to temp files and inspect it. Reused worktrees retain caches, but those caches do not establish that dependencies or generated types are current.
-4. Run the outer loop and all fixes, verification, commits, and pushes from the leased path. Reuse existing Docker services with their fixed names and ports instead of starting a second Compose stack. Database-dependent tests across checkouts must not run concurrently. Any app server used for verification must serve this checkout and revision.
-5. Hold the lease for the whole CI task. When finished, ensure intentional changes are committed and pushed, the CI log has a final outcome entry, and needed logs are saved outside the worktree, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Return can terminate worktree processes and reset files; never use `--force` or `return --all` for routine cleanup. If work remains unsaved, cleanup fails, or the task pauses for user input, retain the lease and report its path, identity, and reason.
+Run in the current checkout by default. Only use a separate [Treehouse](https://github.com/kunchenguid/treehouse) worktree when the user asks for one, or when the checkout moves to another branch mid-run (see **Separate checkout (on request)** below).
+
+1. Record the repository, branch, remote and current SHA. Fetch, and confirm the local branch matches its remote (fast-forward if it's behind; stop and ask if it has diverged).
+2. Leave the user's uncommitted changes alone. Don't stash, reset or commit them. Stage only the files you changed for a fix. If a fix needs a file that has uncommitted user changes, stop and ask.
+3. Run all fixes, verification, commits and pushes from this checkout, pushing explicitly to the recorded remote and branch.
+4. The user keeps working in this checkout while you run, and may switch branches. Before every edit, commit and push, check that `git branch --show-current` is still the recorded branch and that `HEAD` is your last known SHA (or a descendant of it, if the user committed).
+	- If the branch has changed, don't switch it back, and don't edit, commit or push here. Move to a Treehouse lease (see **Separate checkout (on request)**), check out the recorded branch at its remote SHA, and carry on there for the rest of the run. Log the move and the lease path.
+	- If you had uncommitted edits in progress when it moved, they went with the user's checkout. Save them with `git diff -- <your files>` to a patch outside the repo, apply it in the lease, and leave the user's checkout alone. Don't revert anything there. Report the files so the user can clean them up.
+
+### Separate checkout (on request)
+
+When the user asks for a separate checkout, or the current checkout moves to another branch mid-run (step 4):
+
+1. Check free disk space with `df -h` on the filesystem holding `~/.treehouse`; if less than 10 GB is available, stop and ask. Run `treehouse get --lease --lease-holder "ci-<unique-run-id>" --json` and save the path and `lease_id` outside the worktree. Don't enter another task's lease (`treehouse status --json` shows allocations); release it only to reclaim an idle one, below.
+	- **Reclaim idle leases first**, so the pool hands out an existing worktree instead of building a new one. A lease is idle when it has no `processes` and nothing in it has changed recently. Its last activity is the newest of: the git index mtime (`git rev-parse --git-path index`), the last commit time, and the mtime of each file in `git status --porcelain`.
+		- **Clean** (no uncommitted files, nothing unpushed versus its upstream): reclaim it after 30 minutes idle with `treehouse return "<path>" --if-lease-id "<its lease_id>"`.
+		- **Dirty** (uncommitted files or unpushed commits): reclaim it after 30 minutes idle too. These are usually runs the user stopped, which never come back to finish. First save its work to `~/.local/state/ci/reclaimed/<lease-holder>-<YYYY-MM-DD-HHMM>/`: `git diff HEAD --binary > changes.patch`, a list of untracked files, and `git bundle create unpushed.bundle @{u}..HEAD` (or `HEAD` if it has no upstream). Then run `treehouse return "<path>" --if-lease-id "<its lease_id>" --force`. This is the only allowed use of `--force`.
+		- Always pass `--if-lease-id`, so a lease that changed hands since you checked isn't returned. List what you reclaimed, and where its backup is, in the CI log and your final report.
+	- **Check you still hold your lease** before every edit, commit and push in it: `treehouse status --json` must show your `lease_id` on your path. If it doesn't, another run reclaimed it while you were paused. Don't touch that worktree; lease a new one, restore your work from `~/.local/state/ci/reclaimed/` if it was saved there, and log the move.
+2. Fetch the target branch into the worktree. If another worktree already has that branch checked out, use a unique local branch that tracks the remote branch. Confirm HEAD matches the remote SHA.
+3. For Neon, run `yarn install --immutable` and `yarn run husky` on first use, and refresh dependencies when the lockfile requires it. Run `yarn turbo build --filter=server...` before local server tests. Reuse the existing Docker services; don't run database tests concurrently across checkouts.
+4. When finished, make sure everything intentional is pushed and the CI log has its outcome, then run `treehouse return "<path>" --if-lease-id "<lease_id>"`. Never use `return --all`, or `--force` outside reclaiming a dirty idle lease (step 1). If work is unsaved or the run pauses for user input, keep the lease and report its path and reason.
 
 ## CI log
 
-Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md`. It lives outside the leased worktree because `treehouse return` wipes the `.tmp/neon-ci/` job logs.
+Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-slashes-as-dashes>.md`. It lives outside the repo so it survives cleanup (`treehouse return` wipes `.tmp/neon-ci/` job logs in a leased worktree).
 
-- At the start, write the repo, branch, initial SHA, lease path and `lease_id`.
+- At the start, write the repo, branch and initial SHA, plus the lease path and `lease_id` if you used a separate checkout.
 - After every push cycle, append:
   - cycle number, run URL, `STATUS:` result
   - each failed job: name, classification (`fix`, `flake`, `infra`), one-line root cause
@@ -30,12 +48,12 @@ Write one log file per run at `~/.local/state/ci/<YYYY-MM-DD-HHMM>-<branch-with-
   ```
   - Take the file path and full test name from the job log, not just the job name. If the log doesn't name the test, write `unknown` and quote the closest identifying log line as the error.
   - Before calling something a flake, grep `~/.local/state/ci/*.md` for `FLAKE:` lines with the same test file. Note prior occurrences in the log and your final report; suggest `fix-ci-flake` for a test that has flaked 3+ times.
-- When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and whether the lease was returned.
+- When the loop ends, append the outcome (green, stopped after 5 cycles, timeout, paused for user) and, for a separate checkout, whether the lease was returned.
 - Write entries as you go, not at the end, so a paused or abandoned run still leaves a trail. Include the log path in your final report.
 
 ## Outer loop
 
-The bundled `ci.sh` infers the remote branch from the local branch name and queries `origin`. If the leased worktree uses a different local branch name or target remote, create a temporary copy outside the worktree and adapt its branch, remote, and GitHub repository lookups to the recorded target. Inspect that copy and use it throughout the loop; do not poll CI for the temporary local branch or change shared Git remote configuration.
+The bundled `ci.sh` infers the remote branch from the local branch name and queries `origin`. If the checkout uses a different local branch name or target remote, create a temporary copy outside the repo and adapt its branch, remote, and GitHub repository lookups to the recorded target. Inspect that copy and use it throughout the loop; do not poll CI for the temporary local branch or change shared Git remote configuration.
 
 Repeat until done (max 5 push cycles before stopping):
 
@@ -44,6 +62,7 @@ Repeat until done (max 5 push cycles before stopping):
    - `passing` → stop, CI is green
    - `no_runs` → CI never started after 2 minutes; stop and report
    - `timeout` → stop with error: "CI timed out after 30 minutes"
+   - `error` → a `gh` or `git` call failed (usually auth or network); the `ERROR:` line names the command. Run the script once more; if it errors again, stop and report the `ERROR:` line and the stderr above it
    - `failed` → **act immediately** on the failed job(s) listed — do not wait for other jobs to finish. Fix or handle each failure, then go back to step 1.
 3. After each cycle, append the cycle entry to the CI log before starting the next one.
 4. After 5 push cycles with no green result, stop and report what's still failing.
@@ -83,12 +102,13 @@ Act on failures immediately — do not wait for the rest of the run to complete.
 | `Unit Tests (checkout)` | `yarn workspace checkout test` |
 | `Server Unit Tests` | `yarn workspace server test` |
 | `Cypress integration tests (checkout, ...)` | `cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/<failing-spec>.cy.ts'` |
+| `Cypress integration tests (neon-js, ...)` | `cd apps/neon-js && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/<failing-spec>.cy.ts'` |
 
 If a job doesn't match a pattern, derive the workspace from the job title.
 
 ### Running Cypress integration tests locally
 
-The checkout Cypress integration tests run against the local Next.js dev server on port 3001 (already running in this environment). Read the failing log to identify which spec file failed, then run it directly:
+The checkout Cypress integration tests run against the local Next.js dev server on port 3001, and the neon-js ones against the neon-js dev server on port 3010 (both already running in this environment). Read the failing log to identify which spec file failed, then run it directly:
 
 ```bash
 cd apps/checkout && npx cypress run --browser chrome-for-testing --spec 'cypress/integration/wechat-pay-qr.cy.ts'

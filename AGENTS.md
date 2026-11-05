@@ -4,6 +4,7 @@
 - Push back on bad ideas, unreasonable expectations and mistakes. Give specific technical reasons when you have them; a gut feeling is still worth raising.
 - Don't flatter me or agree just to be nice.
 - Give complete answers. If part of an answer depends on something you can check yourself (code, DB, API, docs, Linear), check it before replying rather than adding a "not checked" or "I didn't trace this" disclaimer. Only flag what you genuinely can't verify, and say why.
+- When I ask a Q&A-style question while you're mid-way through code changes (e.g. "what is this change for?", "how do tuples work?"), append it to `questions.md` in the session scratchpad with its file:line and status `open`, plus any facts you find while coding. Once the code is done, reread the file and answer every open question in the same summary, then mark them `answered`. If the answer would change the code you're writing, answer it right away instead.
 
 ## Writing docs and notes
 
@@ -13,6 +14,7 @@
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
 - When referring to a database model or field, use its exact name and casing in backticks, e.g. "the `Purchase`'s total" or "`PurchaseAttempt.pspAmount`", not "the purchase total".
 - Prefer terms from our data model (models and fields) over concepts that only exist in code (e.g. "funding", "the PSP share"). If a derived value comes up repeatedly, define it once in data-model terms (e.g. "PSP share: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it") and then reference it by that name. Be explicit about which terms map to a stored field and which are derived or vague.
+- Whenever you reference an API endpoint, in docs or in chat, start with its HTTP method: `GET /wallet/player`, not `/wallet/player`.
 
 ## Voice
 
@@ -31,6 +33,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 
 - when inspecting outputs from files (tests, lint, typecheck, etc), the output into a temp file, then grep the temp file. do not use exit codes as a metric for success; read the file.
 - to quickly check & typecheck a file, use `/home/node/.local/bin-dotfiles/check <filepaths>`. For a comprehensive check use `tsc` and `eslint`.
+- Run `check` once per turn: on every file you changed, right before you say you're done. Don't re-run it after each file or feature change; speed matters more than catching a mistake a few steps earlier.
 - Do not run tests unless you're using the `ci` skill. Other skills and workflows (e.g. the ticket workflow) don't count. The `check` script is allowed.
 - **IMPORTANT:** Always run `/home/node/.local/bin-dotfiles/check <filepaths>` on the relevant files before running tests.
 - `ls` is aliased to `eza`
@@ -79,7 +82,7 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 ## Linear
 
-- When you create a Linear ticket, always set its status to Triage and leave its priority unset (No priority).
+- When you create a Linear ticket, always set its status to Triage, leave its priority unset (No priority) and leave it out of any cycle unless I ask for one. After creating it, fetch it and check that every field matches what you set.
 - Write acceptance criteria as Markdown checkboxes (`- [ ] ...`), not plain bullets.
 - When editing an existing ticket, patch only the part that changes; never replace the whole description. If a patch fails, re-read the ticket and retry the patch against its current text.
 
@@ -103,17 +106,22 @@ These docs are a cache of what the codebase does, so they can be out of date. Wh
 
 All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
 
+- Backlinks: there's no Obsidian index here, so find the notes that link to a note by grepping for its wikilink, by path and by bare name: `grep -rl --include=*.md -e "\[\[topics/neon architecture" -e "\[\[neon architecture" .` (run from the vault root). This catches `|alias`, `#heading` and `![[embeds]]`, but not markdown-style `[text](path.md)` links.
+  - Topic notes (`topics/*.md`) have no content of their own: they embed `topics/_.base`, which Obsidian renders as a table of backlinks. Read their backlinks, not the note.
+
+- Architecture
+  - `topics/neon architecture.md` — No page content; check its backlinks for the architecture notes (payments, checkout amounts, refunds, webhooks, ledger, tax, async jobs, etc.).
 - Wallet work
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
-  - `neon wallet api - for llms.md` (vault root) — Wallet API reference: endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
-  - `neon/Wallet in checkout.md` — How checkout applies wallet funds, places and captures holds, and records `PurchaseAttempt`s, including which endpoints capture a hold.
-  - `neon/Wallet API - User Stories.md` — Wallet API user stories grouped by epic (onboarding, saved payment methods, balance, etc.), each with acceptance criteria and edge cases. Read when checking expected wallet behavior or writing AC/QA.
+  - `neon wallet api - for llms.md` (vault root) — **very important: read before any Wallet API work** (calling it, changing it, testing it). Endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
   - https://docs.neonpay.com/docs/neon-wallet-in-development — Public Neon Wallet docs we give makers: core wallet APIs, wallet webhook events and which webhooks each action sends, wallet in Neon Checkout, and wallet reports. Only read this when I mention "public docs"; usually skip it.
   - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.
+  - For more wallet context, check the backlinks to `topics/neon wallet.md`.
 - Ticket work
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
 - Code changes
-  - `writing good code.md` (vault root) — Index of my coding conventions (types, naming, abstractions, error handling, transactions, repo/service layering). Read the docs it links that apply to the change.
+  - `neon/best practices for writing good code.md` — Index of my coding conventions (types, naming, abstractions, error handling, transactions, repo/service layering). Read the docs it links that apply to the change.
+  - `neon/Neon API Best Practices.md` — How we design and evolve Neon's APIs, public ones especially. Read before changing any API's behavior or OpenAPI spec.
   - `neon/Testing 101.md` — How I want tests written, which layer to use, and where the existing wallet test helpers live. Read before writing tests.
 - PR review
   - `neon/PR Review Prompts/1-Overview.md` — Index of the `pr-review` workflow and its reviewer angles (data model/API, bugs, tests, code quality). `2a-main-agent-prompt.md` in that folder is the authoritative workflow.
