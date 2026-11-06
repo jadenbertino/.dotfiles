@@ -19,3 +19,9 @@ Things learned while driving Chrome with `ch`. Read before starting; append when
 - The card form has two `input[data-testid=emailAddress]` (one belongs to the hidden Neon Pay auth block). Target the visible one with `input#emailAddress`.
 - Locally, the card form requires a phone number (e.g. `2015550123`), or Place Order shows "Please enter a valid phone number".
 - Clicking `[data-testid=wallet-balance-toggle]` right after the page loads may not register. Check the wallet state in a screenshot before relying on it.
+
+## GitHub
+
+- `gh` can't upload images. To get `user-attachments` URLs for a PR description, open the PR in a background tab and call `setInputFiles({ name, mimeType, buffer })` on a `fc-…` file input. Wait for the matching textarea to contain the `<img … src="https://github.com/user-attachments/…">` tag, read it, then reload the page so nothing gets saved. Then put the tags in the body with `gh pr edit --body-file`.
+  - The first `input[type=file]` on a PR page belongs to the PR description's hidden edit form (`fc-issue-<id>-body`), not to the new comment box (`fc-new_comment_field`). Either works, as long as you read the textarea with the same id.
+  - Passing a buffer works over CDP even though the files live in the codespace, not on the Mac.
