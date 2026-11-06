@@ -7,6 +7,7 @@ description: For code or shell agents only, drive the user's Mac Chrome from the
 
 - This skill applies only to code or shell agents. Desktop app agents, including agents running in the Codex app, must use their app-provided browser or computer-use tools instead. Having shell access inside an app does not make the agent a shell agent.
 
+- read `NOTES.md` (next to this file) before starting. When something surprises you or you learn a gotcha, add a short bullet to it, then commit and push the dotfiles repo
 - `ch` (`~/.local/bin-dotfiles/ch`) runs on my Mac and tunnels my Chrome's debug port into the codespace at `http://localhost:9222`
   - if `curl -s localhost:9222/json/version` fails, ask me to run `ch` on my Mac
 - connect with `chromium.connectOverCDP("http://localhost:9222")` rather than launching a new browser
