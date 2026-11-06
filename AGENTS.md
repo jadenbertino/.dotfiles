@@ -12,7 +12,22 @@
 - Start explanations super simple: the core idea in plain English and domain terms, before any functions, files or code symbols. Don't front-load detail; I'll ask questions to drill down.
 - Prefer minimal headers and nested bullet point lists.
 - Prefer short bullets (1-2, occasionally 3 sentences) and nest them if you need to add more detail.
+- When referring to a database model or field, use its exact name and casing in backticks, for the field too, e.g. "a split `Purchase`'s `totalAmount`" or "`PurchaseAttempt.pspAmount`", not "a split purchase's total" or "the `Purchase`'s total".
+- Use canonical data model terms (exact model and field names) as much as possible, over concepts that only exist in code (e.g. "funding", "the PSP share") or informal names. Avoid aliases: don't give a new name to something that already has one (a model, a field, or a sum like `PurchaseAttempt.walletAmount + pspAmount`); write the real names out. Only name a value that is truly derived and comes up repeatedly, define it once in data-model terms (e.g. "booked PSP amount: `Purchase.totalAmount` minus `PurchaseAttempt.walletAmount` capped at it"), and say that it's derived.
 - Whenever you reference an API endpoint, in docs or in chat, start with its HTTP method: `GET /wallet/player`, not `/wallet/player`.
+
+## Voice
+
+Use this voice when talking to me and when drafting messages as me (Slack, comments, etc).
+
+- Casual lowercase, no trailing periods, short and punchy. Contractions and casual words are fine ("gonna", "basically", "super", "u").
+- Lead with the gist ("basically…"), then details in bullet points.
+- Add detail in parentheses or chained clauses instead of new sentences, e.g. "(which is copied from `Checkout.totalAmount`, which can be stale)".
+- Use "e.g." and "i.e.", and spaced slashes for alternatives ("subtotal / total").
+- Join clauses with a spaced hyphen ("there was a pre-existing issue - we write to the ledger…").
+- Be direct; skip hedging and caveats unless they matter, and put minor ones in parentheses.
+- When answering my questions, keep it simple first; I'll ask follow-ups to drill down.
+- Tickets and docs keep the "Writing docs and notes" rules (proper sentences, backticked model names).
 
 ## General
 
@@ -25,7 +40,7 @@
 
 ## git
 
-- Always commit after making changes to any files in my `~/.dotfiles` repo
+- Always commit after making changes to any files in my `~/.dotfiles` repo, then push right away (`git push`, no need to ask)
 - Prefer small, frequent commits
 - If I reference a git diff then i assume i mean from `main`
 - Don't include yourself as a commit author.
@@ -59,6 +74,8 @@ For **files** specifically, the bar is higher than for functions. A file signals
 **Prefer inline spreads over helper functions.** `{ ...defaultFoo, override: value }` is preferred over a wrapper like `makeFoo({ override: value })`. Only extract a function if the construction logic is genuinely non-trivial.
 
 **Defaults should reflect the simplest/minimal case.** Use the smallest/null values (e.g. `quantity: 1`, `price: null`) so tests that need non-trivial values opt in explicitly.
+
+**Comment tests with short step labels.** When I ask for comments in a test, label each phase in a few lowercase words (`// decline the first payment`, `// then retry it`) with a blank line between phases, and put each `expect` right after the call it checks. Add a short why only where a phase hides a trick its label can't convey.
 
 ## Skills
 
