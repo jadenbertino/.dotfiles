@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+
+[[ -n "${1:-}" && "$1" != -* ]] || { echo "Usage: cs-name <display-name>" >&2; exit 1; }
+query=$(tr '[:upper:]' '[:lower:]' <<< "$1")
+all=$(gh codespace list --json name,displayName --jq '.[] | "\(.displayName)\t\(.name)"')
+matches=$(awk -F'\t' -v q="$query" 'tolower($1) == q' <<< "$all")
+[[ -n "$matches" ]] || matches=$(awk -F'\t' -v q="$query" 'index(tolower($1), q)' <<< "$all")
+[[ -n "$matches" ]] || { echo "No codespace with display name matching '$1'" >&2; exit 1; }
+[[ "$matches" != *$'\n'* ]] || { echo "Multiple codespaces match '$1':" >&2; echo "$matches" >&2; exit 1; }
+echo "${matches#*$'\t'}"

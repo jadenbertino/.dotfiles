@@ -8,20 +8,10 @@ alias cl='clear'
 alias dr='doppler run --'
 alias reload='source ~/.zshrc && source $ZSH_CONFIG_HOME/git-aliases.zsh && update_git_aliases'
 alias rmf='rm -rf'
-_cs_name_for_display_name() {
-  local query=$1 all matches
-  all=$(gh codespace list --json name,displayName --jq '.[] | "\(.displayName)\t\(.name)"') || return
-  matches=$(awk -F'\t' -v q="${query:l}" 'tolower($1) == q' <<< "$all")
-  [[ -n "$matches" ]] || matches=$(awk -F'\t' -v q="${query:l}" 'index(tolower($1), q)' <<< "$all")
-  [[ -n "$matches" ]] || { echo "No codespace with display name matching '$query'" >&2; return 1; }
-  [[ "$matches" != *$'\n'* ]] || { echo "Multiple codespaces match '$query':" >&2; echo "$matches" >&2; return 1; }
-  echo "${matches#*$'\t'}"
-}
-
 cs() {
   [[ -n "$1" && "$1" != -* ]] || { echo "Usage: cs <display-name> [gh codespace ssh args...]" >&2; return 1; }
   local name
-  name=$(_cs_name_for_display_name "$1") || return
+  name=$(cs-name "$1") || return
   shift
   gh codespace ssh -c "$name" "$@"
 }
