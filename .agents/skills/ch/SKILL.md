@@ -12,6 +12,10 @@ description: For code or shell agents only, drive the user's Mac Chrome from the
 - connect with `chromium.connectOverCDP("http://localhost:9222")` rather than launching a new browser
   - if it fails with "Browser context management is not supported", Chrome has no windows open, so Playwright has no context to attach to. Open a background tab over raw CDP first (connect to `webSocketDebuggerUrl` from `/json/version` and send `Target.createTarget` with `url: "about:blank", background: true`), then connect again
   - `playwright-core` is installed in `/workspaces/neon/node_modules`
+- every script must time out instead of hanging
+  - call `page.setDefaultTimeout(10_000)` right after you get the page, and pass `{ timeout }` to a single call that's slow on purpose (e.g. waiting for a payment to finish)
+  - end the script with `await browser.close()`: over CDP it only disconnects (my Chrome and its tabs stay open), but without it node never exits
+  - wrap the command in `timeout 60 node …` as a backstop
 - I want to watch, so avoid headless browsers: don't fall back to one without asking me first
 - open tabs in the background so Chrome doesn't steal focus from whatever app I'm in
   - `newPage()`, `/json/new`, `Target.activateTarget` and `page.bringToFront()` all bring Chrome to the front, so don't use them
