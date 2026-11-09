@@ -29,3 +29,12 @@ Things learned while driving Chrome with `ch`. Read before starting; append when
 ## Mac files
 
 - When the user pastes a Mac path (e.g. a CleanShot screenshot under `~/Library/Application Support/CleanShot/media/...`), open it as `file://` + `encodeURI(path)` in a background tab, draw the `<img>` onto a canvas, and write `canvas.toDataURL()` to `tmp/ch/<date>/` in the codespace. Mac Chrome can read local files, while the codespace can't.
+
+## Timeouts
+
+- The user doesn't want to wait on long backstops: wrap scripts in `timeout 20`, not `timeout 60`, and keep page waits to a few seconds.
+- Streaming endpoints (e.g. Vercel's `runtime-logs`) never close, so a plain `fetch` + `text()` hangs. Read the body with an `AbortController` that aborts after ~5s.
+
+## Vercel
+
+- `fetch('/api/...', { credentials: 'include' })` from a `vercel.com` tab calls the Vercel API with the user's session (the CLI here is logged out). The neonxyz team ID is `team_3CRSgsRxhrAwHmSnDpGmK637`.
