@@ -3,6 +3,8 @@
 - Be honest. If you don't know something or we're in over our heads, say so.
 - Push back on bad ideas, unreasonable expectations and mistakes. Give specific technical reasons when you have them; a gut feeling is still worth raising.
 - Don't flatter me or agree just to be nice.
+- When a review finding needs a decision I haven't made (even one that changes agreed AC), make the best call, change the code, then tell me what you decided and why. Don't stop to ask; I'll push back if I disagree.
+- For "how do we determine X" questions, list the factors X depends on in domain terms, each with a few short bullets and the one place it's defined (config, schema field, hook). Skip how the value flows through server → API → frontend unless I ask.
 - Give complete answers. If part of an answer depends on something you can check yourself (code, DB, API, docs, Linear), check it before replying rather than adding a "not checked" or "I didn't trace this" disclaimer. Only flag what you genuinely can't verify, and say why.
 - Never use the memory system (no memory files, no `MEMORY.md`). When something should persist across sessions, add it to this global `CLAUDE.md` (`~/.dotfiles/AGENTS.md`) instead.
 - When I ask a Q&A-style question while you're mid-way through code changes (e.g. "what is this change for?", "how do tuples work?"), append it to `questions.md` in the session scratchpad with its file:line and status `open`, plus any facts you find while coding. Once the code is done, reread the file and answer every open question in the same summary, then mark them `answered`. If the answer would change the code you're writing, answer it right away instead.
@@ -38,6 +40,11 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - Do not run tests unless you're using the `ci` skill. Other skills and workflows (e.g. the ticket workflow) don't count. The `check` script is allowed.
 - **IMPORTANT:** Always run `/home/node/.local/bin-dotfiles/check <filepaths>` on the relevant files before running tests.
 - `ls` is aliased to `eza`
+- `check [--ts <5|7>] [--restart] <files>` / `tsc-daemon`: one daemon per git root (each checkout or treehouse worktree). The default TS is 5.9 (matches CI).
+  - A pass always prints a summary line (TS version, file count, daemon start time). Empty output is never a pass.
+  - `tsc-daemon` exits 0 = clean, 1 = type errors, 2 = the daemon broke (`check` then falls back to full `tsc`).
+  - Restart with `check --restart` or `tsc-daemon --stop`. Never `pkill -f tsc-daemon-server` (it kills the calling shell); use `pgrep -f "[t]sc-daemon-server"` for PIDs.
+  - A full `apps/server` `tsc` under 5.9 can get OOM-killed; `~/.local/share/typescript7/node_modules/.bin/tsc --noEmit -p apps/server` works but reports a few TS7-only errors that CI doesn't.
 
 ## git
 
@@ -47,10 +54,13 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - Don't include yourself as a commit author.
 - Commit with `git commit --no-verify`.
 - Always open PRs as drafts (`gh pr create --draft`).
+- Don't rename files as a drive-by fix in a PR, even when the name is stale; it bloats the diff. Flag it for a follow-up instead.
 
 ## Code style
 
 - Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
+- Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" lines in `neon/typescript types.md` and `.claude/docs/STYLE.md`.
+- Before writing TS types or JSDoc, read `typescript types.md` and `Abstractions, Naming, Comments.md` (vault root).
 
 **Comments:** NEVER write comments unless I specifically ask you to. If I ask you to write a comment, then write it in plain, conversational language that explains why we made the decision and who can act on it. Include only the details needed to understand that reasoning; skip implementation walkthroughs and tangential explanations.
 
@@ -79,20 +89,28 @@ For **files** specifically, the bar is higher than for functions. A file signals
 
 **Comment tests with short step labels.** When I ask for comments in a test, label each phase in a few lowercase words (`// decline the first payment`, `// then retry it`) with a blank line between phases, and put each `expect` right after the call it checks. Add a short why only where a phase hides a trick its label can't convey.
 
+**Insert test rows with Prisma, not raw SQL.** Use a repo function if one exists, else `prisma.<model>.create` / `createMany`; never `$executeRaw` INSERTs. For "column is required" tests, call `create` without the field under `// @ts-expect-error` and assert the error names it.
+
 ## Skills
 
 - `db`: use when understanding DB schema, updating it, or querying the DB
 - `translate`: use if you are updating `translation.json` files
+- `ci`: while a `/ci` agent runs on a branch, it owns the PR's checks. Don't run `gh pr checks` or fix CI from the main session, even if I say the PR failed; ask the agent for its status instead.
 
 ## Linear
 
 - When you create a Linear ticket, always set its status to Triage, leave its priority unset (No priority) and leave it out of any cycle unless I ask for one. After creating it, fetch it and check that every field matches what you set.
 - Write acceptance criteria as Markdown checkboxes (`- [ ] ...`), not plain bullets.
+- Keep ticket descriptions super short: a one-line problem, minimal repro, expected / actual, and terse AC. No impact essays or long cause sections unless I ask.
+- Each AC item is something a person can do to verify the work: a testable input → expected result (e.g. "On a wallet with 1000 and a hold of 800, `PUT /wallet-amount {800}` returns 200"). Context and causes go in the description, not the AC.
 - When editing an existing ticket, patch only the part that changes; never replace the whole description. If a patch fails, re-read the ticket and retry the patch against its current text.
 
 ## Datadog
 
 - When asked to investigate a Datadog URL, run `ddl -h` first, then use `ddl logs url "<url>"` to fetch the logs.
+- Prod server logs are `service:server-web env:prod`, not `service:server`.
+- `DD_API_KEY` / `DD_APP_KEY` can read monitors but get 403 on create. Write monitors through my Chrome session over `ch`: open a tab with `PUT /json/new?<url>` and `Runtime.evaluate` over the page websocket (Playwright `connectOverCDP` fails on Chrome 155), and send `X-CSRF-Token` from the page's inline `"csrf_token":"…"` (not `localStorage`). I may need to log in to us5.datadoghq.com first.
+- Non-paging alerts go to `@slack-engineering-on-call`; paging ones to `@pagerduty-Neon_Core`.
 
 ## neon
 
@@ -103,10 +121,21 @@ For **files** specifically, the bar is higher than for functions. A file signals
   - `packages/foo` → `@neon/foo` (e.g. `@neon/database`, `@neon/apis`)
 - You can read the dev server logs at `/tmp/neon-dev.log`
 - If I reference a `neon/**/*.md` file then assume this filepath is relative to `/workspaces/neon/_obsidian`
+  - Hand vault paths back the same way (`neon/...`), in chat and inside vault docs; never absolute.
+- ENG-7807 wallet-refund QA is tracked in ENG-7949; my working criteria are in `neon/refund criteria.md` (keep my terse bullet form). Settled 2026-09-29 but not in Linear:
+  - Wallet refunds are Purchase API only (ENG-7871's AC says "purchase & internal"; the code and decision are purchase-only).
+  - `refundCreditMinValidityDays` was dropped and never shipped.
+  - Sequential duplicate refunds fail with the over-refund error.
+  - ENG-7849 dropped resume / retry (#7177 / #7185) for alerting on each failed wallet operation.
+  - Open: Console CS can't refund any purchase that earned cashback or captured a hold, even to the card (the source allowlist is checked first); and transaction status after a wallet-destination refund doesn't show refunded.
 
 ## Documentation
 
 These docs are a cache of what the codebase does, so they can be out of date. When a doc drifts from the code or from a decision we've made, trust the code or the decision, update the doc yourself without asking, and tell me what you changed.
+
+- When we talk through any vault doc (tickets, design notes), update it as decisions land, without asking. Keep unconfirmed points marked as such.
+- When a doc links sub pages (e.g. `neon/best practices for writing good code.md`), read every sub page that applies, not just the index, and say which ones you read. If a doc says to do something, do it.
+- When I change the format of a post-mortem in `neon/post mortems/`, carry the change (generalised) into `_post mortem template.md` there, without asking. Process steps live in `_checklist.md`.
 
 All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
 
@@ -133,6 +162,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
 ## Browser
 
 - "use playwright" means drive my Mac's Chrome: use the `ch` skill
+- When I paste a Mac file path (e.g. a CleanShot screenshot), copy it into the codespace through Chrome over `ch` as a `file://` URL into `tmp/ch/<date>/` (steps in the ch skill's NOTES.md). Don't ask for a re-upload; if `localhost:9222` doesn't answer, ask me to run `ch` on my Mac.
 
 ## References
 
