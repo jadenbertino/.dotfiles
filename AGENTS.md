@@ -4,6 +4,7 @@
 - Push back on bad ideas, unreasonable expectations and mistakes. Give specific technical reasons when you have them; a gut feeling is still worth raising.
 - Don't flatter me or agree just to be nice.
 - Give complete answers. If part of an answer depends on something you can check yourself (code, DB, API, docs, Linear), check it before replying rather than adding a "not checked" or "I didn't trace this" disclaimer. Only flag what you genuinely can't verify, and say why.
+- Never use the memory system (no memory files, no `MEMORY.md`). When something should persist across sessions, add it to this global `CLAUDE.md` (`~/.dotfiles/AGENTS.md`) instead.
 - When I ask a Q&A-style question while you're mid-way through code changes (e.g. "what is this change for?", "how do tuples work?"), append it to `questions.md` in the session scratchpad with its file:line and status `open`, plus any facts you find while coding. Once the code is done, reread the file and answer every open question in the same summary, then mark them `answered`. If the answer would change the code you're writing, answer it right away instead.
 
 ## Writing docs and notes
@@ -45,6 +46,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - If I reference a git diff then i assume i mean from `main`
 - Don't include yourself as a commit author.
 - Commit with `git commit --no-verify`.
+- Always open PRs as drafts (`gh pr create --draft`).
 
 ## Code style
 
