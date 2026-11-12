@@ -61,23 +61,16 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 ## Code style
 
 - Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
-- Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" lines in `neon/typescript types.md` and `.claude/docs/STYLE.md`.
-- Before writing TS types or JSDoc, read `typescript types.md` and `Abstractions, Naming, Comments.md` (vault root).
+- Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" line in `.claude/docs/STYLE.md`.
+- Before writing error handling or logging, read `neon/Error Handling & Logging.md`.
 
 **Comments:** NEVER write comments unless I specifically ask you to. If I ask you to write a comment, then write it in plain, conversational language that explains why we made the decision and who can act on it. Include only the details needed to understand that reasoning; skip implementation walkthroughs and tangential explanations.
 
-**Default to inline. Don't extract unless one of the following is true (ordered high to low priority):**
+Types, abstractions, naming and comments (imported from the vault's `typescript types.md` and `Abstractions, Naming, Comments.md`):
 
-1. **Reused in 2+ real places** — clearest, most objective signal. Not "might be reused" — actually is.
-2. **High complexity / line count makes the caller hard to skim** — the extracted name does real explanatory work; the caller reads better without the detail inline.
-3. **Needs independent tests** — the logic is non-trivial enough to verify in isolation, separate from whatever consumes it.
-4. **Crosses a clear system boundary** — generic primitive vs. domain-specific usage (e.g. `QrCode.tsx` vs `ShareQrCode.tsx`); the extracted thing has a different *kind* of responsibility, not just a different task. Usually a special case of 2+3 combined, but the clearest justification for a new *file* rather than just a new function.
+@~/.dotfiles/docs/typescript-types.md
 
-The cost of extraction is always indirection — the reader has to leave the current context. The benefit has to outweigh that. #1 or #2 on its own is enough: a single caller doesn't make a helper wrong when it makes the code easier to read and reason about.
-
-For **files** specifically, the bar is higher than for functions. A file signals "standalone unit of the system." A file used in one place with no tests is lying.
-
-**Naming is exact, not approximate.** `review.tsx` → `ReviewModal.tsx`, `offers.tsx` → `Offers.tsx`. Names should describe the shape of the thing (Modal, Panel, Row, Form), not just the subject domain.
+@~/.dotfiles/docs/abstractions-naming-comments.md
 
 **Tests follow reusable logic, not file count.** Write tests for shared primitives and non-obvious logic. Don't write tests just because something is in its own file.
 
