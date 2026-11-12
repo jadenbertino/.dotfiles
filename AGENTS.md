@@ -141,20 +141,16 @@ These docs are a cache of what the codebase does, so they can be out of date. Wh
 - When a doc links sub pages (e.g. `neon/PR Review Prompts/1-Overview.md`), read every sub page that applies, not just the index, and say which ones you read. If a doc says to do something, do it.
 - When I change the format of a post-mortem in `neon/post mortems/`, carry the change (generalised) into `_post mortem template.md` there, without asking. Process steps live in `_checklist.md`.
 
-All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
+All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to, or grep the vault for its key terms (model and field names, ticket IDs).
 
 - Backlinks: there's no Obsidian index here, so find the notes that link to a note by grepping for its wikilink, by path and by bare name: `grep -rl --include=*.md -e "\[\[topics/neon architecture" -e "\[\[neon architecture" .` (run from the vault root). This catches `|alias`, `#heading` and `![[embeds]]`, but not markdown-style `[text](path.md)` links.
   - Topic notes (`topics/*.md`) have no content of their own: they embed `topics/_.base`, which Obsidian renders as a table of backlinks. Read their backlinks, not the note.
 
-- Architecture
-  - `topics/neon architecture.md` — No page content; check its backlinks for the architecture notes (payments, checkout amounts, refunds, webhooks, ledger, tax, async jobs, etc.).
 - Wallet work
   - `neon/Wallet Terms.md` — **read for any wallet work.** Glossary of wallet concepts (lots, free/paid balances, debt, holds, reversals, refund terms) and how wallet records link back to purchases and refunds.
   - `neon wallet api - for llms.md` (vault root) — **very important: read before any Wallet API work** (calling it, changing it, testing it). Endpoints, schemas, errors and gotchas, plus sandbox and local credentials for making real calls.
   - https://docs.neonpay.com/docs/neon-wallet-in-development — Public Neon Wallet docs we give makers: core wallet APIs, wallet webhook events and which webhooks each action sends, wallet in Neon Checkout, and wallet reports. Only read this when I mention "public docs"; usually skip it.
-  - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.
-  - For more wallet context, check the backlinks to `topics/neon wallet.md`.
-- Ticket work
+  - `neon/Makers, Property Codes, Environment IDs.md` — Lookup table of maker, property, environment and storefront IDs and domains for each game.- Ticket work
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
 - Code changes
   - `neon/Neon API Best Practices.md` — How we design and evolve Neon's APIs, public ones especially. Read before changing any API's behavior or OpenAPI spec.
