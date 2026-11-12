@@ -141,7 +141,7 @@ These docs are a cache of what the codebase does, so they can be out of date. Wh
 - When a doc links sub pages (e.g. `neon/PR Review Prompts/1-Overview.md`), read every sub page that applies, not just the index, and say which ones you read. If a doc says to do something, do it.
 - When I change the format of a post-mortem in `neon/post mortems/`, carry the change (generalised) into `_post mortem template.md` there, without asking. Process steps live in `_checklist.md`.
 
-All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to, or grep the vault for its key terms (model and field names, ticket IDs).
+All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to, or grep the vault for its key terms (model and field names, ticket IDs). For a hand-picked list of architecture or wallet notes, read the backlinks to `topics/neon architecture.md` / `topics/neon wallet.md` (plain grep also hits PR review runs, tickets and scratchpads).
 
 - Backlinks: there's no Obsidian index here, so find the notes that link to a note by grepping for its wikilink, by path and by bare name: `grep -rl --include=*.md -e "\[\[topics/neon architecture" -e "\[\[neon architecture" .` (run from the vault root). This catches `|alias`, `#heading` and `![[embeds]]`, but not markdown-style `[text](path.md)` links.
   - Topic notes (`topics/*.md`) have no content of their own: they embed `topics/_.base`, which Obsidian renders as a table of backlinks. Read their backlinks, not the note.
