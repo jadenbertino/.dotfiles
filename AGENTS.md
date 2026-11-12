@@ -38,6 +38,8 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - to quickly check & typecheck a file, use `/home/node/.local/bin-dotfiles/check <filepaths>`. For a comprehensive check use `tsc` and `eslint`.
 - Run `check` once per turn: on every file you changed, right before you say you're done. Don't re-run it after each file or feature change; speed matters more than catching a mistake a few steps earlier.
 - Do not run tests unless you're using the `ci` skill. Other skills and workflows (e.g. the ticket workflow) don't count. The `check` script is allowed.
+  - When you do run tests, select them by name: `yarn test <file> -t "<test name>"`, never a whole directory or workspace.
+  - To check that a new test fails without the fix, stash only the fix and keep the tests: `git stash push --include-untracked -m without-fix -- <files of the fix>`, run the test, then `git stash pop` only if the top entry of `git stash list` is `without-fix`. Don't undo the fix by hand.
 - **IMPORTANT:** Always run `/home/node/.local/bin-dotfiles/check <filepaths>` on the relevant files before running tests.
 - `ls` is aliased to `eza`
 - `check [--ts <5|7>] [--restart] <files>` / `tsc-daemon`: one daemon per git root (each checkout or treehouse worktree). The default TS is 5.9 (matches CI).
@@ -63,6 +65,12 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
 - Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" line in `.claude/docs/STYLE.md`.
 - Before writing error handling or logging, read `neon/Error Handling & Logging.md`.
+- Before writing repo code or any Prisma call, read `prisma + repo best practices.md` (vault root).
+- Before you add a new way to reach a state (e.g. a declined payment), find the code that already reaches it. Reuse it, or do everything it does (webhooks, wallet holds, fraud and analytics events), and say why if you leave something out.
+
+Coding values (imported from the vault's `neon/Coding Values.md`):
+
+@~/.dotfiles/docs/coding-values.md
 
 **Comments:** NEVER write comments unless I specifically ask you to. If I ask you to write a comment, then write it in plain, conversational language that explains why we made the decision and who can act on it. Include only the details needed to understand that reasoning; skip implementation walkthroughs and tangential explanations.
 
