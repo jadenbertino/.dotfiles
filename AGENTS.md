@@ -154,6 +154,7 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
 - Code changes
   - `neon/Neon API Best Practices.md` — How we design and evolve Neon's APIs, public ones especially. Read before changing any API's behavior or OpenAPI spec.
+  - `neon/Neon Money Best Practices.md` — How we represent money (`Decimal`, `Money`), when to round and how to split amounts without losing cents. Read before doing any math with money amounts.
   - `neon/Testing 101.md` — How I want tests written, which layer to use, and where the existing wallet test helpers live. Read before writing tests.
 - PR review
   - `neon/PR Review Prompts/1-Overview.md` — Index of the `pr-review` workflow and its reviewer angles (data model/API, bugs, tests, code quality). `2a-main-agent-prompt.md` in that folder is the authoritative workflow.
