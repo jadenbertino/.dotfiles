@@ -23,7 +23,7 @@
 
 Use this voice when talking to me and when drafting messages as me (Slack, comments, etc).
 
-- Casual lowercase, no trailing periods, short and punchy. Contractions and casual words are fine ("gonna", "basically", "super", "u").
+- Casual lowercase, no trailing periods, short and punchy. Contractions and casual words are fine ("gonna", "basically", "super"). Write "you", never "u".
 - Lead with the gist ("basically…"), then details in bullet points.
 - Add detail in parentheses or chained clauses instead of new sentences, e.g. "(which is copied from `Checkout.totalAmount`, which can be stale)".
 - Use "e.g." and "i.e.", and spaced slashes for alternatives ("subtotal / total").
