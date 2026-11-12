@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Poll a PR for new comments and print one line per comment, for Claude's Monitor tool.
+# Usage: pr-comments-watch [--all] [--interval <seconds>] <PR number>
+#   --all  also print comments that already exist when the watch starts
+# Line format: [copilot|human] <kind> id=<comment id> <author> <path:line or -> <url> :: <first line of body>
+# Skips your own comments and other bots. Exits when the PR is merged or closed.
+
+set -uo pipefail
+
+USAGE="Usage: pr-comments-watch [--all] [--interval <seconds>] <PR number>"
+show_existing=false
+interval=60
+pr=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --all) show_existing=true; shift ;;
+    --interval) interval="$2"; shift 2 ;;
+    -h|--help) echo "$USAGE"; exit 0 ;;
+    *) pr="$1"; shift ;;
+  esac
+done
+if [[ ! "$pr" =~ ^[0-9]+$ ]]; then echo "$USAGE" >&2; exit 1; fi
+
+me=$(gh api user -q .login) || { echo "pr-comments-watch: gh api user failed" ; exit 1; }
+
+FILTER='
+  def kind_of($login):
+    if $login == "Copilot" or $login == "copilot-pull-request-reviewer[bot]" then "copilot"
+    else "human" end;
+  def first_line: (. // "" | split("\n") | map(select(length > 0 and (startswith("<!--") | not))) | .[0] // "" | .[0:200]);
+  .[]
+  | select(.user.login != $me)
+  | select((.user.login | endswith("[bot]") | not) or .user.login == "copilot-pull-request-reviewer[bot]")
+  | (if $endpoint == "review" and ((.body // "") == "") then
+       (if .state == "COMMENTED" then empty else "(\(.state | ascii_downcase))" end)
+     else (.body | first_line) end) as $text
+  | [ "\($endpoint)-\(.id)",
+      "[\(kind_of(.user.login))] \($endpoint) id=\(.id) \(.user.login) \(if .path then "\(.path):\(.line // .original_line // "?")" else "-" end) \(.html_url) :: \($text)" ]
+  | @tsv'
+
+fetch() {
+  local endpoint="$1" path="$2"
+  gh api --paginate "repos/{owner}/{repo}/$path" \
+    | jq -r --arg me "$me" --arg endpoint "$endpoint" -s 'add // [] | '"$FILTER"
+}
+
+declare -A seen
+first_poll=true
+failing=false
+
+while true; do
+  state=$(gh pr view "$pr" --json state -q .state 2>/dev/null)
+  out=$(
+    fetch conversation "issues/$pr/comments" &&
+    fetch inline "pulls/$pr/comments" &&
+    fetch review "pulls/$pr/reviews"
+  ) 2>/dev/null
+  if [[ $? -ne 0 || -z "$state" ]]; then
+    if ! $failing; then echo "[error] pr-comments-watch: GitHub API calls are failing, will keep retrying"; fi
+    failing=true
+    sleep "$interval"
+    continue
+  fi
+  if $failing; then echo "[error] pr-comments-watch: GitHub API calls recovered"; fi
+  failing=false
+
+  while IFS=$'\t' read -r id line; do
+    [[ -z "$id" || -n "${seen[$id]:-}" ]] && continue
+    seen[$id]=1
+    if ! $first_poll || $show_existing; then echo "$line"; fi
+  done <<< "$out"
+  first_poll=false
+
+  if [[ "$state" != "OPEN" ]]; then echo "[done] PR #$pr is $(tr '[:upper:]' '[:lower:]' <<< "$state")"; exit 0; fi
+  sleep "$interval"
+done

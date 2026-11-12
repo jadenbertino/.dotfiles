@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Reply to an inline PR review comment, and optionally resolve its thread.
+# Usage: pr-comment-reply [--resolve] <PR number> <comment id> <body>
+# The comment id is the number after #discussion_r in the comment's URL (pr-comments-watch prints it).
+# Conversation comments and review summaries have no thread to resolve; reply to those with `gh pr comment`.
+
+set -euo pipefail
+
+USAGE="Usage: pr-comment-reply [--resolve] <PR number> <comment id> <body>"
+resolve=false
+if [[ "${1:-}" == "--resolve" ]]; then resolve=true; shift; fi
+if [[ $# -ne 3 || ! "$1" =~ ^[0-9]+$ || ! "$2" =~ ^[0-9]+$ ]]; then echo "$USAGE" >&2; exit 1; fi
+pr="$1" comment_id="$2" body="$3"
+
+reply_url=$(gh api "repos/{owner}/{repo}/pulls/$pr/comments/$comment_id/replies" -f body="$body" -q .html_url)
+echo "replied: $reply_url"
+
+if ! $resolve; then exit 0; fi
+
+repo=$(gh repo view --json owner,name -q '"\(.owner.login) \(.name)"')
+read -r owner name <<< "$repo"
+thread_id=$(gh api graphql --paginate -F owner="$owner" -F name="$name" -F pr="$pr" -f query='
+  query($owner: String!, $name: String!, $pr: Int!, $endCursor: String) {
+    repository(owner: $owner, name: $name) {
+      pullRequest(number: $pr) {
+        reviewThreads(first: 100, after: $endCursor) {
+          pageInfo { hasNextPage endCursor }
+          nodes { id comments(first: 1) { nodes { databaseId } } }
+        }
+      }
+    }
+  }' --jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.comments.nodes[0].databaseId == $comment_id) | .id")
+
+if [[ -z "$thread_id" ]]; then
+  echo "pr-comment-reply: no review thread starts with comment $comment_id (pass the thread's first comment id)" >&2
+  exit 1
+fi
+
+gh api graphql -f id="$thread_id" -f query='
+  mutation($id: ID!) { resolveReviewThread(input: { threadId: $id }) { thread { isResolved } } }' \
+  --jq '"resolved: \(.data.resolveReviewThread.thread.isResolved)"'
