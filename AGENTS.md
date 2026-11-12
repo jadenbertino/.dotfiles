@@ -54,6 +54,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - Don't include yourself as a commit author.
 - Commit with `git commit --no-verify`.
 - Always open PRs as drafts (`gh pr create --draft`).
+- Don't add a verification section to PR descriptions.
 - Don't rename files as a drive-by fix in a PR, even when the name is stale; it bloats the diff. Flag it for a follow-up instead.
 
 ## Code style
