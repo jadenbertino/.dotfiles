@@ -63,8 +63,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 ## Code style
 
 - Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
-- Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" line in `.claude/docs/STYLE.md`.
-- When `.claude/docs/STYLE.md` or `.claude/docs/PUBLIC_APIS.md` disagrees with my vault docs, my vault docs win. For public APIs, read `neon/Neon API Best Practices.md` instead of `PUBLIC_APIS.md` (it covers everything in it).
+- Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable.
 - Before writing error handling or logging, read `neon/Error Handling & Logging.md`.
 - Before writing repo code or any Prisma call, read `prisma + repo best practices.md` (vault root).
 - Before you add a new way to reach a state (e.g. a declined payment), find the code that already reaches it. Reuse it, or do everything it does (webhooks, wallet holds, fraud and analytics events), and say why if you leave something out.
