@@ -64,6 +64,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 
 - Skip full typecheck and lint. Run `check` on changed files before committing instead, since `--no-verify` skips the pre-commit hook.
 - Annotate function return types (including `Promise<Result<…>>` on repos and services) so the contract is skimmable. This overrides the "let TS infer" line in `.claude/docs/STYLE.md`.
+- When `.claude/docs/STYLE.md` disagrees with my vault docs, my vault docs win.
 - Before writing error handling or logging, read `neon/Error Handling & Logging.md`.
 - Before writing repo code or any Prisma call, read `prisma + repo best practices.md` (vault root).
 - Before you add a new way to reach a state (e.g. a declined payment), find the code that already reaches it. Reuse it, or do everything it does (webhooks, wallet holds, fraud and analytics events), and say why if you leave something out.
@@ -137,7 +138,7 @@ Types, abstractions, naming and comments (imported from the vault's `typescript 
 These docs are a cache of what the codebase does, so they can be out of date. When a doc drifts from the code or from a decision we've made, trust the code or the decision, update the doc yourself without asking, and tell me what you changed.
 
 - When we talk through any vault doc (tickets, design notes), update it as decisions land, without asking. Keep unconfirmed points marked as such.
-- When a doc links sub pages (e.g. `neon/best practices for writing good code.md`), read every sub page that applies, not just the index, and say which ones you read. If a doc says to do something, do it.
+- When a doc links sub pages (e.g. `neon/PR Review Prompts/1-Overview.md`), read every sub page that applies, not just the index, and say which ones you read. If a doc says to do something, do it.
 - When I change the format of a post-mortem in `neon/post mortems/`, carry the change (generalised) into `_post mortem template.md` there, without asking. Process steps live in `_checklist.md`.
 
 All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match the task before starting. If you need more context on a topic, follow the `[[links]]` in these docs to the files they link to.
@@ -156,7 +157,6 @@ All paths are relative to `/workspaces/neon/_obsidian`. Read the docs that match
 - Ticket work
   - `neon/ticket workflow.md` — My step-by-step process for a ticket: scaffold from `neon/tickets/_template.md`, plan and agree AC, code, review, retro.
 - Code changes
-  - `neon/best practices for writing good code.md` — Index of my coding conventions (types, naming, abstractions, error handling, transactions, repo/service layering). Read the docs it links that apply to the change.
   - `neon/Neon API Best Practices.md` — How we design and evolve Neon's APIs, public ones especially. Read before changing any API's behavior or OpenAPI spec.
   - `neon/Testing 101.md` — How I want tests written, which layer to use, and where the existing wallet test helpers live. Read before writing tests.
 - PR review
