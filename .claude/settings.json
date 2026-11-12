@@ -31,7 +31,9 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "claudeMdExcludes": [
-    "/workspaces/neon/CLAUDE.md"
+    "/workspaces/neon/CLAUDE.md",
+    "/workspaces/neon-*/CLAUDE.md",
+    "**/.treehouse/*/*/neon/CLAUDE.md"
   ],
   "theme": "dark",
   "voiceEnabled": true,
