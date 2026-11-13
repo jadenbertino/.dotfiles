@@ -15,6 +15,7 @@ Things learned while driving Chrome with `ch`. Read before starting; append when
 
 ## Neon checkout (localhost:3001)
 
+- Local arrakis (`localhost:3004`) needs a real Google sign-in. The server verifies the Google token, so there's no local bypass. Open the page in a background tab, ask the user to sign in there, then reuse that tab (find it by `localhost:3004`).
 - Chrome on the Mac can open `localhost:3001` / `localhost:8080` in the codespace directly, but only when the Mac forwards those ports from this codespace. `ch` tunnels only the debug port, so with several codespaces open the ports can point at a different one and every checkout shows "404 Not Found". To check, fetch a made-up path like `localhost:8080/zz-probe` from the page and grep `/tmp/neon-dev.log` for it.
 - The card form has two `input[data-testid=emailAddress]` (one belongs to the hidden Neon Pay auth block). Target the visible one with `input#emailAddress`.
 - Locally, the card form requires a phone number (e.g. `2015550123`), or Place Order shows "Please enter a valid phone number".
