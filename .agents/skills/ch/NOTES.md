@@ -23,6 +23,7 @@ Things learned while driving Chrome with `ch`. Read before starting; append when
 
 ## GitHub
 
+- As of 2026-11, the PR page is React and has no `input[type=file]` until you interact. Instead, build a `DataTransfer` holding a `File` (from base64) in the page, dispatch `dragenter` / `dragover` / `drop` on the "Leave a comment" textarea, and poll its value for `https://github.com/user-attachments/assets/<id>`. Then `fill("")` and reload so nothing gets posted. This works for videos too: put the bare URL on its own line in the body and GitHub renders a player.
 - `gh` can't upload images. To get `user-attachments` URLs for a PR description, open the PR in a background tab and call `setInputFiles({ name, mimeType, buffer })` on a `fc-…` file input. Wait for the matching textarea to contain the `<img … src="https://github.com/user-attachments/…">` tag, read it, then reload the page so nothing gets saved. Then put the tags in the body with `gh pr edit --body-file`.
   - The first `input[type=file]` on a PR page belongs to the PR description's hidden edit form (`fc-issue-<id>-body`), not to the new comment box (`fc-new_comment_field`). Either works, as long as you read the textarea with the same id.
   - Passing a buffer works over CDP even though the files live in the codespace, not on the Mac.
