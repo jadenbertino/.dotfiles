@@ -58,6 +58,7 @@ Use this voice when talking to me and when drafting messages as me (Slack, comme
 - Always open PRs as drafts (`gh pr create --draft`).
 - Don't add a verification section to PR descriptions.
 - When fixing Copilot PR comments (not human ones), make one commit per comment where you can, then reply on the comment saying what you changed (no need to cite the commit hash) and resolve its thread. `pr-comment-reply --resolve <PR> <comment id> "<body>"` does both.
+- Start every GitHub comment or reply you post for me with `Claude: `, so readers can tell I didn't write it myself. `pr-comment-reply` adds it automatically; add it yourself anywhere else (e.g. `gh pr comment`, review comments). This doesn't apply to PR descriptions or commit messages.
 - After opening a PR, watch it for comments by running `pr-comments-watch <PR number>` in a `Monitor` for one 30-minute window. When it expires, don't re-arm it.
 - Don't rename files as a drive-by fix in a PR, even when the name is stale; it bloats the diff. Flag it for a follow-up instead.
 
